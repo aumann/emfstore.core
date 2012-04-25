@@ -56,12 +56,21 @@ public abstract class WorkspaceTest {
 	 */
 	@After
 	public void cleanProjectSpace() {
+		cleanProjectSpace(getProjectSpace());
+	}
+
+	/**
+	 * Clean workspace.
+	 * 
+	 * @param ps projectSpace
+	 */
+	public void cleanProjectSpace(final ProjectSpace ps) {
 		new EMFStoreCommand() {
 
 			@Override
 			protected void doRun() {
 				try {
-					WorkspaceManager.getInstance().getCurrentWorkspace().deleteProjectSpace(getProjectSpace());
+					WorkspaceManager.getInstance().getCurrentWorkspace().deleteProjectSpace(ps);
 				} catch (IOException e) {
 					fail();
 				}
