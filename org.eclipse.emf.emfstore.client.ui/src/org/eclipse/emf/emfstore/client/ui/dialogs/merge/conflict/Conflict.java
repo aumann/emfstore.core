@@ -317,7 +317,7 @@ public abstract class Conflict extends Observable {
 	 * 
 	 * @return list of operations
 	 */
-	protected List<AbstractOperation> getMyOperations() {
+	public List<AbstractOperation> getMyOperations() {
 		return ((leftIsMy) ? leftOperations : rightOperations);
 	}
 
@@ -326,7 +326,7 @@ public abstract class Conflict extends Observable {
 	 * 
 	 * @return list of operations
 	 */
-	protected List<AbstractOperation> getTheirOperations() {
+	public List<AbstractOperation> getTheirOperations() {
 		return ((!leftIsMy) ? leftOperations : rightOperations);
 	}
 
@@ -335,7 +335,7 @@ public abstract class Conflict extends Observable {
 	 * 
 	 * @return list of operations
 	 */
-	protected List<AbstractOperation> getLeftOperations() {
+	public List<AbstractOperation> getLeftOperations() {
 		return leftOperations;
 	}
 
@@ -344,7 +344,7 @@ public abstract class Conflict extends Observable {
 	 * 
 	 * @return list of operations
 	 */
-	protected List<AbstractOperation> getRightOperations() {
+	public List<AbstractOperation> getRightOperations() {
 		return rightOperations;
 	}
 
@@ -353,7 +353,7 @@ public abstract class Conflict extends Observable {
 	 * 
 	 * @return operation
 	 */
-	protected AbstractOperation getLeftOperation() {
+	public AbstractOperation getLeftOperation() {
 		return leftOperations.get(0);
 	}
 
@@ -362,7 +362,7 @@ public abstract class Conflict extends Observable {
 	 * 
 	 * @return operation
 	 */
-	protected AbstractOperation getRightOperation() {
+	public AbstractOperation getRightOperation() {
 		return rightOperations.get(0);
 	}
 
@@ -371,7 +371,7 @@ public abstract class Conflict extends Observable {
 	 * 
 	 * @return operation
 	 */
-	protected AbstractOperation getMyOperation() {
+	public AbstractOperation getMyOperation() {
 		return getMyOperations().get(0);
 	}
 
@@ -380,7 +380,7 @@ public abstract class Conflict extends Observable {
 	 * 
 	 * @return operation
 	 */
-	protected AbstractOperation getTheirOperation() {
+	public AbstractOperation getTheirOperation() {
 		return getTheirOperations().get(0);
 	}
 
@@ -394,7 +394,7 @@ public abstract class Conflict extends Observable {
 	 * @return operation
 	 */
 	@SuppressWarnings("unchecked")
-	protected <T> T getMyOperation(Class<T> clazz) {
+	public <T> T getMyOperation(Class<T> clazz) {
 		return (T) getMyOperation();
 	}
 
@@ -408,7 +408,7 @@ public abstract class Conflict extends Observable {
 	 * @return operation
 	 */
 	@SuppressWarnings("unchecked")
-	protected <T> T getTheirOperation(Class<T> clazz) {
+	public <T> T getTheirOperation(Class<T> clazz) {
 		return (T) getTheirOperation();
 	}
 

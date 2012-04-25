@@ -1,5 +1,15 @@
+/*******************************************************************************
+ * Copyright (c) 2008-2011 Chair for Applied Software Engineering, Technische Universitaet Muenchen. All rights
+ * reserved. This program and the accompanying materials are made available under the terms of the Eclipse Public
+ * License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+ * Contributors:
+ ******************************************************************************/
 package org.eclipse.emf.emfstore.client.test.conflictDetection.merging;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.eclipse.emf.emfstore.client.model.ProjectSpace;
@@ -8,15 +18,26 @@ import org.eclipse.emf.emfstore.client.model.util.EMFStoreCommandWithResult;
 import org.eclipse.emf.emfstore.client.test.model.task.ActionItem;
 import org.eclipse.emf.emfstore.client.test.model.task.TaskFactory;
 import org.eclipse.emf.emfstore.client.ui.dialogs.merge.DecisionManager;
+import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.Conflict;
+import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.AttributeConflict;
 import org.eclipse.emf.emfstore.common.model.Project;
 import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.VersioningFactory;
+import org.eclipse.emf.emfstore.server.model.versioning.operations.AttributeOperation;
 import org.junit.Test;
 
+/**
+ * AttributeOperation merge tests.
+ * 
+ * @author wesendon
+ */
 public class AttributeMergeTest extends MergeTest {
 
+	/**
+	 * Test without the convenience methods.
+	 */
 	@Test
-	public void attributeCollision() {
+	public void oldAttributeCollision() {
 		final ActionItem item = new EMFStoreCommandWithResult<ActionItem>() {
 			@Override
 			protected ActionItem doRun() {
@@ -30,8 +51,8 @@ public class AttributeMergeTest extends MergeTest {
 		clearOperations();
 
 		ProjectSpace projectSpace2 = cloneProjectSpace(getProjectSpace());
-		Project project = projectSpace2.getProject();
-		final ActionItem theirItem = (ActionItem) project.getModelElement(project.getModelElementId(item));
+		Project project2 = projectSpace2.getProject();
+		final ActionItem theirItem = (ActionItem) project2.getModelElement(getProject().getModelElementId(item));
 
 		new EMFStoreCommand() {
 			@Override
@@ -53,34 +74,157 @@ public class AttributeMergeTest extends MergeTest {
 		DecisionManager manager = new DecisionManager(getProject(), getProjectSpace().getLocalChangePackage(true),
 			Arrays.asList(projectSpace2.getLocalChangePackage(true)), spec, spec);
 
-		manager.calcResult();
+		ArrayList<Conflict> conflicts = manager.getConflicts();
 
-		manager.getAcceptedMine();
-		manager.getRejectedTheirs();
+		assertEquals(conflicts.size(), 1);
+		assertTrue(conflicts.get(0) instanceof AttributeConflict);
+		Conflict conflict = conflicts.get(0);
+		assertTrue(conflict.getMyOperations().size() == 1);
+		assertTrue(conflict.getMyOperation() instanceof AttributeOperation);
+		assertTrue(conflict.getTheirOperations().size() == 1);
+		assertTrue(conflict.getTheirOperation() instanceof AttributeOperation);
 	}
 
+	/**
+	 * Simple attribute conflict on name attribute.
+	 */
 	@Test
-	public void betterAttributeCollision() {
+	public void simpleAttributeCollision() {
 		final MergeCase mergeCase = newMergeCase();
 
-		ActionItem item = TaskFactory.eINSTANCE.createActionItem();
+		final ActionItem item = TaskFactory.eINSTANCE.createActionItem();
 		mergeCase.add(item);
 
 		new EMFStoreCommand() {
 			@Override
 			protected void doRun() {
-				mergeCase.getMyItem(ActionItem.class).setName("Otto");
+				mergeCase.getMyItem(item).setName("Otto");
 			}
 		}.run(false);
 
 		new EMFStoreCommand() {
 			@Override
 			protected void doRun() {
-				mergeCase.getTheirItem(ActionItem.class).setName("Max");
+				mergeCase.getTheirItem(item).setName("Max");
 			}
 		}.run(false);
 
-		mergeCase.execute();
+		ArrayList<Conflict> conflicts = mergeCase.execute().getConflicts();
+
+		assertEquals(conflicts.size(), 1);
+		assertTrue(conflicts.get(0) instanceof AttributeConflict);
+		Conflict conflict = conflicts.get(0);
+		assertTrue(conflict.getMyOperations().size() == 1);
+		assertTrue(conflict.getMyOperation() instanceof AttributeOperation);
+		assertTrue(conflict.getTheirOperations().size() == 1);
+		assertTrue(conflict.getTheirOperation() instanceof AttributeOperation);
 	}
 
+	/**
+	 * Simple attribute conflict on name attribute with uninvoled change before.
+	 */
+	@Test
+	public void simpleAttributeCollisionWithUninvolvedBefore() {
+		final MergeCase mergeCase = newMergeCase();
+
+		final ActionItem item = TaskFactory.eINSTANCE.createActionItem();
+		mergeCase.add(item);
+
+		new EMFStoreCommand() {
+			@Override
+			protected void doRun() {
+				mergeCase.getMyItem(item).setDescription("some random description");
+				mergeCase.getMyItem(item).setName("Otto");
+			}
+		}.run(false);
+
+		new EMFStoreCommand() {
+			@Override
+			protected void doRun() {
+				mergeCase.getTheirItem(item).setName("Max");
+			}
+		}.run(false);
+
+		ArrayList<Conflict> conflicts = mergeCase.execute().getConflicts();
+
+		assertEquals(conflicts.size(), 1);
+		assertTrue(conflicts.get(0) instanceof AttributeConflict);
+		Conflict conflict = conflicts.get(0);
+		assertTrue(conflict.getMyOperations().size() == 1);
+		assertTrue(conflict.getMyOperation() instanceof AttributeOperation);
+		assertTrue(conflict.getTheirOperations().size() == 1);
+		assertTrue(conflict.getTheirOperation() instanceof AttributeOperation);
+	}
+
+	/**
+	 * Simple attribute conflict on name attribute with uninvoled change after.
+	 */
+	@Test
+	public void simpleAttributeCollisionWithUninvolvedAfter() {
+		final MergeCase mergeCase = newMergeCase();
+
+		final ActionItem item = TaskFactory.eINSTANCE.createActionItem();
+		mergeCase.add(item);
+
+		new EMFStoreCommand() {
+			@Override
+			protected void doRun() {
+				mergeCase.getMyItem(item).setName("Otto");
+				mergeCase.getMyItem(item).setDescription("some random description");
+			}
+		}.run(false);
+
+		new EMFStoreCommand() {
+			@Override
+			protected void doRun() {
+				mergeCase.getTheirItem(item).setName("Max");
+			}
+		}.run(false);
+
+		ArrayList<Conflict> conflicts = mergeCase.execute().getConflicts();
+
+		assertEquals(conflicts.size(), 1);
+		assertTrue(conflicts.get(0) instanceof AttributeConflict);
+		Conflict conflict = conflicts.get(0);
+		assertTrue(conflict.getMyOperations().size() == 1);
+		assertTrue(conflict.getMyOperation() instanceof AttributeOperation);
+		assertTrue(conflict.getTheirOperations().size() == 1);
+		assertTrue(conflict.getTheirOperation() instanceof AttributeOperation);
+	}
+
+	/**
+	 * Simple attribute conflict on name attribute with uninvoled change before on their side.
+	 */
+	@Test
+	public void simpleAttributeCollisionWithUninvolvedBeforeTheir() {
+		final MergeCase mergeCase = newMergeCase();
+
+		final ActionItem item = TaskFactory.eINSTANCE.createActionItem();
+		mergeCase.add(item);
+
+		new EMFStoreCommand() {
+			@Override
+			protected void doRun() {
+				mergeCase.getMyItem(item).setName("Otto");
+			}
+		}.run(false);
+
+		new EMFStoreCommand() {
+			@Override
+			protected void doRun() {
+				mergeCase.getTheirItem(item).setDescription("some random description");
+				mergeCase.getTheirItem(item).setName("Max");
+			}
+		}.run(false);
+
+		ArrayList<Conflict> conflicts = mergeCase.execute().getConflicts();
+
+		assertEquals(conflicts.size(), 1);
+		assertTrue(conflicts.get(0) instanceof AttributeConflict);
+		Conflict conflict = conflicts.get(0);
+		assertTrue(conflict.getMyOperations().size() == 1);
+		assertTrue(conflict.getMyOperation() instanceof AttributeOperation);
+		assertTrue(conflict.getTheirOperations().size() == 1);
+		assertTrue(conflict.getTheirOperation() instanceof AttributeOperation);
+	}
 }
