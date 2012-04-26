@@ -140,7 +140,9 @@ public abstract class WorkspaceTest {
 	 */
 	protected TestElement getTestElement(String name) {
 		TestElement element = TestmodelFactory.eINSTANCE.createTestElement();
-		element.setName(name);
+		if (name != null) {
+			element.setName(name);
+		}
 		return element;
 	}
 }

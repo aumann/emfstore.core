@@ -18,6 +18,9 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.emf.emfstore.client.test.testmodel.TestElement#getStrings <em>Strings</em>}</li>
  *   <li>{@link org.eclipse.emf.emfstore.client.test.testmodel.TestElement#getReferences <em>References</em>}</li>
  *   <li>{@link org.eclipse.emf.emfstore.client.test.testmodel.TestElement#getContainedElements <em>Contained Elements</em>}</li>
+ *   <li>{@link org.eclipse.emf.emfstore.client.test.testmodel.TestElement#getReference <em>Reference</em>}</li>
+ *   <li>{@link org.eclipse.emf.emfstore.client.test.testmodel.TestElement#getContainedElement <em>Contained Element</em>}</li>
+ *   <li>{@link org.eclipse.emf.emfstore.client.test.testmodel.TestElement#getOtherReference <em>Other Reference</em>}</li>
  * </ul>
  * </p>
  *
@@ -99,5 +102,83 @@ public interface TestElement extends EObject {
 	 * @generated
 	 */
 	EList<TestElement> getContainedElements();
+
+	/**
+	 * Returns the value of the '<em><b>Reference</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Reference</em>' reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Reference</em>' reference.
+	 * @see #setReference(TestElement)
+	 * @see org.eclipse.emf.emfstore.client.test.testmodel.TestmodelPackage#getTestElement_Reference()
+	 * @model
+	 * @generated
+	 */
+	TestElement getReference();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.emf.emfstore.client.test.testmodel.TestElement#getReference <em>Reference</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Reference</em>' reference.
+	 * @see #getReference()
+	 * @generated
+	 */
+	void setReference(TestElement value);
+
+	/**
+	 * Returns the value of the '<em><b>Contained Element</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Contained Element</em>' containment reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Contained Element</em>' containment reference.
+	 * @see #setContainedElement(TestElement)
+	 * @see org.eclipse.emf.emfstore.client.test.testmodel.TestmodelPackage#getTestElement_ContainedElement()
+	 * @model containment="true"
+	 * @generated
+	 */
+	TestElement getContainedElement();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.emf.emfstore.client.test.testmodel.TestElement#getContainedElement <em>Contained Element</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Contained Element</em>' containment reference.
+	 * @see #getContainedElement()
+	 * @generated
+	 */
+	void setContainedElement(TestElement value);
+
+	/**
+	 * Returns the value of the '<em><b>Other Reference</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Other Reference</em>' reference isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Other Reference</em>' reference.
+	 * @see #setOtherReference(TestElement)
+	 * @see org.eclipse.emf.emfstore.client.test.testmodel.TestmodelPackage#getTestElement_OtherReference()
+	 * @model
+	 * @generated
+	 */
+	TestElement getOtherReference();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.emf.emfstore.client.test.testmodel.TestElement#getOtherReference <em>Other Reference</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Other Reference</em>' reference.
+	 * @see #getOtherReference()
+	 * @generated
+	 */
+	void setOtherReference(TestElement value);
 
 } // TestElement
