@@ -56,12 +56,21 @@ public abstract class WorkspaceTest {
 	 */
 	@After
 	public void cleanProjectSpace() {
+		cleanProjectSpace(getProjectSpace());
+	}
+
+	/**
+	 * Clean workspace.
+	 * 
+	 * @param ps projectSpace
+	 */
+	public void cleanProjectSpace(final ProjectSpace ps) {
 		new EMFStoreCommand() {
 
 			@Override
 			protected void doRun() {
 				try {
-					WorkspaceManager.getInstance().getCurrentWorkspace().deleteProjectSpace(getProjectSpace());
+					WorkspaceManager.getInstance().getCurrentWorkspace().deleteProjectSpace(ps);
 				} catch (IOException e) {
 					fail();
 				}
@@ -131,7 +140,9 @@ public abstract class WorkspaceTest {
 	 */
 	protected TestElement getTestElement(String name) {
 		TestElement element = TestmodelFactory.eINSTANCE.createTestElement();
-		element.setName(name);
+		if (name != null) {
+			element.setName(name);
+		}
 		return element;
 	}
 }

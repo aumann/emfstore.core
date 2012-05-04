@@ -84,10 +84,14 @@ public abstract class ConflictDetectionTest extends WorkspaceTest {
 	}
 
 	public TestElement createTestElement() {
+		return createTestElement(null);
+	}
+
+	public TestElement createTestElement(final String name) {
 		return new EMFStoreCommandWithResult<TestElement>() {
 			@Override
 			protected TestElement doRun() {
-				return getTestElement();
+				return getTestElement(name);
 			}
 		}.run(false);
 	}
