@@ -26,6 +26,7 @@ import org.eclipse.emf.emfstore.common.model.Project;
 import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.VersioningFactory;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.AbstractOperation;
+import org.eclipse.emf.emfstore.server.model.versioning.operations.AttributeOperation;
 
 /**
  * Helper super class for merge tests.
@@ -84,6 +85,12 @@ public class MergeTest extends ConflictDetectionTest {
 		public void add(EObject... objs) {
 			for (EObject obj : objs) {
 				getProject().addModelElement(obj);
+			}
+		}
+
+		public void addTheirs(EObject... objs) {
+			for (EObject obj : objs) {
+				getTheirProject().addModelElement(obj);
 			}
 		}
 
@@ -151,6 +158,10 @@ public class MergeTest extends ConflictDetectionTest {
 			}
 			return hasConflict(clazz, 1);
 		}
+
+		public ProjectSpace getMyProjectSpace() {
+			return getProjectSpace();
+		}
 	}
 
 	public class MergeTestQuery {
@@ -170,7 +181,11 @@ public class MergeTest extends ConflictDetectionTest {
 		public <T extends Conflict> MergeTestQuery hasConflict(Class<T> clazz, int i) {
 			conflicts = manager.getConflicts();
 			assertEquals("Number of conflicts", i, conflicts.size());
-			assertTrue(clazz.isInstance(currentConflict()));
+			Conflict currentConflict = currentConflict();
+			if (!clazz.isInstance(currentConflict)) {
+				throw new AssertionError("Expected: " + clazz.getName() + " but found: "
+					+ ((currentConflict == null) ? "null" : currentConflict.getClass().getName()));
+			}
 			return this;
 		}
 
@@ -250,6 +265,13 @@ public class MergeTest extends ConflictDetectionTest {
 			} catch (InvocationTargetException e) {
 			}
 			throw new AssertionError("No such method");
+		}
+
+		private int myCounter = 0;
+
+		public MergeTestQuery andMyIs(Class<AttributeOperation> class1) {
+			myIs(class1, ++myCounter);
+			return this;
 		}
 	}
 }

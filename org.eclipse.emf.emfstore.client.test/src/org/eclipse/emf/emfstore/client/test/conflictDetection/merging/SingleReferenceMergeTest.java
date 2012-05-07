@@ -69,7 +69,7 @@ public class SingleReferenceMergeTest extends MergeTest {
 		final TestElement myLink = createTestElement();
 		final TestElement theirLink = createTestElement();
 
-		final MergeCase mc = newMergeCase(target, myLink, theirLink);
+		final MergeCase mc = newMergeCase(target, decoy, myLink, theirLink);
 
 		new EMFStoreCommand() {
 			@Override
