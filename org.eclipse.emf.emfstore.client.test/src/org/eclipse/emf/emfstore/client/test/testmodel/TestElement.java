@@ -21,6 +21,7 @@ import org.eclipse.emf.ecore.EObject;
  *   <li>{@link org.eclipse.emf.emfstore.client.test.testmodel.TestElement#getReference <em>Reference</em>}</li>
  *   <li>{@link org.eclipse.emf.emfstore.client.test.testmodel.TestElement#getContainedElement <em>Contained Element</em>}</li>
  *   <li>{@link org.eclipse.emf.emfstore.client.test.testmodel.TestElement#getOtherReference <em>Other Reference</em>}</li>
+ *   <li>{@link org.eclipse.emf.emfstore.client.test.testmodel.TestElement#getDescription <em>Description</em>}</li>
  * </ul>
  * </p>
  *
@@ -180,5 +181,31 @@ public interface TestElement extends EObject {
 	 * @generated
 	 */
 	void setOtherReference(TestElement value);
+
+	/**
+	 * Returns the value of the '<em><b>Description</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Description</em>' attribute isn't clear,
+	 * there really should be more of a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * @return the value of the '<em>Description</em>' attribute.
+	 * @see #setDescription(String)
+	 * @see org.eclipse.emf.emfstore.client.test.testmodel.TestmodelPackage#getTestElement_Description()
+	 * @model
+	 * @generated
+	 */
+	String getDescription();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.emf.emfstore.client.test.testmodel.TestElement#getDescription <em>Description</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @param value the new value of the '<em>Description</em>' attribute.
+	 * @see #getDescription()
+	 * @generated
+	 */
+	void setDescription(String value);
 
 } // TestElement

@@ -152,6 +152,15 @@ public class TestmodelPackageImpl extends EPackageImpl implements TestmodelPacka
 	}
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EAttribute getTestElement_Description() {
+		return (EAttribute)testElementEClass.getEStructuralFeatures().get(7);
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @generated
 	 */
@@ -184,6 +193,7 @@ public class TestmodelPackageImpl extends EPackageImpl implements TestmodelPacka
 		createEReference(testElementEClass, TEST_ELEMENT__REFERENCE);
 		createEReference(testElementEClass, TEST_ELEMENT__CONTAINED_ELEMENT);
 		createEReference(testElementEClass, TEST_ELEMENT__OTHER_REFERENCE);
+		createEAttribute(testElementEClass, TEST_ELEMENT__DESCRIPTION);
 	}
 
 	/**
@@ -223,6 +233,7 @@ public class TestmodelPackageImpl extends EPackageImpl implements TestmodelPacka
 		initEReference(getTestElement_Reference(), this.getTestElement(), null, "reference", null, 0, 1, TestElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getTestElement_ContainedElement(), this.getTestElement(), null, "containedElement", null, 0, 1, TestElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getTestElement_OtherReference(), this.getTestElement(), null, "otherReference", null, 0, 1, TestElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getTestElement_Description(), ecorePackage.getEString(), "description", null, 0, 1, TestElement.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);
