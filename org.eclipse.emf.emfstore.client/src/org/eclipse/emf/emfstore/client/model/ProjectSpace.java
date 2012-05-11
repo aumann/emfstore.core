@@ -37,6 +37,7 @@ import org.eclipse.emf.emfstore.server.model.ProjectId;
 import org.eclipse.emf.emfstore.server.model.ProjectInfo;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.OrgUnitProperty;
 import org.eclipse.emf.emfstore.server.model.url.ModelElementUrlFragment;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryQuery;
@@ -151,6 +152,10 @@ public interface ProjectSpace extends IdentifiableElement {
 	 */
 	PrimaryVersionSpec commit(LogMessage logMessage, CommitCallback callback, IProgressMonitor monitor)
 		throws EmfStoreException;
+
+	// TODO BRANCH
+	PrimaryVersionSpec commitToBranch(BranchVersionSpec branch, LogMessage logMessage, CommitCallback callback,
+		IProgressMonitor monitor) throws EmfStoreException;
 
 	/**
 	 * Export all local changes to a file.

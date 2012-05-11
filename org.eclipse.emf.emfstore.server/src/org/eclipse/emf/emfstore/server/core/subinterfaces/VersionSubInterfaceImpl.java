@@ -33,6 +33,7 @@ import org.eclipse.emf.emfstore.server.exceptions.StorageException;
 import org.eclipse.emf.emfstore.server.model.ProjectHistory;
 import org.eclipse.emf.emfstore.server.model.ProjectId;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.ACUser;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.DateVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.HeadVersionSpec;
@@ -127,7 +128,11 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 					}
 				}
 				throw new InvalidVersionSpecException();
+			} else if (versionSpec instanceof BranchVersionSpec) {
+				// TODO BRANCH
+				return null;
 			} else {
+
 				throw new InvalidVersionSpecException();
 			}
 		}

@@ -161,6 +161,7 @@ public class EmfStoreImpl extends AbstractEmfstoreInterface implements EmfStore 
 		ACUser user = getAuthorizationControl().resolveUser(sessionId);
 		PrimaryVersionSpec newVersion = getSubInterface(VersionSubInterfaceImpl.class).createVersion(projectId,
 			baseVersionSpec, changePackage, logMessage, user);
+		System.out.println("Create Version Branch: " + branch);
 		return newVersion;
 	}
 

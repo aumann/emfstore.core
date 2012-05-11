@@ -68,6 +68,7 @@ import org.eclipse.emf.emfstore.server.model.ProjectInfo;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.ACUser;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.OrgUnitProperty;
 import org.eclipse.emf.emfstore.server.model.url.ModelElementUrlFragment;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryQuery;
@@ -288,6 +289,14 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 	public PrimaryVersionSpec commit(LogMessage logMessage, CommitCallback callback, IProgressMonitor monitor)
 		throws EmfStoreException {
 		return new CommitController(this, logMessage, callback, monitor).execute();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public PrimaryVersionSpec commitToBranch(BranchVersionSpec branch, LogMessage logMessage, CommitCallback callback,
+		IProgressMonitor monitor) throws EmfStoreException {
+		return new CommitController(this, branch, logMessage, callback, monitor).execute();
 	}
 
 	/**
