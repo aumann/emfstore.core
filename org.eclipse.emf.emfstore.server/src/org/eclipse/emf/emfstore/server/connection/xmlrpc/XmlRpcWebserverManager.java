@@ -121,7 +121,7 @@ public final class XmlRpcWebserverManager {
 			serverConfig.setEnabledForExtensions(true);
 			serverConfig.setEnabledForExceptions(true);
 			serverConfig.setContentLengthOptional(true);
-	
+
 			webServer.start();
 		} catch (IOException e) {
 			throw new FatalEmfStoreException("Couldn't start webserver", e);

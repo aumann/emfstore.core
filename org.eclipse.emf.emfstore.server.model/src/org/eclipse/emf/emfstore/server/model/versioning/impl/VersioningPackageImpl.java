@@ -578,6 +578,26 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 	}
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EReference getVersion_AncestorVersion() {
+		return (EReference) versionEClass.getEStructuralFeatures().get(7);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EReference getVersion_BranchedVersions() {
+		return (EReference) versionEClass.getEStructuralFeatures().get(8);
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -697,6 +717,8 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 		createEReference(versionEClass, VERSION__PREVIOUS_VERSION);
 		createEReference(versionEClass, VERSION__CHANGES);
 		createEReference(versionEClass, VERSION__LOG_MESSAGE);
+		createEReference(versionEClass, VERSION__ANCESTOR_VERSION);
+		createEReference(versionEClass, VERSION__BRANCHED_VERSIONS);
 
 		headVersionSpecEClass = createEClass(HEAD_VERSION_SPEC);
 
@@ -855,6 +877,12 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 		initEReference(getVersion_LogMessage(), this.getLogMessage(), null, "logMessage", null, 0, 1, Version.class,
 			!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE,
 			!IS_DERIVED, IS_ORDERED);
+		initEReference(getVersion_AncestorVersion(), this.getVersion(), this.getVersion_BranchedVersions(),
+			"ancestorVersion", null, 0, 1, Version.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+			IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getVersion_BranchedVersions(), this.getVersion(), this.getVersion_AncestorVersion(),
+			"branchedVersions", null, 0, -1, Version.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+			IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(headVersionSpecEClass, HeadVersionSpec.class, "HeadVersionSpec", !IS_ABSTRACT, !IS_INTERFACE,
 			IS_GENERATED_INSTANCE_CLASS);

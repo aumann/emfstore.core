@@ -120,6 +120,10 @@
           containment="true"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="logMessage" eType="#//versioning/LogMessage"
           containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="ancestorVersion" eType="#//versioning/Version"
+          eOpposite="#//versioning/Version/branchedVersions"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="branchedVersions" upperBound="-1"
+          eType="#//versioning/Version" eOpposite="#//versioning/Version/ancestorVersion"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="HeadVersionSpec" eSuperTypes="#//versioning/VersionSpec"/>
     <eClassifiers xsi:type="ecore:EClass" name="VersionProperty">

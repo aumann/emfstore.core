@@ -228,7 +228,7 @@ public final class CommonUtil {
 		// }
 		return true;
 	}
-	
+
 	/**
 	 * Check if containment tree is in given resource.
 	 * 
@@ -241,8 +241,8 @@ public final class CommonUtil {
 		Set<EObject> allChildEObjects = getNonTransientContents(root);
 		Set<EObject> allEObjects = new HashSet<EObject>(allChildEObjects);
 		allEObjects.add(root);
-		for (EObject eObject: allEObjects) {
-			if (resource!=eObject.eResource()) {
+		for (EObject eObject : allEObjects) {
+			if (resource != eObject.eResource()) {
 				return false;
 			}
 		}

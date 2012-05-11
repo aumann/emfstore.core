@@ -82,7 +82,7 @@ import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionPointException;
  * @author wesendon
  */
 public class ObserverBus {
-	
+
 	/**
 	 * Initializes the singleton instance statically.
 	 */
@@ -98,7 +98,7 @@ public class ObserverBus {
 	public static ObserverBus getInstance() {
 		return SingletonHolder.INSTANCE;
 	}
-	
+
 	private HashMap<Class<? extends IObserver>, List<IObserver>> observerMap;
 
 	/**
@@ -282,18 +282,17 @@ public class ObserverBus {
 		}
 		return false;
 	}
-	
-	private Set<Class<?>> getAllInterfaces(final Class<?> clazz, 
-		final Set<Class<?>> interfacesFound) {
-		
+
+	private Set<Class<?>> getAllInterfaces(final Class<?> clazz, final Set<Class<?>> interfacesFound) {
+
 		for (Class<?> iface : clazz.getInterfaces()) {
 			interfacesFound.add((Class<?>) iface);
 		}
-		
+
 		if (clazz.getSuperclass() == null) {
-			return interfacesFound; 
+			return interfacesFound;
 		}
-		
+
 		return getAllInterfaces(clazz.getSuperclass(), interfacesFound);
 	}
 
@@ -301,10 +300,10 @@ public class ObserverBus {
 	 * Pulls observers from an extensionpoint and registers them.
 	 */
 	public void collectionExtensionPoints() {
-		for (ExtensionElement outer : new ExtensionPoint("org.eclipse.emf.emfstore.common.observer",true)
+		for (ExtensionElement outer : new ExtensionPoint("org.eclipse.emf.emfstore.common.observer", true)
 			.getExtensionElements()) {
 			try {
-				for (ExtensionElement inner : new ExtensionPoint(outer.getAttribute("extensionPointName"),true)
+				for (ExtensionElement inner : new ExtensionPoint(outer.getAttribute("extensionPointName"), true)
 					.getExtensionElements()) {
 					register(inner.getClass(outer.getAttribute("observerAttributeName"), IObserver.class));
 				}

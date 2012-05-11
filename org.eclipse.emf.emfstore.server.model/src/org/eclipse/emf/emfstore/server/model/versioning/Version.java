@@ -27,6 +27,8 @@ import org.eclipse.emf.emfstore.common.model.Project;
  * <li>{@link org.eclipse.emf.emfstore.server.model.versioning.Version#getPreviousVersion <em>Previous Version</em>}</li>
  * <li>{@link org.eclipse.emf.emfstore.server.model.versioning.Version#getChanges <em>Changes</em>}</li>
  * <li>{@link org.eclipse.emf.emfstore.server.model.versioning.Version#getLogMessage <em>Log Message</em>}</li>
+ * <li>{@link org.eclipse.emf.emfstore.server.model.versioning.Version#getAncestorVersion <em>Ancestor Version</em>}</li>
+ * <li>{@link org.eclipse.emf.emfstore.server.model.versioning.Version#getBranchedVersions <em>Branched Versions</em>}</li>
  * </ul>
  * </p>
  * 
@@ -224,5 +226,57 @@ public interface Version extends EObject {
 	 * @generated
 	 */
 	void setLogMessage(LogMessage value);
+
+	/**
+	 * Returns the value of the '<em><b>Ancestor Version</b></em>' reference.
+	 * It is bidirectional and its opposite is '
+	 * {@link org.eclipse.emf.emfstore.server.model.versioning.Version#getBranchedVersions <em>Branched Versions</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Ancestor Version</em>' reference isn't clear, there really should be more of a
+	 * description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Ancestor Version</em>' reference.
+	 * @see #setAncestorVersion(Version)
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.VersioningPackage#getVersion_AncestorVersion()
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.Version#getBranchedVersions
+	 * @model opposite="branchedVersions"
+	 * @generated
+	 */
+	Version getAncestorVersion();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.emf.emfstore.server.model.versioning.Version#getAncestorVersion
+	 * <em>Ancestor Version</em>}' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @param value the new value of the '<em>Ancestor Version</em>' reference.
+	 * @see #getAncestorVersion()
+	 * @generated
+	 */
+	void setAncestorVersion(Version value);
+
+	/**
+	 * Returns the value of the '<em><b>Branched Versions</b></em>' reference list.
+	 * The list contents are of type {@link org.eclipse.emf.emfstore.server.model.versioning.Version}.
+	 * It is bidirectional and its opposite is '
+	 * {@link org.eclipse.emf.emfstore.server.model.versioning.Version#getAncestorVersion <em>Ancestor Version</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Branched Versions</em>' reference list isn't clear, there really should be more of a
+	 * description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Branched Versions</em>' reference list.
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.VersioningPackage#getVersion_BranchedVersions()
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.Version#getAncestorVersion
+	 * @model opposite="ancestorVersion"
+	 * @generated
+	 */
+	EList<Version> getBranchedVersions();
 
 } // Version

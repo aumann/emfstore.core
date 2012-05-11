@@ -537,13 +537,33 @@ public interface VersioningPackage extends EPackage {
 	int VERSION__LOG_MESSAGE = 6;
 
 	/**
+	 * The feature id for the '<em><b>Ancestor Version</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int VERSION__ANCESTOR_VERSION = 7;
+
+	/**
+	 * The feature id for the '<em><b>Branched Versions</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int VERSION__BRANCHED_VERSIONS = 8;
+
+	/**
 	 * The number of structural features of the '<em>Version</em>' class.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int VERSION_FEATURE_COUNT = 7;
+	int VERSION_FEATURE_COUNT = 9;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.emf.emfstore.server.model.versioning.impl.HeadVersionSpecImpl
@@ -1099,6 +1119,32 @@ public interface VersioningPackage extends EPackage {
 	EReference getVersion_LogMessage();
 
 	/**
+	 * Returns the meta object for the reference '
+	 * {@link org.eclipse.emf.emfstore.server.model.versioning.Version#getAncestorVersion <em>Ancestor Version</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference '<em>Ancestor Version</em>'.
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.Version#getAncestorVersion()
+	 * @see #getVersion()
+	 * @generated
+	 */
+	EReference getVersion_AncestorVersion();
+
+	/**
+	 * Returns the meta object for the reference list '
+	 * {@link org.eclipse.emf.emfstore.server.model.versioning.Version#getBranchedVersions <em>Branched Versions</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference list '<em>Branched Versions</em>'.
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.Version#getBranchedVersions()
+	 * @see #getVersion()
+	 * @generated
+	 */
+	EReference getVersion_BranchedVersions();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.emf.emfstore.server.model.versioning.HeadVersionSpec
 	 * <em>Head Version Spec</em>}'.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1519,6 +1565,24 @@ public interface VersioningPackage extends EPackage {
 		 * @generated
 		 */
 		EReference VERSION__LOG_MESSAGE = eINSTANCE.getVersion_LogMessage();
+
+		/**
+		 * The meta object literal for the '<em><b>Ancestor Version</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference VERSION__ANCESTOR_VERSION = eINSTANCE.getVersion_AncestorVersion();
+
+		/**
+		 * The meta object literal for the '<em><b>Branched Versions</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference VERSION__BRANCHED_VERSIONS = eINSTANCE.getVersion_BranchedVersions();
 
 		/**
 		 * The meta object literal for the '
