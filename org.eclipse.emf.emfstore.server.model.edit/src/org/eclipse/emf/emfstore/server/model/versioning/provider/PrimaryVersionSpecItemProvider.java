@@ -60,9 +60,26 @@ public class PrimaryVersionSpecItemProvider extends ItemProviderAdapter implemen
 		if (itemPropertyDescriptors == null) {
 			super.getPropertyDescriptors(object);
 
+			addBranchPropertyDescriptor(object);
 			addIdentifierPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
+	}
+
+	/**
+	 * This adds a property descriptor for the Branch feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	protected void addBranchPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+			((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+			getString("_UI_VersionSpec_branch_feature"),
+			getString("_UI_PropertyDescriptor_description", "_UI_VersionSpec_branch_feature", "_UI_VersionSpec_type"),
+			VersioningPackage.Literals.VERSION_SPEC__BRANCH, true, false, false,
+			ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -100,8 +117,9 @@ public class PrimaryVersionSpecItemProvider extends ItemProviderAdapter implemen
 	 */
 	@Override
 	public String getText(Object object) {
-		PrimaryVersionSpec primaryVersionSpec = (PrimaryVersionSpec) object;
-		return getString("_UI_PrimaryVersionSpec_type") + " " + primaryVersionSpec.getIdentifier();
+		String label = ((PrimaryVersionSpec) object).getBranch();
+		return label == null || label.length() == 0 ? getString("_UI_PrimaryVersionSpec_type")
+			: getString("_UI_PrimaryVersionSpec_type") + " " + label;
 	}
 
 	/**
@@ -116,6 +134,7 @@ public class PrimaryVersionSpecItemProvider extends ItemProviderAdapter implemen
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(PrimaryVersionSpec.class)) {
+		case VersioningPackage.PRIMARY_VERSION_SPEC__BRANCH:
 		case VersioningPackage.PRIMARY_VERSION_SPEC__IDENTIFIER:
 			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;

@@ -74,13 +74,23 @@ public interface VersioningPackage extends EPackage {
 	int VERSION_SPEC = 3;
 
 	/**
+	 * The feature id for the '<em><b>Branch</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int VERSION_SPEC__BRANCH = 0;
+
+	/**
 	 * The number of structural features of the '<em>Version Spec</em>' class. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int VERSION_SPEC_FEATURE_COUNT = 0;
+	int VERSION_SPEC_FEATURE_COUNT = 1;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.emf.emfstore.server.model.versioning.impl.TagVersionSpecImpl
@@ -92,6 +102,16 @@ public interface VersioningPackage extends EPackage {
 	 * @generated
 	 */
 	int TAG_VERSION_SPEC = 0;
+
+	/**
+	 * The feature id for the '<em><b>Branch</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int TAG_VERSION_SPEC__BRANCH = VERSION_SPEC__BRANCH;
 
 	/**
 	 * The feature id for the '<em><b>Name</b></em>' attribute.
@@ -124,6 +144,16 @@ public interface VersioningPackage extends EPackage {
 	int DATE_VERSION_SPEC = 1;
 
 	/**
+	 * The feature id for the '<em><b>Branch</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int DATE_VERSION_SPEC__BRANCH = VERSION_SPEC__BRANCH;
+
+	/**
 	 * The feature id for the '<em><b>Date</b></em>' attribute.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -152,6 +182,16 @@ public interface VersioningPackage extends EPackage {
 	 * @generated
 	 */
 	int PRIMARY_VERSION_SPEC = 2;
+
+	/**
+	 * The feature id for the '<em><b>Branch</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int PRIMARY_VERSION_SPEC__BRANCH = VERSION_SPEC__BRANCH;
 
 	/**
 	 * The feature id for the '<em><b>Identifier</b></em>' attribute.
@@ -517,6 +557,16 @@ public interface VersioningPackage extends EPackage {
 	int HEAD_VERSION_SPEC = 9;
 
 	/**
+	 * The feature id for the '<em><b>Branch</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int HEAD_VERSION_SPEC__BRANCH = VERSION_SPEC__BRANCH;
+
+	/**
 	 * The number of structural features of the '<em>Head Version Spec</em>' class.
 	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
@@ -564,6 +614,38 @@ public interface VersioningPackage extends EPackage {
 	 * @ordered
 	 */
 	int VERSION_PROPERTY_FEATURE_COUNT = 2;
+
+	/**
+	 * The meta object id for the '{@link org.eclipse.emf.emfstore.server.model.versioning.impl.BranchVersionSpecImpl
+	 * <em>Branch Version Spec</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.impl.BranchVersionSpecImpl
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.impl.VersioningPackageImpl#getBranchVersionSpec()
+	 * @generated
+	 */
+	int BRANCH_VERSION_SPEC = 11;
+
+	/**
+	 * The feature id for the '<em><b>Branch</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int BRANCH_VERSION_SPEC__BRANCH = VERSION_SPEC__BRANCH;
+
+	/**
+	 * The number of structural features of the '<em>Branch Version Spec</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int BRANCH_VERSION_SPEC_FEATURE_COUNT = VERSION_SPEC_FEATURE_COUNT + 0;
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.emf.emfstore.server.model.versioning.TagVersionSpec
@@ -646,6 +728,19 @@ public interface VersioningPackage extends EPackage {
 	 * @generated
 	 */
 	EClass getVersionSpec();
+
+	/**
+	 * Returns the meta object for the attribute '
+	 * {@link org.eclipse.emf.emfstore.server.model.versioning.VersionSpec#getBranch <em>Branch</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Branch</em>'.
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.VersionSpec#getBranch()
+	 * @see #getVersionSpec()
+	 * @generated
+	 */
+	EAttribute getVersionSpec_Branch();
 
 	/**
 	 * Returns the meta object for class '{@link org.eclipse.emf.emfstore.server.model.versioning.LogMessage
@@ -1052,6 +1147,18 @@ public interface VersioningPackage extends EPackage {
 	EAttribute getVersionProperty_Value();
 
 	/**
+	 * Returns the meta object for class '{@link org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec
+	 * <em>Branch Version Spec</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for class '<em>Branch Version Spec</em>'.
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec
+	 * @generated
+	 */
+	EClass getBranchVersionSpec();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -1146,6 +1253,15 @@ public interface VersioningPackage extends EPackage {
 		 * @generated
 		 */
 		EClass VERSION_SPEC = eINSTANCE.getVersionSpec();
+
+		/**
+		 * The meta object literal for the '<em><b>Branch</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute VERSION_SPEC__BRANCH = eINSTANCE.getVersionSpec_Branch();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.emf.emfstore.server.model.versioning.impl.LogMessageImpl
@@ -1445,6 +1561,19 @@ public interface VersioningPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute VERSION_PROPERTY__VALUE = eINSTANCE.getVersionProperty_Value();
+
+		/**
+		 * The meta object literal for the '
+		 * {@link org.eclipse.emf.emfstore.server.model.versioning.impl.BranchVersionSpecImpl
+		 * <em>Branch Version Spec</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @see org.eclipse.emf.emfstore.server.model.versioning.impl.BranchVersionSpecImpl
+		 * @see org.eclipse.emf.emfstore.server.model.versioning.impl.VersioningPackageImpl#getBranchVersionSpec()
+		 * @generated
+		 */
+		EClass BRANCH_VERSION_SPEC = eINSTANCE.getBranchVersionSpec();
 
 	}
 

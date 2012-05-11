@@ -119,6 +119,16 @@ public interface VersioningFactory extends EFactory {
 	VersionProperty createVersionProperty();
 
 	/**
+	 * Returns a new object of class '<em>Branch Version Spec</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return a new object of class '<em>Branch Version Spec</em>'.
+	 * @generated
+	 */
+	BranchVersionSpec createBranchVersionSpec();
+
+	/**
 	 * Returns the package supported by this factory.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 

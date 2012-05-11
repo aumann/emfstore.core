@@ -23,6 +23,7 @@ import org.eclipse.emf.emfstore.server.model.accesscontrol.roles.impl.RolesPacka
 import org.eclipse.emf.emfstore.server.model.impl.ModelPackageImpl;
 import org.eclipse.emf.emfstore.server.model.url.UrlPackage;
 import org.eclipse.emf.emfstore.server.model.url.impl.UrlPackageImpl;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.DateVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.HeadVersionSpec;
@@ -127,6 +128,14 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 	 * @generated
 	 */
 	private EClass versionPropertyEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	private EClass branchVersionSpecEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with {@link org.eclipse.emf.ecore.EPackage.Registry
@@ -295,6 +304,16 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 	 */
 	public EClass getVersionSpec() {
 		return versionSpecEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EAttribute getVersionSpec_Branch() {
+		return (EAttribute) versionSpecEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -595,6 +614,16 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 	}
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EClass getBranchVersionSpec() {
+		return branchVersionSpecEClass;
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -633,6 +662,7 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 		createEAttribute(primaryVersionSpecEClass, PRIMARY_VERSION_SPEC__IDENTIFIER);
 
 		versionSpecEClass = createEClass(VERSION_SPEC);
+		createEAttribute(versionSpecEClass, VERSION_SPEC__BRANCH);
 
 		logMessageEClass = createEClass(LOG_MESSAGE);
 		createEAttribute(logMessageEClass, LOG_MESSAGE__AUTHOR);
@@ -673,6 +703,8 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 		versionPropertyEClass = createEClass(VERSION_PROPERTY);
 		createEAttribute(versionPropertyEClass, VERSION_PROPERTY__NAME);
 		createEAttribute(versionPropertyEClass, VERSION_PROPERTY__VALUE);
+
+		branchVersionSpecEClass = createEClass(BRANCH_VERSION_SPEC);
 	}
 
 	/**
@@ -718,6 +750,7 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 		dateVersionSpecEClass.getESuperTypes().add(this.getVersionSpec());
 		primaryVersionSpecEClass.getESuperTypes().add(this.getVersionSpec());
 		headVersionSpecEClass.getESuperTypes().add(this.getVersionSpec());
+		branchVersionSpecEClass.getESuperTypes().add(this.getVersionSpec());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(tagVersionSpecEClass, TagVersionSpec.class, "TagVersionSpec", !IS_ABSTRACT, !IS_INTERFACE,
@@ -738,6 +771,8 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 
 		initEClass(versionSpecEClass, VersionSpec.class, "VersionSpec", IS_ABSTRACT, IS_INTERFACE,
 			IS_GENERATED_INSTANCE_CLASS);
+		initEAttribute(getVersionSpec_Branch(), ecorePackage.getEString(), "branch", "trunk", 0, 1, VersionSpec.class,
+			!IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(logMessageEClass, LogMessage.class, "LogMessage", !IS_ABSTRACT, !IS_INTERFACE,
 			IS_GENERATED_INSTANCE_CLASS);
@@ -831,6 +866,9 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 		initEAttribute(getVersionProperty_Value(), ecorePackage.getEString(), "value", null, 0, 1,
 			VersionProperty.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
 			!IS_DERIVED, IS_ORDERED);
+
+		initEClass(branchVersionSpecEClass, BranchVersionSpec.class, "BranchVersionSpec", !IS_ABSTRACT, !IS_INTERFACE,
+			IS_GENERATED_INSTANCE_CLASS);
 	}
 
 } // VersioningPackageImpl

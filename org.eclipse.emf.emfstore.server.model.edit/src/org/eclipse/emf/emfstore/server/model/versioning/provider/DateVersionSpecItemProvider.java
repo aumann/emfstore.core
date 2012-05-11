@@ -11,7 +11,6 @@
 package org.eclipse.emf.emfstore.server.model.versioning.provider;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import org.eclipse.emf.common.notify.AdapterFactory;
@@ -61,9 +60,26 @@ public class DateVersionSpecItemProvider extends ItemProviderAdapter implements 
 		if (itemPropertyDescriptors == null) {
 			super.getPropertyDescriptors(object);
 
+			addBranchPropertyDescriptor(object);
 			addDatePropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
+	}
+
+	/**
+	 * This adds a property descriptor for the Branch feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	protected void addBranchPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+			((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+			getString("_UI_VersionSpec_branch_feature"),
+			getString("_UI_PropertyDescriptor_description", "_UI_VersionSpec_branch_feature", "_UI_VersionSpec_type"),
+			VersioningPackage.Literals.VERSION_SPEC__BRANCH, true, false, false,
+			ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
 	}
 
 	/**
@@ -101,8 +117,7 @@ public class DateVersionSpecItemProvider extends ItemProviderAdapter implements 
 	 */
 	@Override
 	public String getText(Object object) {
-		Date labelValue = ((DateVersionSpec) object).getDate();
-		String label = labelValue == null ? null : labelValue.toString();
+		String label = ((DateVersionSpec) object).getBranch();
 		return label == null || label.length() == 0 ? getString("_UI_DateVersionSpec_type")
 			: getString("_UI_DateVersionSpec_type") + " " + label;
 	}
@@ -119,6 +134,7 @@ public class DateVersionSpecItemProvider extends ItemProviderAdapter implements 
 		updateChildren(notification);
 
 		switch (notification.getFeatureID(DateVersionSpec.class)) {
+		case VersioningPackage.DATE_VERSION_SPEC__BRANCH:
 		case VersioningPackage.DATE_VERSION_SPEC__DATE:
 			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;

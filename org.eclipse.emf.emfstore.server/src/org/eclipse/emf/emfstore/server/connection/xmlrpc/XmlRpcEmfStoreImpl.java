@@ -30,6 +30,7 @@ import org.eclipse.emf.emfstore.server.model.SessionId;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.ACOrgUnitId;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.ACUser;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.OrgUnitProperty;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryQuery;
@@ -99,6 +100,15 @@ public class XmlRpcEmfStoreImpl implements EmfStore, AuthenticationControl {
 		PrimaryVersionSpec baseVersionSpec, ChangePackage changePackage, LogMessage logMessage)
 		throws EmfStoreException, InvalidVersionSpecException {
 		return getEmfStore().createVersion(sessionId, projectId, baseVersionSpec, changePackage, logMessage);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public PrimaryVersionSpec createVersion(SessionId sessionId, ProjectId projectId, BranchVersionSpec branch,
+		PrimaryVersionSpec baseVersionSpec, ChangePackage changePackage, LogMessage logMessage)
+		throws EmfStoreException, InvalidVersionSpecException {
+		return getEmfStore().createVersion(sessionId, projectId, branch, baseVersionSpec, changePackage, logMessage);
 	}
 
 	/**

@@ -23,6 +23,7 @@ import org.eclipse.emf.emfstore.server.model.versioning.VersioningPackage;
  * <p>
  * The following features are implemented:
  * <ul>
+ * <li>{@link org.eclipse.emf.emfstore.server.model.versioning.impl.PrimaryVersionSpecImpl#getBranch <em>Branch</em>}</li>
  * <li>{@link org.eclipse.emf.emfstore.server.model.versioning.impl.PrimaryVersionSpecImpl#getIdentifier <em>Identifier
  * </em>}</li>
  * </ul>
@@ -31,6 +32,28 @@ import org.eclipse.emf.emfstore.server.model.versioning.VersioningPackage;
  * @generated
  */
 public class PrimaryVersionSpecImpl extends EObjectImpl implements PrimaryVersionSpec {
+	/**
+	 * The default value of the '{@link #getBranch() <em>Branch</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @see #getBranch()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String BRANCH_EDEFAULT = "trunk";
+
+	/**
+	 * The cached value of the '{@link #getBranch() <em>Branch</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @see #getBranch()
+	 * @generated
+	 * @ordered
+	 */
+	protected String branch = BRANCH_EDEFAULT;
+
 	/**
 	 * The default value of the '{@link #getIdentifier() <em>Identifier</em>}' attribute.
 	 * <!-- begin-user-doc --> <!--
@@ -73,6 +96,30 @@ public class PrimaryVersionSpecImpl extends EObjectImpl implements PrimaryVersio
 	}
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public String getBranch() {
+		return branch;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public void setBranch(String newBranch) {
+		String oldBranch = branch;
+		branch = newBranch;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, VersioningPackage.PRIMARY_VERSION_SPEC__BRANCH,
+				oldBranch, branch));
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -102,6 +149,8 @@ public class PrimaryVersionSpecImpl extends EObjectImpl implements PrimaryVersio
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
+		case VersioningPackage.PRIMARY_VERSION_SPEC__BRANCH:
+			return getBranch();
 		case VersioningPackage.PRIMARY_VERSION_SPEC__IDENTIFIER:
 			return getIdentifier();
 		}
@@ -116,6 +165,9 @@ public class PrimaryVersionSpecImpl extends EObjectImpl implements PrimaryVersio
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
+		case VersioningPackage.PRIMARY_VERSION_SPEC__BRANCH:
+			setBranch((String) newValue);
+			return;
 		case VersioningPackage.PRIMARY_VERSION_SPEC__IDENTIFIER:
 			setIdentifier((Integer) newValue);
 			return;
@@ -131,6 +183,9 @@ public class PrimaryVersionSpecImpl extends EObjectImpl implements PrimaryVersio
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
+		case VersioningPackage.PRIMARY_VERSION_SPEC__BRANCH:
+			setBranch(BRANCH_EDEFAULT);
+			return;
 		case VersioningPackage.PRIMARY_VERSION_SPEC__IDENTIFIER:
 			setIdentifier(IDENTIFIER_EDEFAULT);
 			return;
@@ -146,6 +201,8 @@ public class PrimaryVersionSpecImpl extends EObjectImpl implements PrimaryVersio
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
+		case VersioningPackage.PRIMARY_VERSION_SPEC__BRANCH:
+			return BRANCH_EDEFAULT == null ? branch != null : !BRANCH_EDEFAULT.equals(branch);
 		case VersioningPackage.PRIMARY_VERSION_SPEC__IDENTIFIER:
 			return identifier != IDENTIFIER_EDEFAULT;
 		}
@@ -163,7 +220,9 @@ public class PrimaryVersionSpecImpl extends EObjectImpl implements PrimaryVersio
 			return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (identifier: ");
+		result.append(" (branch: ");
+		result.append(branch);
+		result.append(", identifier: ");
 		result.append(identifier);
 		result.append(')');
 		return result.toString();

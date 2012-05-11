@@ -1,31 +1,34 @@
-/*******************************************************************************
- * Copyright (c) 2008-2011 Chair for Applied Software Engineering,
- * Technische Universitaet Muenchen.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+/**
+ * <copyright> Copyright (c) 2008-2009 Jonas Helming, Maximilian Koegel. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html </copyright>
  * 
- * Contributors:
- ******************************************************************************/
+ * 
+ * 
+ */
 package org.eclipse.emf.emfstore.server.model.versioning.impl;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.impl.ENotificationImpl;
 import org.eclipse.emf.ecore.impl.EObjectImpl;
-import org.eclipse.emf.emfstore.server.model.versioning.HeadVersionSpec;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.VersioningPackage;
 
 /**
- * <!-- begin-user-doc --> An implementation of the model object ' <em><b>Head Version Spec</b></em>'. <!-- end-user-doc
- * -->
+ * <!-- begin-user-doc -->
+ * An implementation of the model object '<em><b>Branch Version Spec</b></em>'.
+ * <!-- end-user-doc -->
  * <p>
+ * The following features are implemented:
+ * <ul>
+ * <li>{@link org.eclipse.emf.emfstore.server.model.versioning.impl.BranchVersionSpecImpl#getBranch <em>Branch</em>}</li>
+ * </ul>
  * </p>
  * 
  * @generated
  */
-public class HeadVersionSpecImpl extends EObjectImpl implements HeadVersionSpec {
+public class BranchVersionSpecImpl extends EObjectImpl implements BranchVersionSpec {
 	/**
 	 * The default value of the '{@link #getBranch() <em>Branch</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -36,6 +39,7 @@ public class HeadVersionSpecImpl extends EObjectImpl implements HeadVersionSpec 
 	 * @ordered
 	 */
 	protected static final String BRANCH_EDEFAULT = "trunk";
+
 	/**
 	 * The cached value of the '{@link #getBranch() <em>Branch</em>}' attribute.
 	 * <!-- begin-user-doc -->
@@ -48,22 +52,24 @@ public class HeadVersionSpecImpl extends EObjectImpl implements HeadVersionSpec 
 	protected String branch = BRANCH_EDEFAULT;
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
-	protected HeadVersionSpecImpl() {
+	protected BranchVersionSpecImpl() {
 		super();
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	@Override
 	protected EClass eStaticClass() {
-		return VersioningPackage.Literals.HEAD_VERSION_SPEC;
+		return VersioningPackage.Literals.BRANCH_VERSION_SPEC;
 	}
 
 	/**
@@ -86,7 +92,7 @@ public class HeadVersionSpecImpl extends EObjectImpl implements HeadVersionSpec 
 		String oldBranch = branch;
 		branch = newBranch;
 		if (eNotificationRequired())
-			eNotify(new ENotificationImpl(this, Notification.SET, VersioningPackage.HEAD_VERSION_SPEC__BRANCH,
+			eNotify(new ENotificationImpl(this, Notification.SET, VersioningPackage.BRANCH_VERSION_SPEC__BRANCH,
 				oldBranch, branch));
 	}
 
@@ -99,7 +105,7 @@ public class HeadVersionSpecImpl extends EObjectImpl implements HeadVersionSpec 
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
-		case VersioningPackage.HEAD_VERSION_SPEC__BRANCH:
+		case VersioningPackage.BRANCH_VERSION_SPEC__BRANCH:
 			return getBranch();
 		}
 		return super.eGet(featureID, resolve, coreType);
@@ -114,7 +120,7 @@ public class HeadVersionSpecImpl extends EObjectImpl implements HeadVersionSpec 
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
-		case VersioningPackage.HEAD_VERSION_SPEC__BRANCH:
+		case VersioningPackage.BRANCH_VERSION_SPEC__BRANCH:
 			setBranch((String) newValue);
 			return;
 		}
@@ -130,7 +136,7 @@ public class HeadVersionSpecImpl extends EObjectImpl implements HeadVersionSpec 
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
-		case VersioningPackage.HEAD_VERSION_SPEC__BRANCH:
+		case VersioningPackage.BRANCH_VERSION_SPEC__BRANCH:
 			setBranch(BRANCH_EDEFAULT);
 			return;
 		}
@@ -146,7 +152,7 @@ public class HeadVersionSpecImpl extends EObjectImpl implements HeadVersionSpec 
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
-		case VersioningPackage.HEAD_VERSION_SPEC__BRANCH:
+		case VersioningPackage.BRANCH_VERSION_SPEC__BRANCH:
 			return BRANCH_EDEFAULT == null ? branch != null : !BRANCH_EDEFAULT.equals(branch);
 		}
 		return super.eIsSet(featureID);
@@ -170,4 +176,4 @@ public class HeadVersionSpecImpl extends EObjectImpl implements HeadVersionSpec 
 		return result.toString();
 	}
 
-} // HeadVersionSpecImpl
+} // BranchVersionSpecImpl

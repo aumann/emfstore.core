@@ -1,13 +1,11 @@
-/*******************************************************************************
- * Copyright (c) 2008-2011 Chair for Applied Software Engineering,
- * Technische Universitaet Muenchen.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+/**
+ * <copyright> Copyright (c) 2008-2009 Jonas Helming, Maximilian Koegel. All rights reserved. This program and the
+ * accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this
+ * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html </copyright>
  * 
- * Contributors:
- ******************************************************************************/
+ * 
+ * 
+ */
 package org.eclipse.emf.emfstore.server.model.versioning.provider;
 
 import java.util.Collection;
@@ -27,31 +25,34 @@ import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
 import org.eclipse.emf.edit.provider.ItemProviderAdapter;
 import org.eclipse.emf.edit.provider.ViewerNotification;
 import org.eclipse.emf.emfstore.server.model.provider.ServerEditPlugin;
-import org.eclipse.emf.emfstore.server.model.versioning.TagVersionSpec;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.VersioningPackage;
 
 /**
- * This is the item provider adapter for a {@link org.eclipse.emf.emfstore.server.model.versioning.TagVersionSpec}
- * object. <!--
- * begin-user-doc --> <!-- end-user-doc -->
+ * This is the item provider adapter for a {@link org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec}
+ * object.
+ * <!-- begin-user-doc -->
+ * <!-- end-user-doc -->
  * 
  * @generated
  */
-public class TagVersionSpecItemProvider extends ItemProviderAdapter implements IEditingDomainItemProvider,
+public class BranchVersionSpecItemProvider extends ItemProviderAdapter implements IEditingDomainItemProvider,
 	IStructuredItemContentProvider, ITreeItemContentProvider, IItemLabelProvider, IItemPropertySource {
 	/**
 	 * This constructs an instance from a factory and a notifier.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
-	public TagVersionSpecItemProvider(AdapterFactory adapterFactory) {
+	public BranchVersionSpecItemProvider(AdapterFactory adapterFactory) {
 		super(adapterFactory);
 	}
 
 	/**
 	 * This returns the property descriptors for the adapted class.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
@@ -61,7 +62,6 @@ public class TagVersionSpecItemProvider extends ItemProviderAdapter implements I
 			super.getPropertyDescriptors(object);
 
 			addBranchPropertyDescriptor(object);
-			addNamePropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -83,49 +83,36 @@ public class TagVersionSpecItemProvider extends ItemProviderAdapter implements I
 	}
 
 	/**
-	 * This adds a property descriptor for the Name feature.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * 
-	 * @generated
-	 */
-	protected void addNamePropertyDescriptor(Object object) {
-		itemPropertyDescriptors.add(createItemPropertyDescriptor(
-			((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
-			getResourceLocator(),
-			getString("_UI_TagVersionSpec_name_feature"),
-			getString("_UI_PropertyDescriptor_description", "_UI_TagVersionSpec_name_feature",
-				"_UI_TagVersionSpec_type"), VersioningPackage.Literals.TAG_VERSION_SPEC__NAME, true, false, false,
-			ItemPropertyDescriptor.GENERIC_VALUE_IMAGE, null, null));
-	}
-
-	/**
-	 * This returns TagVersionSpec.gif.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * This returns BranchVersionSpec.gif.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	@Override
 	public Object getImage(Object object) {
-		return overlayImage(object, getResourceLocator().getImage("full/obj16/TagVersionSpec"));
+		return overlayImage(object, getResourceLocator().getImage("full/obj16/BranchVersionSpec"));
 	}
 
 	/**
 	 * This returns the label text for the adapted class.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	@Override
 	public String getText(Object object) {
-		String label = ((TagVersionSpec) object).getName();
-		return label == null || label.length() == 0 ? getString("_UI_TagVersionSpec_type")
-			: getString("_UI_TagVersionSpec_type") + " " + label;
+		String label = ((BranchVersionSpec) object).getBranch();
+		return label == null || label.length() == 0 ? getString("_UI_BranchVersionSpec_type")
+			: getString("_UI_BranchVersionSpec_type") + " " + label;
 	}
 
 	/**
-	 * This handles model notifications by calling {@link #updateChildren} to update any cached children and by creating
-	 * a viewer notification, which it passes to {@link #fireNotifyChanged}. <!-- begin-user-doc --> <!-- end-user-doc
-	 * -->
+	 * This handles model notifications by calling {@link #updateChildren} to update any cached
+	 * children and by creating a viewer notification, which it passes to {@link #fireNotifyChanged}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
@@ -133,9 +120,8 @@ public class TagVersionSpecItemProvider extends ItemProviderAdapter implements I
 	public void notifyChanged(Notification notification) {
 		updateChildren(notification);
 
-		switch (notification.getFeatureID(TagVersionSpec.class)) {
-		case VersioningPackage.TAG_VERSION_SPEC__BRANCH:
-		case VersioningPackage.TAG_VERSION_SPEC__NAME:
+		switch (notification.getFeatureID(BranchVersionSpec.class)) {
+		case VersioningPackage.BRANCH_VERSION_SPEC__BRANCH:
 			fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
 			return;
 		}
@@ -145,7 +131,8 @@ public class TagVersionSpecItemProvider extends ItemProviderAdapter implements I
 	/**
 	 * This adds {@link org.eclipse.emf.edit.command.CommandParameter}s describing the children
 	 * that can be created under this object.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
@@ -156,7 +143,8 @@ public class TagVersionSpecItemProvider extends ItemProviderAdapter implements I
 
 	/**
 	 * Return the resource locator for this item provider's resources.
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */

@@ -86,7 +86,7 @@
         </enabledWhen>
      </handler>
      <handler
-           class="org.eclipse.emf.emfstore.client.ui.handlers.CommitProjectHandler"
+           class="org.eclipse.emf.emfstore.client.ui.handlers.CommitProjectToBranchHandler"
            commandId="org.eclipse.emf.emfstore.client.ui.commitProjectToBranch">
         <enabledWhen>
            <and>

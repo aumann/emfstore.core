@@ -33,6 +33,28 @@ import org.eclipse.emf.emfstore.server.model.versioning.VersioningPackage;
  */
 public class DateVersionSpecImpl extends EObjectImpl implements DateVersionSpec {
 	/**
+	 * The default value of the '{@link #getBranch() <em>Branch</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @see #getBranch()
+	 * @generated
+	 * @ordered
+	 */
+	protected static final String BRANCH_EDEFAULT = "trunk";
+
+	/**
+	 * The cached value of the '{@link #getBranch() <em>Branch</em>}' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @see #getBranch()
+	 * @generated
+	 * @ordered
+	 */
+	protected String branch = BRANCH_EDEFAULT;
+
+	/**
 	 * The default value of the '{@link #getDate() <em>Date</em>}' attribute. <!-- begin-user-doc --> <!-- end-user-doc
 	 * -->
 	 * 
@@ -72,6 +94,30 @@ public class DateVersionSpecImpl extends EObjectImpl implements DateVersionSpec 
 	}
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public String getBranch() {
+		return branch;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public void setBranch(String newBranch) {
+		String oldBranch = branch;
+		branch = newBranch;
+		if (eNotificationRequired())
+			eNotify(new ENotificationImpl(this, Notification.SET, VersioningPackage.DATE_VERSION_SPEC__BRANCH,
+				oldBranch, branch));
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -101,6 +147,8 @@ public class DateVersionSpecImpl extends EObjectImpl implements DateVersionSpec 
 	@Override
 	public Object eGet(int featureID, boolean resolve, boolean coreType) {
 		switch (featureID) {
+		case VersioningPackage.DATE_VERSION_SPEC__BRANCH:
+			return getBranch();
 		case VersioningPackage.DATE_VERSION_SPEC__DATE:
 			return getDate();
 		}
@@ -115,6 +163,9 @@ public class DateVersionSpecImpl extends EObjectImpl implements DateVersionSpec 
 	@Override
 	public void eSet(int featureID, Object newValue) {
 		switch (featureID) {
+		case VersioningPackage.DATE_VERSION_SPEC__BRANCH:
+			setBranch((String) newValue);
+			return;
 		case VersioningPackage.DATE_VERSION_SPEC__DATE:
 			setDate((Date) newValue);
 			return;
@@ -130,6 +181,9 @@ public class DateVersionSpecImpl extends EObjectImpl implements DateVersionSpec 
 	@Override
 	public void eUnset(int featureID) {
 		switch (featureID) {
+		case VersioningPackage.DATE_VERSION_SPEC__BRANCH:
+			setBranch(BRANCH_EDEFAULT);
+			return;
 		case VersioningPackage.DATE_VERSION_SPEC__DATE:
 			setDate(DATE_EDEFAULT);
 			return;
@@ -145,6 +199,8 @@ public class DateVersionSpecImpl extends EObjectImpl implements DateVersionSpec 
 	@Override
 	public boolean eIsSet(int featureID) {
 		switch (featureID) {
+		case VersioningPackage.DATE_VERSION_SPEC__BRANCH:
+			return BRANCH_EDEFAULT == null ? branch != null : !BRANCH_EDEFAULT.equals(branch);
 		case VersioningPackage.DATE_VERSION_SPEC__DATE:
 			return DATE_EDEFAULT == null ? date != null : !DATE_EDEFAULT.equals(date);
 		}
@@ -162,7 +218,9 @@ public class DateVersionSpecImpl extends EObjectImpl implements DateVersionSpec 
 			return super.toString();
 
 		StringBuffer result = new StringBuffer(super.toString());
-		result.append(" (date: ");
+		result.append(" (branch: ");
+		result.append(branch);
+		result.append(", date: ");
 		result.append(date);
 		result.append(')');
 		return result.toString();

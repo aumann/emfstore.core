@@ -59,7 +59,10 @@
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="identifier" lowerBound="1"
           eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
     </eClassifiers>
-    <eClassifiers xsi:type="ecore:EClass" name="VersionSpec" abstract="true" interface="true"/>
+    <eClassifiers xsi:type="ecore:EClass" name="VersionSpec" abstract="true" interface="true">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="branch" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"
+          defaultValueLiteral="trunk"/>
+    </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="LogMessage">
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="author" lowerBound="1"
           eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
@@ -123,6 +126,7 @@
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="value" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
     </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="BranchVersionSpec" eSuperTypes="#//versioning/VersionSpec"/>
     <eSubpackages name="operations" nsURI="http://eclipse.org/emf/emfstore/server/model/versioning/operations"
         nsPrefix="org.eclipse.emf.emfstore.server.model.versioning.operations">
       <eClassifiers xsi:type="ecore:EClass" name="AbstractOperation" abstract="true"

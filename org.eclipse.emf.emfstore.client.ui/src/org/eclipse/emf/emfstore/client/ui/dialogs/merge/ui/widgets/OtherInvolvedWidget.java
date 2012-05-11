@@ -43,8 +43,7 @@ public class OtherInvolvedWidget extends Composite {
 	 * @param option
 	 *            option
 	 */
-	public OtherInvolvedWidget(Composite parent,
-			DecisionManager decisionManager, ConflictOption option) {
+	public OtherInvolvedWidget(Composite parent, DecisionManager decisionManager, ConflictOption option) {
 		super(parent, SWT.None);
 		TableWrapLayout wrapLayout = new TableWrapLayout();
 		wrapLayout.numColumns = COLUMNS;
@@ -59,12 +58,10 @@ public class OtherInvolvedWidget extends Composite {
 		wrapData.colspan = COLUMNS;
 		label.setLayoutData(wrapData);
 
-		ChangePackageVisualizationHelper visualizationHelper = decisionManager
-				.getChangePackageVisualizationHelper();
+		ChangePackageVisualizationHelper visualizationHelper = decisionManager.getChangePackageVisualizationHelper();
 
 		for (AbstractOperation ao : option.getOperations()) {
-			Image image = visualizationHelper.getImage(
-					DecisionUtil.getAdapterFactory(), ao);
+			Image image = visualizationHelper.getImage(DecisionUtil.getAdapterFactory(), ao);
 
 			CLabel meLabel = new CLabel(this, SWT.WRAP);
 			if (image != null) {

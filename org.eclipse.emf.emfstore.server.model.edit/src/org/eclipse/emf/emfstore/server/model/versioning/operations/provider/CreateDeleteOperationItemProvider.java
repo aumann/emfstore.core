@@ -349,6 +349,9 @@ public class CreateDeleteOperationItemProvider extends AbstractOperationItemProv
 			VersioningFactory.eINSTANCE.createVersionProperty()));
 
 		newChildDescriptors.add(createChildParameter(OperationsPackage.Literals.CREATE_DELETE_OPERATION__MODEL_ELEMENT,
+			VersioningFactory.eINSTANCE.createBranchVersionSpec()));
+
+		newChildDescriptors.add(createChildParameter(OperationsPackage.Literals.CREATE_DELETE_OPERATION__MODEL_ELEMENT,
 			EventsFactory.eINSTANCE.createEvent()));
 
 		newChildDescriptors.add(createChildParameter(OperationsPackage.Literals.CREATE_DELETE_OPERATION__MODEL_ELEMENT,
