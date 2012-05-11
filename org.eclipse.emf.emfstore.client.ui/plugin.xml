@@ -85,6 +85,26 @@
            </and>
         </enabledWhen>
      </handler>
+     <handler
+           class="org.eclipse.emf.emfstore.client.ui.handlers.CommitProjectHandler"
+           commandId="org.eclipse.emf.emfstore.client.ui.commitProjectToBranch">
+        <enabledWhen>
+           <and>
+              <iterate
+                    ifEmpty="true"
+                    operator="and">
+                 <instanceof
+                       value="org.eclipse.emf.emfstore.client.model.ProjectSpace">
+                 </instanceof>
+                 <test
+                       forcePluginActivation="true"
+                       property="org.eclipse.emf.emfstore.client.ui.commands.projectHasLocalChanges"
+                       value="true">
+                 </test>
+              </iterate>
+           </and>
+        </enabledWhen>
+     </handler>
   </extension>
   <extension
         point="org.eclipse.ui.commands">
@@ -642,6 +662,11 @@
             categoryId="org.eclipse.emf.emfstore.client.ui.project"
             id="org.eclipse.emf.emfstore.client.ui.commitProject"
             name="commit">
+      </command>
+      <command
+            categoryId="org.eclipse.emf.emfstore.client.ui.project"
+            id="org.eclipse.emf.emfstore.client.ui.commitProjectToBranch"
+            name="commit to branch">
       </command>
          <command
            categoryId="org.eclipse.emf.emfstore.client.ui.project"
