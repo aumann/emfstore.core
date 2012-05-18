@@ -353,6 +353,32 @@ public class VersioningItemProviderAdapterFactory extends VersioningAdapterFacto
 	}
 
 	/**
+	 * This keeps track of the one adapter used for all
+	 * {@link org.eclipse.emf.emfstore.server.model.versioning.BranchInfo} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	protected BranchInfoItemProvider branchInfoItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.eclipse.emf.emfstore.server.model.versioning.BranchInfo}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public Adapter createBranchInfoAdapter() {
+		if (branchInfoItemProvider == null) {
+			branchInfoItemProvider = new BranchInfoItemProvider(this);
+		}
+
+		return branchInfoItemProvider;
+	}
+
+	/**
 	 * This returns the root adapter factory that contains this factory.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -475,6 +501,8 @@ public class VersioningItemProviderAdapterFactory extends VersioningAdapterFacto
 			versionPropertyItemProvider.dispose();
 		if (branchVersionSpecItemProvider != null)
 			branchVersionSpecItemProvider.dispose();
+		if (branchInfoItemProvider != null)
+			branchInfoItemProvider.dispose();
 	}
 
 }

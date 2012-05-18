@@ -15,6 +15,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.DateVersionSpec;
@@ -94,6 +95,8 @@ public class VersioningFactoryImpl extends EFactoryImpl implements VersioningFac
 			return createVersionProperty();
 		case VersioningPackage.BRANCH_VERSION_SPEC:
 			return createBranchVersionSpec();
+		case VersioningPackage.BRANCH_INFO:
+			return createBranchInfo();
 		default:
 			throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -208,6 +211,17 @@ public class VersioningFactoryImpl extends EFactoryImpl implements VersioningFac
 	public BranchVersionSpec createBranchVersionSpec() {
 		BranchVersionSpecImpl branchVersionSpec = new BranchVersionSpecImpl();
 		return branchVersionSpec;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public BranchInfo createBranchInfo() {
+		BranchInfoImpl branchInfo = new BranchInfoImpl();
+		return branchInfo;
 	}
 
 	/**

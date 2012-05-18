@@ -142,11 +142,11 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 			// TODO BRANCH
 			// Branching case: branch specifier added
 			newBaseVersion = getConnectionManager().createVersion(getUsersession().getSessionId(),
-				getProjectSpace().getProjectId(), branch, getProjectSpace().getBaseVersion(), changePackage,
+				getProjectSpace().getProjectId(), getProjectSpace().getBaseVersion(), changePackage, branch, null,
 				changePackage.getLogMessage());
 		} else {
 			newBaseVersion = getConnectionManager().createVersion(getUsersession().getSessionId(),
-				getProjectSpace().getProjectId(), getProjectSpace().getBaseVersion(), changePackage,
+				getProjectSpace().getProjectId(), getProjectSpace().getBaseVersion(), changePackage, null, null,
 				changePackage.getLogMessage());
 		}
 

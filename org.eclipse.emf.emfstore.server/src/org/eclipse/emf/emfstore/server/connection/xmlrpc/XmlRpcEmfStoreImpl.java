@@ -97,18 +97,10 @@ public class XmlRpcEmfStoreImpl implements EmfStore, AuthenticationControl {
 	 * {@inheritDoc}
 	 */
 	public PrimaryVersionSpec createVersion(SessionId sessionId, ProjectId projectId,
-		PrimaryVersionSpec baseVersionSpec, ChangePackage changePackage, LogMessage logMessage)
-		throws EmfStoreException, InvalidVersionSpecException {
-		return getEmfStore().createVersion(sessionId, projectId, baseVersionSpec, changePackage, logMessage);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public PrimaryVersionSpec createVersion(SessionId sessionId, ProjectId projectId, BranchVersionSpec branch,
-		PrimaryVersionSpec baseVersionSpec, ChangePackage changePackage, LogMessage logMessage)
-		throws EmfStoreException, InvalidVersionSpecException {
-		return getEmfStore().createVersion(sessionId, projectId, branch, baseVersionSpec, changePackage, logMessage);
+		PrimaryVersionSpec baseVersionSpec, ChangePackage changePackage, BranchVersionSpec targetBranch,
+		PrimaryVersionSpec sourceVersion, LogMessage logMessage) throws EmfStoreException, InvalidVersionSpecException {
+		return getEmfStore().createVersion(sessionId, projectId, baseVersionSpec, changePackage, targetBranch,
+			sourceVersion, logMessage);
 	}
 
 	/**

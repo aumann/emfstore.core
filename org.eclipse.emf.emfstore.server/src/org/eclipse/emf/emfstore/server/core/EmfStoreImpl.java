@@ -145,23 +145,17 @@ public class EmfStoreImpl extends AbstractEmfstoreInterface implements EmfStore 
 	 * {@inheritDoc}
 	 */
 	public PrimaryVersionSpec createVersion(SessionId sessionId, ProjectId projectId,
-		PrimaryVersionSpec baseVersionSpec, ChangePackage changePackage, LogMessage logMessage)
-		throws EmfStoreException, InvalidVersionSpecException {
-		return createVersion(sessionId, projectId, null, baseVersionSpec, changePackage, logMessage);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public PrimaryVersionSpec createVersion(SessionId sessionId, ProjectId projectId, BranchVersionSpec branch,
-		PrimaryVersionSpec baseVersionSpec, ChangePackage changePackage, LogMessage logMessage)
-		throws EmfStoreException, InvalidVersionSpecException {
+		PrimaryVersionSpec baseVersionSpec, ChangePackage changePackage, BranchVersionSpec targetBranch,
+		PrimaryVersionSpec sourceVersion, LogMessage logMessage) throws EmfStoreException, InvalidVersionSpecException {
 		sanityCheckObjects(sessionId, projectId, baseVersionSpec, changePackage, logMessage);
 		checkWriteAccess(sessionId, projectId, null);
 		ACUser user = getAuthorizationControl().resolveUser(sessionId);
 		PrimaryVersionSpec newVersion = getSubInterface(VersionSubInterfaceImpl.class).createVersion(projectId,
-			baseVersionSpec, changePackage, logMessage, user);
-		System.out.println("Create Version Branch: " + branch);
+			baseVersionSpec, changePackage, targetBranch, sourceVersion, logMessage, user);
+
+		// TODO BRANCH remove this println
+		System.out.println("Create Version Branch: " + targetBranch);
+
 		return newVersion;
 	}
 

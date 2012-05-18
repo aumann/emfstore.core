@@ -63,11 +63,11 @@ public interface VersioningPackage extends EPackage {
 	VersioningPackage eINSTANCE = org.eclipse.emf.emfstore.server.model.versioning.impl.VersioningPackageImpl.init();
 
 	/**
-	 * The meta object id for the '{@link org.eclipse.emf.emfstore.server.model.versioning.VersionSpec
+	 * The meta object id for the '{@link org.eclipse.emf.emfstore.server.model.versioning.impl.VersionSpecImpl
 	 * <em>Version Spec</em>}' class.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
-	 * @see org.eclipse.emf.emfstore.server.model.versioning.VersionSpec
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.impl.VersionSpecImpl
 	 * @see org.eclipse.emf.emfstore.server.model.versioning.impl.VersioningPackageImpl#getVersionSpec()
 	 * @generated
 	 */
@@ -668,6 +668,58 @@ public interface VersioningPackage extends EPackage {
 	int BRANCH_VERSION_SPEC_FEATURE_COUNT = VERSION_SPEC_FEATURE_COUNT + 0;
 
 	/**
+	 * The meta object id for the '{@link org.eclipse.emf.emfstore.server.model.versioning.impl.BranchInfoImpl
+	 * <em>Branch Info</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.impl.BranchInfoImpl
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.impl.VersioningPackageImpl#getBranchInfo()
+	 * @generated
+	 */
+	int BRANCH_INFO = 12;
+
+	/**
+	 * The feature id for the '<em><b>Name</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int BRANCH_INFO__NAME = 0;
+
+	/**
+	 * The feature id for the '<em><b>Head</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int BRANCH_INFO__HEAD = 1;
+
+	/**
+	 * The feature id for the '<em><b>Source</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int BRANCH_INFO__SOURCE = 2;
+
+	/**
+	 * The number of structural features of the '<em>Branch Info</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int BRANCH_INFO_FEATURE_COUNT = 3;
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.emf.emfstore.server.model.versioning.TagVersionSpec
 	 * <em>Tag Version Spec</em>}'.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1205,6 +1257,57 @@ public interface VersioningPackage extends EPackage {
 	EClass getBranchVersionSpec();
 
 	/**
+	 * Returns the meta object for class '{@link org.eclipse.emf.emfstore.server.model.versioning.BranchInfo
+	 * <em>Branch Info</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for class '<em>Branch Info</em>'.
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.BranchInfo
+	 * @generated
+	 */
+	EClass getBranchInfo();
+
+	/**
+	 * Returns the meta object for the attribute '
+	 * {@link org.eclipse.emf.emfstore.server.model.versioning.BranchInfo#getName <em>Name</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Name</em>'.
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.BranchInfo#getName()
+	 * @see #getBranchInfo()
+	 * @generated
+	 */
+	EAttribute getBranchInfo_Name();
+
+	/**
+	 * Returns the meta object for the containment reference '
+	 * {@link org.eclipse.emf.emfstore.server.model.versioning.BranchInfo#getHead <em>Head</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the containment reference '<em>Head</em>'.
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.BranchInfo#getHead()
+	 * @see #getBranchInfo()
+	 * @generated
+	 */
+	EReference getBranchInfo_Head();
+
+	/**
+	 * Returns the meta object for the containment reference '
+	 * {@link org.eclipse.emf.emfstore.server.model.versioning.BranchInfo#getSource <em>Source</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the containment reference '<em>Source</em>'.
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.BranchInfo#getSource()
+	 * @see #getBranchInfo()
+	 * @generated
+	 */
+	EReference getBranchInfo_Source();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -1290,11 +1393,11 @@ public interface VersioningPackage extends EPackage {
 		EAttribute PRIMARY_VERSION_SPEC__IDENTIFIER = eINSTANCE.getPrimaryVersionSpec_Identifier();
 
 		/**
-		 * The meta object literal for the '{@link org.eclipse.emf.emfstore.server.model.versioning.VersionSpec
-		 * <em>Version Spec</em>}' class.
+		 * The meta object literal for the '
+		 * {@link org.eclipse.emf.emfstore.server.model.versioning.impl.VersionSpecImpl <em>Version Spec</em>}' class.
 		 * <!-- begin-user-doc --> <!-- end-user-doc -->
 		 * 
-		 * @see org.eclipse.emf.emfstore.server.model.versioning.VersionSpec
+		 * @see org.eclipse.emf.emfstore.server.model.versioning.impl.VersionSpecImpl
 		 * @see org.eclipse.emf.emfstore.server.model.versioning.impl.VersioningPackageImpl#getVersionSpec()
 		 * @generated
 		 */
@@ -1638,6 +1741,45 @@ public interface VersioningPackage extends EPackage {
 		 * @generated
 		 */
 		EClass BRANCH_VERSION_SPEC = eINSTANCE.getBranchVersionSpec();
+
+		/**
+		 * The meta object literal for the '{@link org.eclipse.emf.emfstore.server.model.versioning.impl.BranchInfoImpl
+		 * <em>Branch Info</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @see org.eclipse.emf.emfstore.server.model.versioning.impl.BranchInfoImpl
+		 * @see org.eclipse.emf.emfstore.server.model.versioning.impl.VersioningPackageImpl#getBranchInfo()
+		 * @generated
+		 */
+		EClass BRANCH_INFO = eINSTANCE.getBranchInfo();
+
+		/**
+		 * The meta object literal for the '<em><b>Name</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute BRANCH_INFO__NAME = eINSTANCE.getBranchInfo_Name();
+
+		/**
+		 * The meta object literal for the '<em><b>Head</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference BRANCH_INFO__HEAD = eINSTANCE.getBranchInfo_Head();
+
+		/**
+		 * The meta object literal for the '<em><b>Source</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference BRANCH_INFO__SOURCE = eINSTANCE.getBranchInfo_Source();
 
 	}
 

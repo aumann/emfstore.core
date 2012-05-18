@@ -108,11 +108,8 @@ public interface EmfStore extends EmfStoreInterface {
 	 * @generated NOT
 	 */
 	PrimaryVersionSpec createVersion(SessionId sessionId, ProjectId projectId, PrimaryVersionSpec baseVersionSpec,
-		ChangePackage changePackage, LogMessage logMessage) throws EmfStoreException, InvalidVersionSpecException;
-
-	PrimaryVersionSpec createVersion(SessionId sessionId, ProjectId projectId, BranchVersionSpec branch,
-		PrimaryVersionSpec baseVersionSpec, ChangePackage changePackage, LogMessage logMessage)
-		throws EmfStoreException, InvalidVersionSpecException;
+		ChangePackage changePackage, BranchVersionSpec targetBranch, PrimaryVersionSpec sourceVersion,
+		LogMessage logMessage) throws EmfStoreException, InvalidVersionSpecException;
 
 	/**
 	 * Resolve a version specified to a primary version specifier.

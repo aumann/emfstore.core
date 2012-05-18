@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.emfstore.common.model.Project;
 import org.eclipse.emf.emfstore.common.model.util.FileUtil;
 import org.eclipse.emf.emfstore.common.model.util.ModelUtil;
@@ -31,6 +32,7 @@ import org.eclipse.emf.emfstore.server.model.ProjectHistory;
 import org.eclipse.emf.emfstore.server.model.ProjectId;
 import org.eclipse.emf.emfstore.server.model.ProjectInfo;
 import org.eclipse.emf.emfstore.server.model.SessionId;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.LogMessage;
 import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
@@ -298,6 +300,13 @@ public class ProjectSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 		PrimaryVersionSpec primary = VersioningFactory.eINSTANCE.createPrimaryVersionSpec();
 		primary.setIdentifier(0);
 		firstVersion.setPrimarySpec(primary);
+
+		// create branch information
+		BranchInfo branchInfo = VersioningFactory.eINSTANCE.createBranchInfo();
+		branchInfo.setName(VersionSpec.BRANCH_DEFAULT_NAME);
+		branchInfo.setHead(EcoreUtil.copy(primary));
+		branchInfo.setSource(EcoreUtil.copy(primary));
+		projectHistory.getBranches().add(branchInfo);
 
 		// create initial project
 		// Project project =

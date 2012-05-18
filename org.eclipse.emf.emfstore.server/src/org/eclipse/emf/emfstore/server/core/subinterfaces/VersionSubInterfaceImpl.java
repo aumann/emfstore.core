@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.emfstore.common.model.Project;
 import org.eclipse.emf.emfstore.common.model.impl.ProjectImpl;
 import org.eclipse.emf.emfstore.common.model.util.ModelUtil;
@@ -33,6 +34,7 @@ import org.eclipse.emf.emfstore.server.exceptions.StorageException;
 import org.eclipse.emf.emfstore.server.model.ProjectHistory;
 import org.eclipse.emf.emfstore.server.model.ProjectId;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.ACUser;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.DateVersionSpec;
@@ -144,56 +146,65 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 	 * @param user
 	 */
 	public PrimaryVersionSpec createVersion(ProjectId projectId, PrimaryVersionSpec baseVersionSpec,
-		ChangePackage changePackage, LogMessage logMessage, ACUser user) throws EmfStoreException {
+		ChangePackage changePackage, BranchVersionSpec targetBranch, PrimaryVersionSpec sourceVersion,
+		LogMessage logMessage, ACUser user) throws EmfStoreException {
 		synchronized (getMonitor()) {
-
 			long currentTimeMillis = System.currentTimeMillis();
-
 			ProjectHistory projectHistory = getSubInterface(ProjectSubInterfaceImpl.class).getProject(projectId);
-			List<Version> versions = projectHistory.getVersions();
 
-			// OW: check here if base version is valid at all
-
-			if (versions.size() - 1 != baseVersionSpec.getIdentifier()) {
-				throw new BaseVersionOutdatedException();
+			// Find branch
+			BranchInfo baseBranch = getBranchInfo(projectHistory, baseVersionSpec);
+			Version baseVersion = getVersion(projectHistory, baseVersionSpec);
+			// TODO BRANCH
+			if (baseVersion == null || baseBranch == null) {
+				// TODO BRANCH custom exception
+				throw new EmfStoreException("Branch doesn't exist.");
 			}
 
-			PrimaryVersionSpec newVersionSpec = VersioningFactory.eINSTANCE.createPrimaryVersionSpec();
-			newVersionSpec.setIdentifier(baseVersionSpec.getIdentifier() + 1);
+			// defined here fore scoping reasons
+			Version newVersion = null;
 
-			Version newVersion = VersioningFactory.eINSTANCE.createVersion();
+			if (targetBranch == null || (baseVersion.getPrimarySpec().getBranch().equals(targetBranch.getBranch()))) {
 
-			Version previousHeadVersion = versions.get(versions.size() - 1);
+				// If branch is null or branch equals base branch, create new version for specific branch
+				if (!baseVersionSpec.equals(isHeadOfBranch(projectHistory, baseVersion.getPrimarySpec()))) {
+					throw new BaseVersionOutdatedException();
+				}
+				newVersion = createVersion(projectHistory, changePackage, logMessage, user, baseVersion);
+				newVersion.setPreviousVersion(baseVersion);
+				baseBranch.setHead(EcoreUtil.copy(newVersion.getPrimarySpec()));
 
-			Project newProjectState = ((ProjectImpl) previousHeadVersion.getProjectState()).copy();
-			changePackage.apply(newProjectState);
+			} else if (getBranchInfo(projectHistory, targetBranch) == null) {
 
-			newVersion.setProjectState(newProjectState);
-			newVersion.setChanges(changePackage);
-			logMessage.setDate(new Date());
-			logMessage.setAuthor(user.getName());
-			newVersion.setLogMessage(logMessage);
-			newVersion.setPrimarySpec(newVersionSpec);
-			newVersion.setNextVersion(null);
-			newVersion.setPreviousVersion(previousHeadVersion);
+				// after check whether branch does NOT exist, create branch
+				newVersion = createVersion(projectHistory, changePackage, logMessage, user, baseVersion);
+				createNewBranch(projectHistory, baseVersion.getPrimarySpec(), newVersion.getPrimarySpec(), targetBranch);
+				newVersion.setAncestorVersion(baseVersion);
 
-			versions.add(newVersion);
+			} else {
+				// TODO BRANCH custom exception
+				throw new EmfStoreException("invalid.");
+			}
+			if (sourceVersion != null) {
+				// TODO BRANCH add sources
+			}
 
+			// TODO BRANCH fix in memory first, then persistence
 			// try to save
 			try {
 				try {
-					getResourceHelper().createResourceForProject(newProjectState, newVersion.getPrimarySpec(),
-						projectHistory.getProjectId());
+					getResourceHelper().createResourceForProject(newVersion.getProjectState(),
+						newVersion.getPrimarySpec(), projectHistory.getProjectId());
 					getResourceHelper().createResourceForChangePackage(changePackage, newVersion.getPrimarySpec(),
 						projectId);
 					getResourceHelper().createResourceForVersion(newVersion, projectHistory.getProjectId());
 				} catch (FatalEmfStoreException e) {
 					// try to roll back
-					previousHeadVersion.setNextVersion(null);
-					versions.remove(newVersion);
+					baseVersion.setNextVersion(null);
+					projectHistory.getVersions().remove(newVersion);
 					// TODO: OW: why do we need to save here, can we remove? do
 					// test!!
-					save(previousHeadVersion);
+					save(baseVersion);
 					save(projectHistory);
 					throw new StorageException(StorageException.NOSAVE, e);
 				}
@@ -201,13 +212,14 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 				// delete projectstate from last revision depending on
 				// persistence
 				// policy
-				handleOldProjectState(projectId, previousHeadVersion);
+				handleOldProjectState(projectId, baseVersion);
 
-				save(previousHeadVersion);
+				save(baseVersion);
 				save(projectHistory);
 
 				// update history cache
-				historyCache.addVersionToCache(projectId, newVersion);
+				// TODO BRANCH fix historyCache
+				// historyCache.addVersionToCache(projectId, newVersion);
 			} catch (FatalEmfStoreException e) {
 				// roll back failed
 				EmfStoreController.getInstance().shutdown(e);
@@ -215,13 +227,79 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 			}
 
 			ModelUtil.logInfo("Total time for commit: " + (System.currentTimeMillis() - currentTimeMillis));
-			return newVersionSpec;
+			return newVersion.getPrimarySpec();
 		}
+	}
+
+	private void createNewBranch(ProjectHistory projectHistory, PrimaryVersionSpec baseSpec,
+		PrimaryVersionSpec primarySpec, BranchVersionSpec branch) {
+		primarySpec.setBranch(branch.getBranch());
+
+		// TODO BRANCH make sure branch name is not null
+		BranchInfo branchInfo = VersioningFactory.eINSTANCE.createBranchInfo();
+		branchInfo.setName(branch.getBranch());
+		branchInfo.setSource(EcoreUtil.copy(baseSpec));
+		branchInfo.setHead(EcoreUtil.copy(primarySpec));
+
+		projectHistory.getBranches().add(branchInfo);
+
+	}
+
+	private Version createVersion(ProjectHistory projectHistory, ChangePackage changePackage, LogMessage logMessage,
+		ACUser user, Version previousHeadVersion) {
+		Version newVersion = VersioningFactory.eINSTANCE.createVersion();
+
+		// copy project and apply changes
+		Project newProjectState = ((ProjectImpl) previousHeadVersion.getProjectState()).copy();
+		changePackage.apply(newProjectState);
+		newVersion.setProjectState(newProjectState);
+		newVersion.setChanges(changePackage);
+
+		logMessage.setDate(new Date());
+		logMessage.setAuthor(user.getName());
+		newVersion.setLogMessage(logMessage);
+
+		// latest version == getVersion.size() (version start with index 0 as the list), IMPORTANT: branch has to be set
+		// outside this method
+		PrimaryVersionSpec newVersionSpec = VersioningFactory.eINSTANCE.createPrimaryVersionSpec();
+		newVersionSpec.setIdentifier(projectHistory.getVersions().size());
+		newVersion.setPrimarySpec(newVersionSpec);
+		newVersion.setNextVersion(null);
+
+		projectHistory.getVersions().add(newVersion);
+		return newVersion;
+	}
+
+	private Version getVersion(ProjectHistory projectHistory, PrimaryVersionSpec baseVersionSpec) {
+		Version version = projectHistory.getVersions().get(baseVersionSpec.getIdentifier());
+		if (version == null || !version.getPrimarySpec().equals(baseVersionSpec)) {
+			return null;
+		}
+		return version;
+	}
+
+	private PrimaryVersionSpec isHeadOfBranch(ProjectHistory projectHistory, PrimaryVersionSpec versionSpec) {
+		BranchInfo branchInfo = getBranchInfo(projectHistory, versionSpec);
+		if (branchInfo != null && branchInfo.getHead().equals(versionSpec)) {
+			return branchInfo.getHead();
+		}
+		return null;
+	}
+
+	private BranchInfo getBranchInfo(ProjectHistory projectHistory, VersionSpec versionSpec) {
+		for (BranchInfo branchInfo : projectHistory.getBranches()) {
+			if (branchInfo.getName().equals(versionSpec.getBranch())) {
+				return branchInfo;
+			}
+		}
+		return null;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	// TODO what's the purpose of this task
+	@Deprecated
 	public PrimaryVersionSpec createVersionForProject(ProjectId projectId, PrimaryVersionSpec baseVersionSpec,
 		ChangePackage changePackage, LogMessage logMessage) throws EmfStoreException {
 		synchronized (getMonitor()) {
@@ -258,6 +336,7 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 
 			versions.add(newVersion);
 
+			// TODO BRANCH fix persistence
 			// try to save
 			try {
 				try {

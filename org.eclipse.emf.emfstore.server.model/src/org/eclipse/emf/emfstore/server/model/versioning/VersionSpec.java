@@ -64,4 +64,6 @@ public interface VersionSpec extends EObject {
 
 	String BASE = "BASE";
 
+	String BRANCH_DEFAULT_NAME = "trunk";
+
 } // VersionSpec

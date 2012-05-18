@@ -97,20 +97,10 @@ public class XmlRpcConnectionManager extends AbstractConnectionManager<XmlRpcCli
 	 * {@inheritDoc}
 	 */
 	public PrimaryVersionSpec createVersion(SessionId sessionId, ProjectId projectId,
-		PrimaryVersionSpec baseVersionSpec, ChangePackage changePackage, LogMessage logMessage)
-		throws EmfStoreException, InvalidVersionSpecException {
+		PrimaryVersionSpec baseVersionSpec, ChangePackage changePackage, BranchVersionSpec targetBranch,
+		PrimaryVersionSpec sourceVersion, LogMessage logMessage) throws EmfStoreException, InvalidVersionSpecException {
 		return getConnectionProxy(sessionId).callWithResult("createVersion", PrimaryVersionSpec.class, sessionId,
-			projectId, baseVersionSpec, changePackage, logMessage);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public PrimaryVersionSpec createVersion(SessionId sessionId, ProjectId projectId, BranchVersionSpec branch,
-		PrimaryVersionSpec baseVersionSpec, ChangePackage changePackage, LogMessage logMessage)
-		throws EmfStoreException, InvalidVersionSpecException {
-		return getConnectionProxy(sessionId).callWithResult("createVersion", PrimaryVersionSpec.class, sessionId,
-			projectId, branch, baseVersionSpec, changePackage, logMessage);
+			projectId, baseVersionSpec, changePackage, targetBranch, sourceVersion, logMessage);
 	}
 
 	/**
