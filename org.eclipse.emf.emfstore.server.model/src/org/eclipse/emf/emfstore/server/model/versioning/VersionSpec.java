@@ -58,6 +58,10 @@ public interface VersionSpec extends EObject {
 	 */
 	void setBranch(String value);
 
+	/**
+	 * Use {@link Versions} instead.
+	 */
+	@Deprecated
 	VersionSpec HEAD_VERSION = VersioningFactory.eINSTANCE.createHeadVersionSpec();
 
 	String HEAD = "HEAD";

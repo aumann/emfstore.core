@@ -15,6 +15,7 @@ import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.VersionSpec;
+import org.eclipse.emf.emfstore.server.model.versioning.Versions;
 
 public class UpdateController extends ServerCall<PrimaryVersionSpec> {
 
@@ -28,7 +29,7 @@ public class UpdateController extends ServerCall<PrimaryVersionSpec> {
 		 * SANITY CHECKS
 		 */
 		if (version == null) {
-			version = VersionSpec.HEAD_VERSION;
+			version = Versions.HEAD_VERSION(projectSpace.getBaseVersion());
 		}
 		if (callback == null) {
 			callback = UpdateCallback.NOCALLBACK;

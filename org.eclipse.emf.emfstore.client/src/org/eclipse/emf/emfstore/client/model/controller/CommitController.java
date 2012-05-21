@@ -25,8 +25,8 @@ import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.LogMessage;
 import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
-import org.eclipse.emf.emfstore.server.model.versioning.VersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.VersioningFactory;
+import org.eclipse.emf.emfstore.server.model.versioning.Versions;
 
 /**
  * The controller responsible for performing a commit.
@@ -117,7 +117,8 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 			}
 		} else {
 			// check if we need to update first
-			PrimaryVersionSpec resolvedVersion = getProjectSpace().resolveVersionSpec(VersionSpec.HEAD_VERSION);
+			PrimaryVersionSpec resolvedVersion = getProjectSpace().resolveVersionSpec(
+				Versions.HEAD_VERSION(getProjectSpace().getBaseVersion()));
 			if (!getProjectSpace().getBaseVersion().equals(resolvedVersion)) {
 				if (!callback.baseVersionOutOfDate(getProjectSpace())) {
 					throw new BaseVersionOutdatedException();

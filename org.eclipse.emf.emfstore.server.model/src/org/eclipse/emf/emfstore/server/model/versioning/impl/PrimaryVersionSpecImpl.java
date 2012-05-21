@@ -180,7 +180,7 @@ public class PrimaryVersionSpecImpl extends VersionSpecImpl implements PrimaryVe
 	}
 
 	public int compareTo(PrimaryVersionSpec o) {
-		if (this.equals(o)) {
+		if (this.getIdentifier() == o.getIdentifier()) {
 			return 0;
 		} else if (this.getIdentifier() < o.getIdentifier()) {
 			return -1;

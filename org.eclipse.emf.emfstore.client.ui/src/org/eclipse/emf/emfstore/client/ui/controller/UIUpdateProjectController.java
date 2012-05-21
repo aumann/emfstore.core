@@ -60,6 +60,7 @@ public class UIUpdateProjectController extends AbstractEMFStoreUIController impl
 		ProjectSpace projectSpace = conflictException.getProjectSpace();
 		boolean mergeSuccessful = false;
 		try {
+			// TODO BRANCH
 			PrimaryVersionSpec targetVersion = projectSpace.resolveVersionSpec(VersionSpec.HEAD_VERSION);
 			mergeSuccessful = projectSpace.merge(targetVersion, new MergeProjectHandler(conflictException));
 		} catch (EmfStoreException e) {

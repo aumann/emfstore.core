@@ -77,6 +77,7 @@ import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.TagVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.VersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.VersioningFactory;
+import org.eclipse.emf.emfstore.server.model.versioning.Versions;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.AbstractOperation;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.CompositeOperation;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.semantic.SemanticCompositeOperation;
@@ -702,7 +703,7 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 	 * @see org.eclipse.emf.emfstore.client.model.ProjectSpace#isUpdated()
 	 */
 	public boolean isUpdated() throws EmfStoreException {
-		PrimaryVersionSpec headVersion = resolveVersionSpec(VersionSpec.HEAD_VERSION);
+		PrimaryVersionSpec headVersion = resolveVersionSpec(Versions.HEAD_VERSION(getBaseVersion()));
 		return getBaseVersion().equals(headVersion);
 	}
 
@@ -1052,7 +1053,7 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 	 * @see org.eclipse.emf.emfstore.client.model.ProjectSpace#update()
 	 */
 	public PrimaryVersionSpec update() throws EmfStoreException {
-		return update(VersionSpec.HEAD_VERSION);
+		return update(Versions.HEAD_VERSION(getBaseVersion()));
 	}
 
 	/**

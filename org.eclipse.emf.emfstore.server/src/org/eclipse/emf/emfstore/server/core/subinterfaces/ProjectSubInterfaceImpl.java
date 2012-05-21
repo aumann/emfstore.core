@@ -90,6 +90,7 @@ public class ProjectSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 	/**
 	 * {@inheritDoc}
 	 */
+	// TODO BRANCH change
 	public Project getProject(ProjectId projectId, VersionSpec versionSpec) throws EmfStoreException {
 
 		synchronized (getMonitor()) {

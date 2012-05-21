@@ -13,7 +13,7 @@ import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
 import org.eclipse.emf.emfstore.server.model.ProjectId;
 import org.eclipse.emf.emfstore.server.model.ProjectInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
-import org.eclipse.emf.emfstore.server.model.versioning.VersionSpec;
+import org.eclipse.emf.emfstore.server.model.versioning.Versions;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -112,6 +112,7 @@ public class UIProjectController extends AbstractEMFStoreUIController {
 	 * 
 	 * @param info projectinfo
 	 */
+	// TODO BRANCH
 	public void showProjectProperties(ProjectInfo info) {
 		ServerInfo serverInfo = (info.eContainer() instanceof ServerInfo) ? (ServerInfo) info.eContainer() : null;
 		String revision = "<unknown>";
@@ -119,7 +120,7 @@ public class UIProjectController extends AbstractEMFStoreUIController {
 			PrimaryVersionSpec versionSpec;
 			try {
 				versionSpec = WorkspaceManager.getInstance().getCurrentWorkspace()
-					.resolveVersionSpec(serverInfo, VersionSpec.HEAD_VERSION, info.getProjectId());
+					.resolveVersionSpec(serverInfo, Versions.HEAD_VERSION(), info.getProjectId());
 				revision = "" + versionSpec.getIdentifier();
 			} catch (EmfStoreException e) {
 			}

@@ -168,6 +168,7 @@ public class WorkspaceImpl extends EObjectImpl implements Workspace {
 	 *      org.eclipse.emf.emfstore.server.model.ProjectInfo)
 	 */
 	public ProjectSpace checkout(final Usersession usersession, final ProjectInfo projectInfo) throws EmfStoreException {
+		// TODO BRANCH
 		PrimaryVersionSpec targetSpec = this.connectionManager.resolveVersionSpec(usersession.getSessionId(),
 			projectInfo.getProjectId(), VersionSpec.HEAD_VERSION);
 		return checkout(usersession, projectInfo, targetSpec);
