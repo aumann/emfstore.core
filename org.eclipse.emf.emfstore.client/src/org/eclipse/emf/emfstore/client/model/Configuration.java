@@ -20,6 +20,7 @@ import org.eclipse.emf.edit.domain.EditingDomain;
 import org.eclipse.emf.emfstore.client.model.connectionmanager.KeyStoreManager;
 import org.eclipse.emf.emfstore.client.model.util.ConfigurationProvider;
 import org.eclipse.emf.emfstore.client.model.util.DefaultWorkspaceLocationProvider;
+import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionElement;
 import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionPoint;
 import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionPointException;
 import org.eclipse.emf.emfstore.common.model.util.ModelUtil;
@@ -54,14 +55,14 @@ public final class Configuration {
 	private static final String UPF = ".upf";
 	private static final String PLUGIN_BASEDIR = "pluginData";
 
+	private static boolean autoSave;
 	private static boolean testing;
+
 	private static LocationProvider locationProvider;
 	private static EditingDomain editingDomain;
+
 	private static int xmlRPCConnectionTimeout = XML_RPC_CONNECTION_TIMEOUT;
 	private static int xmlRPCReplyTimeout = XML_RPC_REPLY_TIMEOUT;
-	private static Boolean resourceSplitting;
-
-	private static boolean autoSave;
 
 	private Configuration() {
 		// nothing to do
@@ -218,12 +219,18 @@ public final class Configuration {
 			.createClientVersionInfo();
 		clientVersionInfo.setName(CLIENT_NAME);
 
-		Bundle emfStoreBundle = Platform.getBundle("org.eclipse.emf.emfstore.client");
-		@SuppressWarnings("cast")
-		String emfStoreVersionString = (String) emfStoreBundle.getHeaders().get(
-			org.osgi.framework.Constants.BUNDLE_VERSION);
+		String versionId;
+		ExtensionElement version = new ExtensionPoint("org.eclipse.emf.emfstore.client.version").setThrowException(
+			false).getFirst();
 
-		clientVersionInfo.setVersion(emfStoreVersionString);
+		if (version != null) {
+			versionId = version.getAttribute("identifier");
+		} else {
+			Bundle emfStoreBundle = Platform.getBundle("org.eclipse.emf.emfstore.client");
+			versionId = (String) emfStoreBundle.getHeaders().get(org.osgi.framework.Constants.BUNDLE_VERSION);
+		}
+
+		clientVersionInfo.setVersion(versionId);
 		return clientVersionInfo;
 	}
 
@@ -358,25 +365,6 @@ public final class Configuration {
 	 */
 	public static void setEditingDomain(EditingDomain editingDomain) {
 		Configuration.editingDomain = editingDomain;
-	}
-
-	/**
-	 * Determines whether resource splitting is enabled.
-	 * 
-	 * @return true, if resource splitting is enabled, false otherwise
-	 */
-	public static boolean isResourceSplittingEnabled() {
-		if (resourceSplitting != null) {
-			return resourceSplitting;
-		}
-		try {
-			resourceSplitting = new ExtensionPoint("org.eclipse.emf.emfstore.client.persistence.options")
-				.setThrowException(true).getBoolean("enabled");
-		} catch (ExtensionPointException e) {
-			resourceSplitting = false;
-		}
-
-		return resourceSplitting;
 	}
 
 	/**

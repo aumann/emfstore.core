@@ -113,7 +113,7 @@ public final class DecisionUtil {
 	 * 
 	 * @return fonts
 	 */
-	public static FontRegistry getFontRegistry() {
+	public synchronized static FontRegistry getFontRegistry() {
 		if (fontRegistry == null) {
 			fontRegistry = new FontRegistry(Display.getCurrent());
 			DecisionConfig.initFonts(fontRegistry);

@@ -36,7 +36,6 @@ import org.eclipse.ui.PlatformUI;
 public class VersionDecorator extends AdapterImpl implements ILightweightLabelDecorator, UpdateObserver, CommitObserver {
 
 	private ArrayList<ILabelProviderListener> listeners = new ArrayList<ILabelProviderListener>();
-	private ProjectSpace element;
 
 	/**
 	 * Default constructor.
@@ -103,9 +102,8 @@ public class VersionDecorator extends AdapterImpl implements ILightweightLabelDe
 	}
 
 	public void decorationChanged() {
-		LabelProviderChangedEvent event = new LabelProviderChangedEvent(this, element);
 		for (ILabelProviderListener listener : listeners) {
-			listener.labelProviderChanged(event);
+			listener.labelProviderChanged(new LabelProviderChangedEvent(this));
 		}
 	}
 

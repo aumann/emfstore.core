@@ -17,7 +17,6 @@ import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.emfstore.client.model.ProjectSpace;
-import org.eclipse.emf.emfstore.client.ui.Activator;
 import org.eclipse.emf.emfstore.client.ui.views.changes.TabbedChangesComposite;
 import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionElement;
 import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionPoint;
@@ -114,7 +113,6 @@ public class CommitDialog extends TitleAreaDialog implements KeyListener {
 
 		setTitle("Commit your local changes to the server");
 		setMessage("Don't forget the commit message!");
-		setTitleImage(Activator.getImageDescriptor("icons/dontForget.png").createImage());
 
 		// Log message
 		Label lblLogMsg = new Label(contents, SWT.NONE);
@@ -126,9 +124,12 @@ public class CommitDialog extends TitleAreaDialog implements KeyListener {
 			.applyTo(txtLogMsg);
 		String logMsg = "";
 		LogMessage logMessage = changes.getLogMessage();
-		if (logMessage != null && logMessage.getMessage() != null) {
+
+		if (logMessage != null && logMessage.getMessage() != null && !logMessage.getMessage().equals("")) {
+			// if change package has log message attached to it, use it
 			logMsg = logMessage.getMessage();
 		} else if (oldLogMessages != null && oldLogMessages.size() > 0) {
+			// otherwise use the most recent log message
 			logMsg = oldLogMessages.get(oldLogMessages.size() - 1);
 		}
 		txtLogMsg.setText(logMsg);
@@ -157,6 +158,10 @@ public class CommitDialog extends TitleAreaDialog implements KeyListener {
 			}
 
 		});
+
+		if (oldLogMessages.size() > 0) {
+			oldMsg.select(0);
+		}
 
 		// ChangesTree
 		ArrayList<ChangePackage> changePackages = new ArrayList<ChangePackage>();

@@ -13,19 +13,22 @@ package org.eclipse.emf.emfstore.client.model.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.emf.common.util.BasicEMap;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature.Setting;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
+import org.eclipse.emf.ecore.util.EcoreUtil.UsageCrossReferencer;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.emfstore.client.model.CompositeOperationHandle;
 import org.eclipse.emf.emfstore.client.model.Configuration;
@@ -53,8 +56,9 @@ import org.eclipse.emf.emfstore.client.model.observers.ConflictResolver;
 import org.eclipse.emf.emfstore.client.model.observers.LoginObserver;
 import org.eclipse.emf.emfstore.client.model.util.WorkspaceUtil;
 import org.eclipse.emf.emfstore.client.properties.PropertyManager;
+import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionElement;
+import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionPoint;
 import org.eclipse.emf.emfstore.common.model.ModelElementId;
-import org.eclipse.emf.emfstore.common.model.Project;
 import org.eclipse.emf.emfstore.common.model.impl.IdEObjectCollectionImpl;
 import org.eclipse.emf.emfstore.common.model.impl.IdentifiableElementImpl;
 import org.eclipse.emf.emfstore.common.model.impl.ProjectImpl;
@@ -110,8 +114,9 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 
 	private StatePersister statePersister;
 	private OperationPersister operationPersister;
+	private ECrossReferenceAdapter crossReferenceAdapter;
 
-	private ResourceSet resourceSet;
+	protected ResourceSet resourceSet;
 
 	/**
 	 * Constructor.
@@ -255,12 +260,6 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 		}
 	}
 
-	private void assignElementToResource(Resource resource, EObject modelElement) {
-		resource.getContents().add(modelElement);
-		// FIXME: this is not nice!
-		((XMIResource) resource).setID(modelElement, getProject().getModelElementId(modelElement).getId());
-	}
-
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -274,9 +273,20 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 	 * Removes the elements that are marked as cutted from the project.
 	 */
 	public void cleanCutElements() {
-		for (EObject cutElement : getProject().getCutElements()) {
+		List<EObject> cutElements = new ArrayList<EObject>(getProject().getCutElements());
+		for (EObject cutElement : cutElements) {
 			getProject().deleteModelElement(cutElement);
 		}
+	}
+
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.model.ProjectSpace#commit()
+	 */
+	public PrimaryVersionSpec commit() throws EmfStoreException {
+		return new CommitController(this, null, null, new NullProgressMonitor()).execute();
 	}
 
 	/**
@@ -541,12 +551,13 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 
 		initCompleted = true;
 		fileTransferManager = new FileTransferManager(this);
-		operationRecorder = new OperationRecorder((IdEObjectCollectionImpl) this.getProject(), changeNotifier);
+		operationRecorder = new OperationRecorder(this, changeNotifier);
 		operationManager = new OperationManager(operationRecorder, this);
 		operationManager.addOperationListener(modifiedModelElementsCache);
 
-		statePersister = new StatePersister(changeNotifier, ((EMFStoreCommandStack) Configuration.getEditingDomain()
-			.getCommandStack()), (IdEObjectCollectionImpl) this.getProject());
+		statePersister = new StatePersister(
+			((EMFStoreCommandStack) Configuration.getEditingDomain().getCommandStack()),
+			(IdEObjectCollectionImpl) this.getProject());
 		operationPersister = new OperationPersister(this);
 
 		EMFStoreCommandStack commandStack = (EMFStoreCommandStack) Configuration.getEditingDomain().getCommandStack();
@@ -596,6 +607,18 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 	 * @generated NOT
 	 */
 	public void initResources(ResourceSet resourceSet) {
+		boolean useCrossReferenceAdapter = false;
+
+		for (ExtensionElement element : new ExtensionPoint("org.eclipse.emf.emfstore.client.inverseCrossReferenceCache")
+			.getExtensionElements()) {
+			useCrossReferenceAdapter |= element.getBoolean("activated");
+		}
+
+		if (useCrossReferenceAdapter) {
+			crossReferenceAdapter = new ECrossReferenceAdapter();
+			getProject().eAdapters().add(crossReferenceAdapter);
+		}
+
 		this.resourceSet = resourceSet;
 		initCompleted = true;
 		String projectSpaceFileNamePrefix = Configuration.getWorkspaceDirectory()
@@ -621,12 +644,8 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 		resources.add(resource);
 		setResourceCount(getResourceCount() + 1);
 
-		if (Configuration.isResourceSplittingEnabled()) {
-			splitResources(resourceSet, projectFragementsFileNamePrefix, resources, this.getProject());
-		} else {
-			for (EObject modelElement : getProject().getAllModelElements()) {
-				((XMIResource) resource).setID(modelElement, getProject().getModelElementId(modelElement).getId());
-			}
+		for (EObject modelElement : getProject().getAllModelElements()) {
+			((XMIResource) resource).setID(modelElement, getProject().getModelElementId(modelElement).getId());
 		}
 
 		Resource localChangePackageResource = resourceSet.createResource(localChangePackageURI);
@@ -658,10 +677,12 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 	 * @see org.eclipse.emf.emfstore.client.model.ProjectSpace#delete()
 	 * @generated NOT
 	 */
+	@SuppressWarnings("unchecked")
 	public void delete() throws IOException {
 		operationManager.removeOperationListener(modifiedModelElementsCache);
 		operationManager.dispose();
 		WorkspaceManager.getObserverBus().unregister(modifiedModelElementsCache);
+		WorkspaceManager.getObserverBus().unregister(this, LoginObserver.class);
 		WorkspaceManager.getObserverBus().unregister(this);
 		((EMFStoreCommandStack) Configuration.getEditingDomain().getCommandStack())
 			.removeCommandStackObserver(operationPersister);
@@ -684,6 +705,39 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 
 		// delete folder of project space
 		FileUtil.deleteFolder(new File(pathToProject));
+	}
+
+	/**
+	 * Returns the {@link ECrossReferenceAdapter}, if available.
+	 * 
+	 * @return the {@link ECrossReferenceAdapter}
+	 */
+	public Collection<Setting> findInverseCrossReferences(EObject modelElement) {
+		if (crossReferenceAdapter != null) {
+			return crossReferenceAdapter.getInverseReferences(modelElement);
+		}
+
+		return UsageCrossReferencer.find(modelElement, resourceSet);
+	}
+
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.model.ProjectSpace#getResourceSet()
+	 */
+	public ResourceSet getResourceSet() {
+		return resourceSet;
+	}
+
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.model.ProjectSpace#setResourceSet(org.eclipse.emf.ecore.resource.ResourceSet)
+	 */
+	public void setResourceSet(ResourceSet resourceSet) {
+		this.resourceSet = resourceSet;
 	}
 
 	/**
@@ -922,37 +976,6 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 	 */
 	public void shareProject(Usersession session, IProgressMonitor monitor) throws EmfStoreException {
 		new ShareController(this, session, monitor).execute();
-	}
-
-	private void splitResources(ResourceSet resourceSet, String projectFragementsFileNamePrefix,
-		List<Resource> resources, Project project) {
-		String fileName;
-		URI fileURI;
-
-		Resource resource = project.eResource();
-		int counter = 0;
-		for (EObject modelElement : project.getAllModelElements()) {
-
-			// never split maps
-			if (modelElement instanceof BasicEMap.Entry) {
-				((XMIResource) modelElement.eContainer().eResource()).setID(modelElement, getProject()
-					.getModelElementId(modelElement).getId());
-				continue;
-			}
-
-			if (counter > Configuration.getMaxMECountPerResource()) {
-				fileName = projectFragementsFileNamePrefix + getResourceCount()
-					+ Configuration.getProjectFragmentFileExtension();
-				fileURI = URI.createFileURI(fileName);
-				resource = resourceSet.createResource(fileURI);
-				setResourceCount(getResourceCount() + 1);
-				resources.add(resource);
-				counter = 0;
-			}
-			counter++;
-
-			assignElementToResource(resource, modelElement);
-		}
 	}
 
 	/**
