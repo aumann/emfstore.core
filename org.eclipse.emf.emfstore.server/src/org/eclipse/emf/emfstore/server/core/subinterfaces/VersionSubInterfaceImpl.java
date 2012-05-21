@@ -218,7 +218,7 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 
 			} else if (getBranchInfo(projectHistory, targetBranch) == null) {
 
-				// after check, whether branch does NOT exist, create branch
+				// when branch does NOT exist, create new branch
 				newVersion = createVersion(projectHistory, changePackage, logMessage, user, baseVersion);
 				createNewBranch(projectHistory, baseVersion.getPrimarySpec(), newVersion.getPrimarySpec(), targetBranch);
 				newVersion.setAncestorVersion(baseVersion);
@@ -251,10 +251,12 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 					throw new StorageException(StorageException.NOSAVE, e);
 				}
 
-				// delete projectstate from last revision depending on
-				// persistence
-				// policy
-				handleOldProjectState(projectId, baseVersion);
+				// if ancesotr isn't null, a new branch was created. In this case we want to keep the old base project
+				// state
+				if (newVersion.getAncestorVersion() == null) {
+					// delete projectstate from last revision depending on persistence policy
+					handleOldProjectState(projectId, baseVersion);
+				}
 
 				save(baseVersion);
 				save(projectHistory);
