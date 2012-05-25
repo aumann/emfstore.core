@@ -557,13 +557,33 @@ public interface VersioningPackage extends EPackage {
 	int VERSION__BRANCHED_VERSIONS = 8;
 
 	/**
+	 * The feature id for the '<em><b>Merged To Version</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int VERSION__MERGED_TO_VERSION = 9;
+
+	/**
+	 * The feature id for the '<em><b>Merged From Version</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int VERSION__MERGED_FROM_VERSION = 10;
+
+	/**
 	 * The number of structural features of the '<em>Version</em>' class.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 * @ordered
 	 */
-	int VERSION_FEATURE_COUNT = 9;
+	int VERSION_FEATURE_COUNT = 11;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.emf.emfstore.server.model.versioning.impl.HeadVersionSpecImpl
@@ -1249,6 +1269,33 @@ public interface VersioningPackage extends EPackage {
 	EReference getVersion_BranchedVersions();
 
 	/**
+	 * Returns the meta object for the reference list '
+	 * {@link org.eclipse.emf.emfstore.server.model.versioning.Version#getMergedToVersion <em>Merged To Version</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference list '<em>Merged To Version</em>'.
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.Version#getMergedToVersion()
+	 * @see #getVersion()
+	 * @generated
+	 */
+	EReference getVersion_MergedToVersion();
+
+	/**
+	 * Returns the meta object for the reference list '
+	 * {@link org.eclipse.emf.emfstore.server.model.versioning.Version#getMergedFromVersion
+	 * <em>Merged From Version</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the reference list '<em>Merged From Version</em>'.
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.Version#getMergedFromVersion()
+	 * @see #getVersion()
+	 * @generated
+	 */
+	EReference getVersion_MergedFromVersion();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.emf.emfstore.server.model.versioning.HeadVersionSpec
 	 * <em>Head Version Spec</em>}'.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1776,6 +1823,24 @@ public interface VersioningPackage extends EPackage {
 		 * @generated
 		 */
 		EReference VERSION__BRANCHED_VERSIONS = eINSTANCE.getVersion_BranchedVersions();
+
+		/**
+		 * The meta object literal for the '<em><b>Merged To Version</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference VERSION__MERGED_TO_VERSION = eINSTANCE.getVersion_MergedToVersion();
+
+		/**
+		 * The meta object literal for the '<em><b>Merged From Version</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference VERSION__MERGED_FROM_VERSION = eINSTANCE.getVersion_MergedFromVersion();
 
 		/**
 		 * The meta object literal for the '

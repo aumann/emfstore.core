@@ -33,6 +33,7 @@ import org.eclipse.emf.emfstore.server.exceptions.StorageException;
 import org.eclipse.emf.emfstore.server.model.ProjectHistory;
 import org.eclipse.emf.emfstore.server.model.ProjectId;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.ACUser;
+import org.eclipse.emf.emfstore.server.model.versioning.AncestorVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.BranchInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
@@ -117,13 +118,44 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 
 				return resolveBranchVersionSpec(projectHistory, (BranchVersionSpec) versionSpec);
 
-				// } else if (versionSpec instanceof AncestorVersionSpec) {
-				//
-				//
-				//
+			} else if (versionSpec instanceof AncestorVersionSpec) {
+
+				return resolveAncestorVersionSpec(projectHistory, (AncestorVersionSpec) versionSpec);
+
 			}
 			throw new InvalidVersionSpecException();
 		}
+	}
+
+	private PrimaryVersionSpec resolveAncestorVersionSpec(ProjectHistory projectHistory, AncestorVersionSpec versionSpec)
+		throws InvalidVersionSpecException {
+
+		Version currentSource = getVersion(projectHistory, versionSpec.getSource());
+		Version currentTarget = getVersion(projectHistory, versionSpec.getTarget());
+
+		if (currentSource == null || currentTarget == null) {
+			throw new InvalidVersionSpecException("Specified source and/or target version invalid.");
+		}
+
+		// TODO BRANCH
+		// The goal is to find the common ancestor version of the source and target version from different branches. In
+		// order to find the ancestor the algorithm starts at the specified version and walks down the version tree in
+		// parallel for source and target until the current versions are equal and the ancestor is found. In Each step
+		// only one version (of target and source) is decremented. To find the global ancestor it is necessary that the
+		// version with the higher version number is decremented.
+		while (currentSource != null && currentTarget != null) {
+			if (currentSource == currentTarget) {
+				return currentSource.getPrimarySpec();
+			}
+
+			if (currentSource.getPrimarySpec().getIdentifier() >= currentTarget.getPrimarySpec().getIdentifier()) {
+				currentSource = findNextVersion(currentSource);
+			} else {
+				currentTarget = findNextVersion(currentTarget);
+			}
+
+		}
+		throw new InvalidVersionSpecException();
 	}
 
 	private PrimaryVersionSpec resolvePrimaryVersionSpec(ProjectHistory projectHistory, PrimaryVersionSpec versionSpec)
@@ -569,14 +601,7 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 					break;
 				}
 
-				// find next version
-				if (currentVersion.getPreviousVersion() != null) {
-					currentVersion = currentVersion.getPreviousVersion();
-				} else if (currentVersion.getAncestorVersion() != null) {
-					currentVersion = currentVersion.getAncestorVersion();
-				} else {
-					throw new InvalidVersionSpecException();
-				}
+				currentVersion = findNextVersion(currentVersion);
 			}
 
 			Collections.reverse(result);
@@ -584,5 +609,17 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 		} else {
 			return getVersions(projectId, target, source);
 		}
+	}
+
+	private Version findNextVersion(Version currentVersion) throws InvalidVersionSpecException {
+		// find next version
+		if (currentVersion.getPreviousVersion() != null) {
+			currentVersion = currentVersion.getPreviousVersion();
+		} else if (currentVersion.getAncestorVersion() != null) {
+			currentVersion = currentVersion.getAncestorVersion();
+		} else {
+			throw new InvalidVersionSpecException();
+		}
+		return currentVersion;
 	}
 }

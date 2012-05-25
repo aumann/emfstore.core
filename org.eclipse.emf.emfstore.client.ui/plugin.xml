@@ -86,8 +86,8 @@
         </enabledWhen>
      </handler>
      <handler
-           class="org.eclipse.emf.emfstore.client.ui.handlers.CommitProjectToBranchHandler"
-           commandId="org.eclipse.emf.emfstore.client.ui.commitProjectToBranch">
+           class="org.eclipse.emf.emfstore.client.ui.handlers.CreateBranchHandler"
+           commandId="org.eclipse.emf.emfstore.client.ui.createBranch">
         <enabledWhen>
            <and>
               <iterate
@@ -665,8 +665,8 @@
       </command>
       <command
             categoryId="org.eclipse.emf.emfstore.client.ui.project"
-            id="org.eclipse.emf.emfstore.client.ui.commitProjectToBranch"
-            name="commit to branch">
+            id="org.eclipse.emf.emfstore.client.ui.createBranch"
+            name="create branch">
       </command>
          <command
            categoryId="org.eclipse.emf.emfstore.client.ui.project"

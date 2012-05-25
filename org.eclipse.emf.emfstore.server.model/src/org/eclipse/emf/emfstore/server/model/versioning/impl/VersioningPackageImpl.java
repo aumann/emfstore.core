@@ -616,6 +616,26 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 	}
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EReference getVersion_MergedToVersion() {
+		return (EReference) versionEClass.getEStructuralFeatures().get(9);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EReference getVersion_MergedFromVersion() {
+		return (EReference) versionEClass.getEStructuralFeatures().get(10);
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -807,6 +827,8 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 		createEReference(versionEClass, VERSION__LOG_MESSAGE);
 		createEReference(versionEClass, VERSION__ANCESTOR_VERSION);
 		createEReference(versionEClass, VERSION__BRANCHED_VERSIONS);
+		createEReference(versionEClass, VERSION__MERGED_TO_VERSION);
+		createEReference(versionEClass, VERSION__MERGED_FROM_VERSION);
 
 		headVersionSpecEClass = createEClass(HEAD_VERSION_SPEC);
 
@@ -980,6 +1002,12 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 			IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getVersion_BranchedVersions(), this.getVersion(), this.getVersion_AncestorVersion(),
 			"branchedVersions", null, 0, -1, Version.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+			IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getVersion_MergedToVersion(), this.getVersion(), this.getVersion_MergedFromVersion(),
+			"mergedToVersion", null, 0, -1, Version.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
+			IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getVersion_MergedFromVersion(), this.getVersion(), this.getVersion_MergedToVersion(),
+			"mergedFromVersion", null, 0, -1, Version.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE,
 			IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(headVersionSpecEClass, HeadVersionSpec.class, "HeadVersionSpec", !IS_ABSTRACT, !IS_INTERFACE,

@@ -29,6 +29,9 @@ import org.eclipse.emf.emfstore.common.model.Project;
  * <li>{@link org.eclipse.emf.emfstore.server.model.versioning.Version#getLogMessage <em>Log Message</em>}</li>
  * <li>{@link org.eclipse.emf.emfstore.server.model.versioning.Version#getAncestorVersion <em>Ancestor Version</em>}</li>
  * <li>{@link org.eclipse.emf.emfstore.server.model.versioning.Version#getBranchedVersions <em>Branched Versions</em>}</li>
+ * <li>{@link org.eclipse.emf.emfstore.server.model.versioning.Version#getMergedToVersion <em>Merged To Version</em>}</li>
+ * <li>{@link org.eclipse.emf.emfstore.server.model.versioning.Version#getMergedFromVersion <em>Merged From Version
+ * </em>}</li>
  * </ul>
  * </p>
  * 
@@ -278,5 +281,46 @@ public interface Version extends EObject {
 	 * @generated
 	 */
 	EList<Version> getBranchedVersions();
+
+	/**
+	 * Returns the value of the '<em><b>Merged To Version</b></em>' reference list.
+	 * The list contents are of type {@link org.eclipse.emf.emfstore.server.model.versioning.Version}.
+	 * It is bidirectional and its opposite is '
+	 * {@link org.eclipse.emf.emfstore.server.model.versioning.Version#getMergedFromVersion
+	 * <em>Merged From Version</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Merged To Version</em>' reference list isn't clear, there really should be more of a
+	 * description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Merged To Version</em>' reference list.
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.VersioningPackage#getVersion_MergedToVersion()
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.Version#getMergedFromVersion
+	 * @model opposite="mergedFromVersion"
+	 * @generated
+	 */
+	EList<Version> getMergedToVersion();
+
+	/**
+	 * Returns the value of the '<em><b>Merged From Version</b></em>' reference list.
+	 * The list contents are of type {@link org.eclipse.emf.emfstore.server.model.versioning.Version}.
+	 * It is bidirectional and its opposite is '
+	 * {@link org.eclipse.emf.emfstore.server.model.versioning.Version#getMergedToVersion <em>Merged To Version</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Merged From Version</em>' reference list isn't clear, there really should be more of a
+	 * description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Merged From Version</em>' reference list.
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.VersioningPackage#getVersion_MergedFromVersion()
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.Version#getMergedToVersion
+	 * @model opposite="mergedToVersion"
+	 * @generated
+	 */
+	EList<Version> getMergedFromVersion();
 
 } // Version

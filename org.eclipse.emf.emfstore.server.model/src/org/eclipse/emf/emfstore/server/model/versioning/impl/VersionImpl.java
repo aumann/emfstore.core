@@ -57,6 +57,10 @@ import org.eclipse.emf.emfstore.server.model.versioning.VersioningPackage;
  * </em>}</li>
  * <li>{@link org.eclipse.emf.emfstore.server.model.versioning.impl.VersionImpl#getBranchedVersions <em>Branched
  * Versions</em>}</li>
+ * <li>{@link org.eclipse.emf.emfstore.server.model.versioning.impl.VersionImpl#getMergedToVersion <em>Merged To Version
+ * </em>}</li>
+ * <li>{@link org.eclipse.emf.emfstore.server.model.versioning.impl.VersionImpl#getMergedFromVersion <em>Merged From
+ * Version</em>}</li>
  * </ul>
  * </p>
  * 
@@ -156,6 +160,28 @@ public class VersionImpl extends EObjectImpl implements Version {
 	 * @ordered
 	 */
 	protected EList<Version> branchedVersions;
+
+	/**
+	 * The cached value of the '{@link #getMergedToVersion() <em>Merged To Version</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @see #getMergedToVersion()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<Version> mergedToVersion;
+
+	/**
+	 * The cached value of the '{@link #getMergedFromVersion() <em>Merged From Version</em>}' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @see #getMergedFromVersion()
+	 * @generated
+	 * @ordered
+	 */
+	protected EList<Version> mergedFromVersion;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -792,6 +818,34 @@ public class VersionImpl extends EObjectImpl implements Version {
 	}
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EList<Version> getMergedToVersion() {
+		if (mergedToVersion == null) {
+			mergedToVersion = new EObjectWithInverseResolvingEList.ManyInverse<Version>(Version.class, this,
+				VersioningPackage.VERSION__MERGED_TO_VERSION, VersioningPackage.VERSION__MERGED_FROM_VERSION);
+		}
+		return mergedToVersion;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EList<Version> getMergedFromVersion() {
+		if (mergedFromVersion == null) {
+			mergedFromVersion = new EObjectWithInverseResolvingEList.ManyInverse<Version>(Version.class, this,
+				VersioningPackage.VERSION__MERGED_FROM_VERSION, VersioningPackage.VERSION__MERGED_TO_VERSION);
+		}
+		return mergedFromVersion;
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -817,6 +871,11 @@ public class VersionImpl extends EObjectImpl implements Version {
 			return basicSetAncestorVersion((Version) otherEnd, msgs);
 		case VersioningPackage.VERSION__BRANCHED_VERSIONS:
 			return ((InternalEList<InternalEObject>) (InternalEList<?>) getBranchedVersions()).basicAdd(otherEnd, msgs);
+		case VersioningPackage.VERSION__MERGED_TO_VERSION:
+			return ((InternalEList<InternalEObject>) (InternalEList<?>) getMergedToVersion()).basicAdd(otherEnd, msgs);
+		case VersioningPackage.VERSION__MERGED_FROM_VERSION:
+			return ((InternalEList<InternalEObject>) (InternalEList<?>) getMergedFromVersion())
+				.basicAdd(otherEnd, msgs);
 		}
 		return super.eInverseAdd(otherEnd, featureID, msgs);
 	}
@@ -847,6 +906,10 @@ public class VersionImpl extends EObjectImpl implements Version {
 			return basicSetAncestorVersion(null, msgs);
 		case VersioningPackage.VERSION__BRANCHED_VERSIONS:
 			return ((InternalEList<?>) getBranchedVersions()).basicRemove(otherEnd, msgs);
+		case VersioningPackage.VERSION__MERGED_TO_VERSION:
+			return ((InternalEList<?>) getMergedToVersion()).basicRemove(otherEnd, msgs);
+		case VersioningPackage.VERSION__MERGED_FROM_VERSION:
+			return ((InternalEList<?>) getMergedFromVersion()).basicRemove(otherEnd, msgs);
 		}
 		return super.eInverseRemove(otherEnd, featureID, msgs);
 	}
@@ -891,6 +954,10 @@ public class VersionImpl extends EObjectImpl implements Version {
 			return basicGetAncestorVersion();
 		case VersioningPackage.VERSION__BRANCHED_VERSIONS:
 			return getBranchedVersions();
+		case VersioningPackage.VERSION__MERGED_TO_VERSION:
+			return getMergedToVersion();
+		case VersioningPackage.VERSION__MERGED_FROM_VERSION:
+			return getMergedFromVersion();
 		}
 		return super.eGet(featureID, resolve, coreType);
 	}
@@ -933,6 +1000,14 @@ public class VersionImpl extends EObjectImpl implements Version {
 			getBranchedVersions().clear();
 			getBranchedVersions().addAll((Collection<? extends Version>) newValue);
 			return;
+		case VersioningPackage.VERSION__MERGED_TO_VERSION:
+			getMergedToVersion().clear();
+			getMergedToVersion().addAll((Collection<? extends Version>) newValue);
+			return;
+		case VersioningPackage.VERSION__MERGED_FROM_VERSION:
+			getMergedFromVersion().clear();
+			getMergedFromVersion().addAll((Collection<? extends Version>) newValue);
+			return;
 		}
 		super.eSet(featureID, newValue);
 	}
@@ -972,6 +1047,12 @@ public class VersionImpl extends EObjectImpl implements Version {
 		case VersioningPackage.VERSION__BRANCHED_VERSIONS:
 			getBranchedVersions().clear();
 			return;
+		case VersioningPackage.VERSION__MERGED_TO_VERSION:
+			getMergedToVersion().clear();
+			return;
+		case VersioningPackage.VERSION__MERGED_FROM_VERSION:
+			getMergedFromVersion().clear();
+			return;
 		}
 		super.eUnset(featureID);
 	}
@@ -1002,6 +1083,10 @@ public class VersionImpl extends EObjectImpl implements Version {
 			return ancestorVersion != null;
 		case VersioningPackage.VERSION__BRANCHED_VERSIONS:
 			return branchedVersions != null && !branchedVersions.isEmpty();
+		case VersioningPackage.VERSION__MERGED_TO_VERSION:
+			return mergedToVersion != null && !mergedToVersion.isEmpty();
+		case VersioningPackage.VERSION__MERGED_FROM_VERSION:
+			return mergedFromVersion != null && !mergedFromVersion.isEmpty();
 		}
 		return super.eIsSet(featureID);
 	}

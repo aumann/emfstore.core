@@ -126,6 +126,10 @@
           eOpposite="#//versioning/Version/branchedVersions"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="branchedVersions" upperBound="-1"
           eType="#//versioning/Version" eOpposite="#//versioning/Version/ancestorVersion"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="mergedToVersion" upperBound="-1"
+          eType="#//versioning/Version" eOpposite="#//versioning/Version/mergedFromVersion"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="mergedFromVersion" upperBound="-1"
+          eType="#//versioning/Version" eOpposite="#//versioning/Version/mergedToVersion"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="HeadVersionSpec" eSuperTypes="#//versioning/VersionSpec"/>
     <eClassifiers xsi:type="ecore:EClass" name="VersionProperty">

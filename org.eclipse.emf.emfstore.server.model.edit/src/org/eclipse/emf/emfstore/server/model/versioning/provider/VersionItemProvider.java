@@ -65,6 +65,8 @@ public class VersionItemProvider extends ItemProviderAdapter implements IEditing
 			addPreviousVersionPropertyDescriptor(object);
 			addAncestorVersionPropertyDescriptor(object);
 			addBranchedVersionsPropertyDescriptor(object);
+			addMergedToVersionPropertyDescriptor(object);
+			addMergedFromVersionPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
@@ -127,6 +129,39 @@ public class VersionItemProvider extends ItemProviderAdapter implements IEditing
 				getString("_UI_Version_branchedVersions_feature"),
 				getString("_UI_PropertyDescriptor_description", "_UI_Version_branchedVersions_feature",
 					"_UI_Version_type"), VersioningPackage.Literals.VERSION__BRANCHED_VERSIONS, true, false, true,
+				null, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Merged To Version feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	protected void addMergedToVersionPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add(createItemPropertyDescriptor(
+			((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(), getResourceLocator(),
+			getString("_UI_Version_mergedToVersion_feature"),
+			getString("_UI_PropertyDescriptor_description", "_UI_Version_mergedToVersion_feature", "_UI_Version_type"),
+			VersioningPackage.Literals.VERSION__MERGED_TO_VERSION, true, false, true, null, null, null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Merged From Version feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	protected void addMergedFromVersionPropertyDescriptor(Object object) {
+		itemPropertyDescriptors
+			.add(createItemPropertyDescriptor(
+				((ComposeableAdapterFactory) adapterFactory).getRootAdapterFactory(),
+				getResourceLocator(),
+				getString("_UI_Version_mergedFromVersion_feature"),
+				getString("_UI_PropertyDescriptor_description", "_UI_Version_mergedFromVersion_feature",
+					"_UI_Version_type"), VersioningPackage.Literals.VERSION__MERGED_FROM_VERSION, true, false, true,
 				null, null, null));
 	}
 

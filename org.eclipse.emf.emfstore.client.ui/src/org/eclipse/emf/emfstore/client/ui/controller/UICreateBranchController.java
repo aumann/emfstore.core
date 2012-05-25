@@ -15,9 +15,9 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 
-public class UICommitProjectToBranchController extends AbstractEMFStoreUIController implements CommitCallback {
+public class UICreateBranchController extends AbstractEMFStoreUIController implements CommitCallback {
 
-	public UICommitProjectToBranchController(Shell shell) {
+	public UICreateBranchController(Shell shell) {
 		super(shell);
 	}
 

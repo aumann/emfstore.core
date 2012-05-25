@@ -100,19 +100,12 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 
 		getProgressMonitor().subTask("Resolving new version");
 
-		// If BranchVersionSpec is set, its a request to create a new branch or to reintegrate into an existing. When
-		// branching the baseversion does not
-		// have to be on the latet version. Further, it has to be checked whether the used branch name is in use.
 		if (branch != null) {
 			// TODO BRANCH
-			// TODO get all required changes inorder to merge
 			PrimaryVersionSpec resolvedVersion = getProjectSpace().resolveVersionSpec(branch);
-			if (resolvedVersion == null) {
-				// create branch
-
-			} else {
-				// reintegrate branch
-
+			if (resolvedVersion != null) {
+				// TODO BRANCH merge should have own controller
+				throw new EmfStoreException("Branch already exists. You need to merge.");
 			}
 		} else {
 			// check if we need to update first
@@ -124,6 +117,7 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 				}
 			}
 		}
+
 		getProgressMonitor().worked(10);
 		getProgressMonitor().subTask("Gathering changes");
 		ChangePackage changePackage = getProjectSpace().getLocalChangePackage();
@@ -143,17 +137,13 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 		getProgressMonitor().subTask("Sending changes to server");
 
 		PrimaryVersionSpec newBaseVersion = null;
-		if (branch != null) {
-			// TODO BRANCH
-			// Branching case: branch specifier added
-			newBaseVersion = getConnectionManager().createVersion(getUsersession().getSessionId(),
-				getProjectSpace().getProjectId(), getProjectSpace().getBaseVersion(), changePackage, branch, null,
-				changePackage.getLogMessage());
-		} else {
-			newBaseVersion = getConnectionManager().createVersion(getUsersession().getSessionId(),
-				getProjectSpace().getProjectId(), getProjectSpace().getBaseVersion(), changePackage, null, null,
-				changePackage.getLogMessage());
-		}
+
+		// TODO BRANCH
+		// Branching case: branch specifier added
+		newBaseVersion = getConnectionManager().createVersion(getUsersession().getSessionId(),
+			getProjectSpace().getProjectId(), getProjectSpace().getBaseVersion(), changePackage, branch, null,
+			changePackage.getLogMessage());
+
 		getProgressMonitor().worked(35);
 
 		getProgressMonitor().subTask("Finalizing commit");
