@@ -140,6 +140,12 @@
       <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="#//versioning/PrimaryVersionSpec"
           containment="true"/>
     </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="AncestorVersionSpec" eSuperTypes="#//versioning/VersionSpec">
+      <eStructuralFeatures xsi:type="ecore:EReference" name="target" eType="#//versioning/PrimaryVersionSpec"
+          containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="source" eType="#//versioning/PrimaryVersionSpec"
+          containment="true"/>
+    </eClassifiers>
     <eSubpackages name="operations" nsURI="http://eclipse.org/emf/emfstore/server/model/versioning/operations"
         nsPrefix="org.eclipse.emf.emfstore.server.model.versioning.operations">
       <eClassifiers xsi:type="ecore:EClass" name="AbstractOperation" abstract="true"

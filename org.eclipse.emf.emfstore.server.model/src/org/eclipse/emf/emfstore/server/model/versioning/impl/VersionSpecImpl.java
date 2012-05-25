@@ -38,7 +38,7 @@ public abstract class VersionSpecImpl extends EObjectImpl implements VersionSpec
 	 * @generated
 	 * @ordered
 	 */
-	public static final String BRANCH_EDEFAULT = "trunk";
+	protected static final String BRANCH_EDEFAULT = "trunk";
 
 	/**
 	 * The cached value of the '{@link #getBranch() <em>Branch</em>}' attribute.

@@ -379,6 +379,32 @@ public class VersioningItemProviderAdapterFactory extends VersioningAdapterFacto
 	}
 
 	/**
+	 * This keeps track of the one adapter used for all
+	 * {@link org.eclipse.emf.emfstore.server.model.versioning.AncestorVersionSpec} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	protected AncestorVersionSpecItemProvider ancestorVersionSpecItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.eclipse.emf.emfstore.server.model.versioning.AncestorVersionSpec}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public Adapter createAncestorVersionSpecAdapter() {
+		if (ancestorVersionSpecItemProvider == null) {
+			ancestorVersionSpecItemProvider = new AncestorVersionSpecItemProvider(this);
+		}
+
+		return ancestorVersionSpecItemProvider;
+	}
+
+	/**
 	 * This returns the root adapter factory that contains this factory.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -503,6 +529,8 @@ public class VersioningItemProviderAdapterFactory extends VersioningAdapterFacto
 			branchVersionSpecItemProvider.dispose();
 		if (branchInfoItemProvider != null)
 			branchInfoItemProvider.dispose();
+		if (ancestorVersionSpecItemProvider != null)
+			ancestorVersionSpecItemProvider.dispose();
 	}
 
 }

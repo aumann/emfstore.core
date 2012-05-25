@@ -720,6 +720,58 @@ public interface VersioningPackage extends EPackage {
 	int BRANCH_INFO_FEATURE_COUNT = 3;
 
 	/**
+	 * The meta object id for the '{@link org.eclipse.emf.emfstore.server.model.versioning.impl.AncestorVersionSpecImpl
+	 * <em>Ancestor Version Spec</em>}' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.impl.AncestorVersionSpecImpl
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.impl.VersioningPackageImpl#getAncestorVersionSpec()
+	 * @generated
+	 */
+	int ANCESTOR_VERSION_SPEC = 13;
+
+	/**
+	 * The feature id for the '<em><b>Branch</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int ANCESTOR_VERSION_SPEC__BRANCH = VERSION_SPEC__BRANCH;
+
+	/**
+	 * The feature id for the '<em><b>Target</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int ANCESTOR_VERSION_SPEC__TARGET = VERSION_SPEC_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Source</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int ANCESTOR_VERSION_SPEC__SOURCE = VERSION_SPEC_FEATURE_COUNT + 1;
+
+	/**
+	 * The number of structural features of the '<em>Ancestor Version Spec</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int ANCESTOR_VERSION_SPEC_FEATURE_COUNT = VERSION_SPEC_FEATURE_COUNT + 2;
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.emf.emfstore.server.model.versioning.TagVersionSpec
 	 * <em>Tag Version Spec</em>}'.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1308,6 +1360,44 @@ public interface VersioningPackage extends EPackage {
 	EReference getBranchInfo_Source();
 
 	/**
+	 * Returns the meta object for class '{@link org.eclipse.emf.emfstore.server.model.versioning.AncestorVersionSpec
+	 * <em>Ancestor Version Spec</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for class '<em>Ancestor Version Spec</em>'.
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.AncestorVersionSpec
+	 * @generated
+	 */
+	EClass getAncestorVersionSpec();
+
+	/**
+	 * Returns the meta object for the containment reference '
+	 * {@link org.eclipse.emf.emfstore.server.model.versioning.AncestorVersionSpec#getTarget <em>Target</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the containment reference '<em>Target</em>'.
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.AncestorVersionSpec#getTarget()
+	 * @see #getAncestorVersionSpec()
+	 * @generated
+	 */
+	EReference getAncestorVersionSpec_Target();
+
+	/**
+	 * Returns the meta object for the containment reference '
+	 * {@link org.eclipse.emf.emfstore.server.model.versioning.AncestorVersionSpec#getSource <em>Source</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the containment reference '<em>Source</em>'.
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.AncestorVersionSpec#getSource()
+	 * @see #getAncestorVersionSpec()
+	 * @generated
+	 */
+	EReference getAncestorVersionSpec_Source();
+
+	/**
 	 * Returns the factory that creates the instances of the model.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -1780,6 +1870,37 @@ public interface VersioningPackage extends EPackage {
 		 * @generated
 		 */
 		EReference BRANCH_INFO__SOURCE = eINSTANCE.getBranchInfo_Source();
+
+		/**
+		 * The meta object literal for the '
+		 * {@link org.eclipse.emf.emfstore.server.model.versioning.impl.AncestorVersionSpecImpl
+		 * <em>Ancestor Version Spec</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @see org.eclipse.emf.emfstore.server.model.versioning.impl.AncestorVersionSpecImpl
+		 * @see org.eclipse.emf.emfstore.server.model.versioning.impl.VersioningPackageImpl#getAncestorVersionSpec()
+		 * @generated
+		 */
+		EClass ANCESTOR_VERSION_SPEC = eINSTANCE.getAncestorVersionSpec();
+
+		/**
+		 * The meta object literal for the '<em><b>Target</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference ANCESTOR_VERSION_SPEC__TARGET = eINSTANCE.getAncestorVersionSpec_Target();
+
+		/**
+		 * The meta object literal for the '<em><b>Source</b></em>' containment reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EReference ANCESTOR_VERSION_SPEC__SOURCE = eINSTANCE.getAncestorVersionSpec_Source();
 
 	}
 

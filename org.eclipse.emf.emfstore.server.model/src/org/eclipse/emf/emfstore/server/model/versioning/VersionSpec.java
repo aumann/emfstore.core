@@ -23,7 +23,7 @@ import org.eclipse.emf.ecore.EObject;
  * </p>
  * 
  * @see org.eclipse.emf.emfstore.server.model.versioning.VersioningPackage#getVersionSpec()
- * @model interface="true" abstract="true"
+ * @model abstract="true"
  * @generated
  */
 public interface VersionSpec extends EObject {

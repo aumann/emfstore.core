@@ -112,10 +112,15 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 			} else if (versionSpec instanceof TagVersionSpec) {
 
 				return resolveTagVersionSpec(projectHistory, (TagVersionSpec) versionSpec);
+
 			} else if (versionSpec instanceof BranchVersionSpec) {
 
 				return resolveBranchVersionSpec(projectHistory, (BranchVersionSpec) versionSpec);
 
+				// } else if (versionSpec instanceof AncestorVersionSpec) {
+				//
+				//
+				//
 			}
 			throw new InvalidVersionSpecException();
 		}
