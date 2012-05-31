@@ -172,6 +172,21 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 		cm.addTag(getUsersession().getSessionId(), getProjectId(), versionSpec, tag);
 	}
 
+	public void applyChanges(PrimaryVersionSpec baseSpec, List<ChangePackage> incoming, ChangePackage myChanges) {
+		// revert
+		revert();
+
+		// apply changes from repo
+		for (ChangePackage change : incoming) {
+			applyOperations(change.getCopyOfOperations(), false);
+		}
+		// reapply local changes
+		applyOperations(myChanges.getCopyOfOperations(), true);
+
+		setBaseVersion(baseSpec);
+		saveProjectSpaceOnly();
+	}
+
 	/**
 	 * Applies a list of operations to the project. The change tracking will be
 	 * stopped meanwhile and the operations are added to the project space.
@@ -794,6 +809,8 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 
 	/**
 	 * {@inheritDoc}
+	 * 
+	 * @return
 	 */
 	// TODO BRANCH rewrite
 	public boolean merge(PrimaryVersionSpec target, ConflictResolver conflictResolver) throws EmfStoreException {
@@ -801,36 +818,13 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 		ChangePackage myCp = this.getLocalChangePackage(true);
 		List<ChangePackage> theirCps = this.getChanges(getBaseVersion(), target);
 		if (conflictResolver.resolveConflicts(getProject(), theirCps, Arrays.asList(myCp), getBaseVersion(), target)) {
-
-			// revert the local operations and apply all their operations
-			this.revert();
-
-			for (ChangePackage changePackage : theirCps) {
-				applyOperations(changePackage.getOperations(), false);
-			}
-
-			// generate merge result and apply to local workspace
-			List<AbstractOperation> acceptedMine = conflictResolver.getAcceptedMine();
-			List<AbstractOperation> rejectedTheirs = conflictResolver.getRejectedTheirs();
-			List<AbstractOperation> mergeResult = new ArrayList<AbstractOperation>();
-			for (AbstractOperation operationToReverse : rejectedTheirs) {
-				mergeResult.add(0, operationToReverse.reverse());
-			}
-			mergeResult.addAll(acceptedMine);
-
-			applyOperations(mergeResult, true);
-
-			this.setBaseVersion(target);
-
-			saveProjectSpaceOnly();
-			return true;
-		} else {
-			// merge could not proceed
-			return false;
+			ChangePackage mergedResult = conflictResolver.getMergedResult();
+			applyChanges(target, theirCps, mergedResult);
 		}
+		return true;
 	}
 
-	public void mergeBranch(PrimaryVersionSpec branch) {
+	public void mergeBranch(PrimaryVersionSpec branch, ConflictResolver conflictResolver) {
 
 	}
 

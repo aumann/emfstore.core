@@ -710,10 +710,10 @@ public interface ProjectSpace extends IdentifiableElement {
 	 *            a conflict resolver that will actually perform the conflict
 	 *            resolution
 	 * 
-	 * @return whether the merge could be proceed
 	 * 
 	 * @throws EmfStoreException
 	 *             if the connection to the server fails
+	 * @return true if merge was succesful
 	 * 
 	 * @generated NOT
 	 */

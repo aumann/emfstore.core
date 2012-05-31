@@ -18,6 +18,7 @@ import org.eclipse.emf.emfstore.client.model.observers.ConflictResolver;
 import org.eclipse.emf.emfstore.common.model.Project;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
+import org.eclipse.emf.emfstore.server.model.versioning.VersioningFactory;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.AbstractOperation;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -70,8 +71,6 @@ public class MergeProjectHandler implements ConflictResolver {
 	public boolean resolveConflicts(Project project, List<ChangePackage> myChangePackages,
 		List<ChangePackage> theirChangePackages, PrimaryVersionSpec base, PrimaryVersionSpec target) {
 
-		boolean caseStudy = false;
-
 		DecisionManager decisionManager = new DecisionManager(project, myChangePackages, theirChangePackages, base,
 			target);
 
@@ -91,5 +90,23 @@ public class MergeProjectHandler implements ConflictResolver {
 		rejectedTheirs = decisionManager.getRejectedTheirs();
 
 		return (open == Window.OK);
+	}
+
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.model.observers.ConflictResolver#getMergedResult()
+	 */
+	public ChangePackage getMergedResult() {
+		List<AbstractOperation> mergeResult = new ArrayList<AbstractOperation>();
+		for (AbstractOperation operationToReverse : getRejectedTheirs()) {
+			mergeResult.add(0, operationToReverse.reverse());
+		}
+		mergeResult.addAll(getAcceptedMine());
+		ChangePackage result = VersioningFactory.eINSTANCE.createChangePackage();
+		result.getOperations().addAll(mergeResult);
+
+		return result;
 	}
 }

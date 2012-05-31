@@ -53,4 +53,6 @@ public interface ConflictResolver {
 	 * @return a list of operations
 	 */
 	List<AbstractOperation> getAcceptedMine();
+
+	ChangePackage getMergedResult();
 }
