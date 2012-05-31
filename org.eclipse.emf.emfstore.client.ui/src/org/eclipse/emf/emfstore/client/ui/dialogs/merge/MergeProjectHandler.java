@@ -15,7 +15,6 @@ import java.util.List;
 
 import org.eclipse.emf.emfstore.client.model.exceptions.ChangeConflictException;
 import org.eclipse.emf.emfstore.client.model.observers.ConflictResolver;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.util.CaseStudySwitch;
 import org.eclipse.emf.emfstore.common.model.Project;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
@@ -68,17 +67,12 @@ public class MergeProjectHandler implements ConflictResolver {
 	 * 
 	 * @see org.eclipse.emf.emfstore.client.model.observers.ConflictResolver#getAcceptedMine()
 	 */
-	public boolean resolveConflicts(Project project, List<ChangePackage> theirChangePackages,
-		ChangePackage myChangePackage, PrimaryVersionSpec base, PrimaryVersionSpec target) {
+	public boolean resolveConflicts(Project project, List<ChangePackage> myChangePackages,
+		List<ChangePackage> theirChangePackages, PrimaryVersionSpec base, PrimaryVersionSpec target) {
 
 		boolean caseStudy = false;
 
-		if (caseStudy) {
-			CaseStudySwitch studySwitch = new CaseStudySwitch();
-			studySwitch.flattenChangePackages(myChangePackage, theirChangePackages);
-		}
-
-		DecisionManager decisionManager = new DecisionManager(project, myChangePackage, theirChangePackages, base,
+		DecisionManager decisionManager = new DecisionManager(project, myChangePackages, theirChangePackages, base,
 			target);
 
 		if (decisionManager.getConflicts().size() == 0) {

@@ -29,4 +29,10 @@ public class Versions {
 	public static PrimaryVersionSpec PRIMARY(VersionSpec versionSpec, int index) {
 		return PRIMARY(versionSpec.getBranch(), index);
 	}
+
+	public static BranchVersionSpec BRANCH(String value) {
+		BranchVersionSpec branchSpec = VersioningFactory.eINSTANCE.createBranchVersionSpec();
+		branchSpec.setBranch(value);
+		return branchSpec;
+	}
 }

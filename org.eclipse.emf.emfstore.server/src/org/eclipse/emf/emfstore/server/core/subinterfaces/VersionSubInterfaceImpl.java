@@ -215,8 +215,13 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 		throw new InvalidVersionSpecException();
 	}
 
-	private PrimaryVersionSpec resolveBranchVersionSpec(ProjectHistory projectHistory, BranchVersionSpec versionSpec) {
-		return null;
+	private PrimaryVersionSpec resolveBranchVersionSpec(ProjectHistory projectHistory, BranchVersionSpec versionSpec)
+		throws InvalidVersionSpecException {
+		BranchInfo branchInfo = getBranchInfo(projectHistory, versionSpec);
+		if (branchInfo == null) {
+			throw new InvalidVersionSpecException();
+		}
+		return branchInfo.getHead();
 	}
 
 	/**

@@ -9,7 +9,7 @@ import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.LogMessage;
 import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
-import org.eclipse.emf.emfstore.server.model.versioning.VersioningFactory;
+import org.eclipse.emf.emfstore.server.model.versioning.Versions;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -43,9 +43,7 @@ public class UICreateBranchController extends AbstractEMFStoreUIController imple
 		if (inputDialog.open() != Dialog.OK) {
 			throw new EmfStoreException("No Branch specified");
 		}
-		BranchVersionSpec branchSpec = VersioningFactory.eINSTANCE.createBranchVersionSpec();
-		branchSpec.setBranch(inputDialog.getValue());
-		return branchSpec;
+		return Versions.BRANCH(inputDialog.getValue());
 	}
 
 	public void noLocalChanges(ProjectSpace projectSpace) {

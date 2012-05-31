@@ -105,6 +105,21 @@
            </and>
         </enabledWhen>
      </handler>
+     <handler
+           class="org.eclipse.emf.emfstore.client.ui.handlers.MergeBranchHandler"
+           commandId="org.eclipse.emf.emfstore.client.ui.mergeBranch">
+        <enabledWhen>
+           <and>
+              <iterate
+                    ifEmpty="true"
+                    operator="and">
+                 <instanceof
+                       value="org.eclipse.emf.emfstore.client.model.ProjectSpace">
+                 </instanceof>
+              </iterate>
+           </and>
+        </enabledWhen>
+     </handler>
   </extension>
   <extension
         point="org.eclipse.ui.commands">
@@ -718,6 +733,11 @@
            defaultHandler="org.eclipse.emf.emfstore.client.ui.handlers.CompareProjectsHandler"
            id="org.eclipse.emf.emfstore.client.ui.compareProjects"
            name="compareProjects">
+     </command>
+     <command
+           categoryId="org.eclipse.emf.emfstore.client.ui.project"
+           id="org.eclipse.emf.emfstore.client.ui.mergeBranch"
+           name="mergeBranch">
      </command>
    </extension>
    <extension

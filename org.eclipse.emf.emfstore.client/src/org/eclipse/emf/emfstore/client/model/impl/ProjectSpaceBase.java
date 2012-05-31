@@ -13,6 +13,7 @@ package org.eclipse.emf.emfstore.client.model.impl;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -794,11 +795,12 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 	/**
 	 * {@inheritDoc}
 	 */
+	// TODO BRANCH rewrite
 	public boolean merge(PrimaryVersionSpec target, ConflictResolver conflictResolver) throws EmfStoreException {
 		// merge the conflicts
 		ChangePackage myCp = this.getLocalChangePackage(true);
 		List<ChangePackage> theirCps = this.getChanges(getBaseVersion(), target);
-		if (conflictResolver.resolveConflicts(getProject(), theirCps, myCp, getBaseVersion(), target)) {
+		if (conflictResolver.resolveConflicts(getProject(), theirCps, Arrays.asList(myCp), getBaseVersion(), target)) {
 
 			// revert the local operations and apply all their operations
 			this.revert();
@@ -826,6 +828,10 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 			// merge could not proceed
 			return false;
 		}
+	}
+
+	public void mergeBranch(PrimaryVersionSpec branch) {
+
 	}
 
 	/**

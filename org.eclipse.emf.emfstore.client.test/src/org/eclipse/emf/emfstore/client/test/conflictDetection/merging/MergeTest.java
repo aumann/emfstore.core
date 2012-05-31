@@ -140,8 +140,9 @@ public class MergeTest extends ConflictDetectionTest {
 			PrimaryVersionSpec spec = VersioningFactory.eINSTANCE.createPrimaryVersionSpec();
 			spec.setIdentifier(23);
 
-			DecisionManager manager = new DecisionManager(getProject(), getProjectSpace().getLocalChangePackage(true),
-				Arrays.asList(getTheirProjectSpace().getLocalChangePackage(true)), spec, spec);
+			DecisionManager manager = new DecisionManager(getProject(), Arrays.asList(getProjectSpace()
+				.getLocalChangePackage(true)), Arrays.asList(getTheirProjectSpace().getLocalChangePackage(true)), spec,
+				spec);
 
 			return manager;
 		}

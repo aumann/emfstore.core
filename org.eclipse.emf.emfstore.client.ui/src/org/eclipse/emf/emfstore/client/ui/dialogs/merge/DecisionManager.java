@@ -73,7 +73,7 @@ import org.eclipse.emf.emfstore.server.model.versioning.operations.MultiReferenc
 public class DecisionManager {
 
 	private final Project project;
-	private final ChangePackage myChangePackage;
+	private final List<ChangePackage> myChangePackages;
 	private final List<ChangePackage> theirChangePackages;
 	private ConflictDetector conflictDetector;
 
@@ -90,7 +90,7 @@ public class DecisionManager {
 	 * 
 	 * @param project
 	 *            the related project
-	 * @param myChangePackage
+	 * @param myChangePackages
 	 *            my changes
 	 * @param theirChangePackages
 	 *            incoming changes
@@ -99,10 +99,10 @@ public class DecisionManager {
 	 * @param targetVersion
 	 *            new target version
 	 */
-	public DecisionManager(Project project, ChangePackage myChangePackage, List<ChangePackage> theirChangePackages,
-		PrimaryVersionSpec baseVersion, PrimaryVersionSpec targetVersion) {
+	public DecisionManager(Project project, List<ChangePackage> myChangePackages,
+		List<ChangePackage> theirChangePackages, PrimaryVersionSpec baseVersion, PrimaryVersionSpec targetVersion) {
 		this.project = project;
-		this.myChangePackage = myChangePackage;
+		this.myChangePackages = myChangePackages;
 		this.theirChangePackages = theirChangePackages;
 		this.baseVersion = baseVersion;
 		this.targetVersion = targetVersion;
@@ -112,11 +112,8 @@ public class DecisionManager {
 
 	private void init() {
 		// flatten operations
-		List<AbstractOperation> myOperations = myChangePackage.getOperations();
-		List<AbstractOperation> theirOperations = new ArrayList<AbstractOperation>();
-		for (ChangePackage cp : theirChangePackages) {
-			theirOperations.addAll(cp.getOperations());
-		}
+		List<AbstractOperation> myOperations = flattenChangepackages(myChangePackages);
+		List<AbstractOperation> theirOperations = flattenChangepackages(theirChangePackages);
 
 		acceptedMine = new ArrayList<AbstractOperation>();
 		rejectedTheirs = new ArrayList<AbstractOperation>();
@@ -165,6 +162,14 @@ public class DecisionManager {
 		}
 
 		createConflicts(conflicting);
+	}
+
+	private List<AbstractOperation> flattenChangepackages(List<ChangePackage> cps) {
+		List<AbstractOperation> operations = new ArrayList<AbstractOperation>();
+		for (ChangePackage cp : cps) {
+			operations.addAll(cp.getOperations());
+		}
+		return operations;
 	}
 
 	/**
@@ -483,13 +488,15 @@ public class DecisionManager {
 			return;
 		}
 		// collect my acknowledge operations
-		for (AbstractOperation myOp : myChangePackage.getOperations()) {
-			if (notInvolvedInConflict.contains(myOp)) {
-				acceptedMine.add(myOp);
-			} else {
-				for (Conflict conflict : conflicts) {
-					if (conflict.getAcceptedMine().contains(myOp)) {
-						acceptedMine.add(myOp);
+		for (ChangePackage myChangePackage : myChangePackages) {
+			for (AbstractOperation myOp : myChangePackage.getOperations()) {
+				if (notInvolvedInConflict.contains(myOp)) {
+					acceptedMine.add(myOp);
+				} else {
+					for (Conflict conflict : conflicts) {
+						if (conflict.getAcceptedMine().contains(myOp)) {
+							acceptedMine.add(myOp);
+						}
 					}
 				}
 			}
@@ -558,7 +565,12 @@ public class DecisionManager {
 	public EObject getModelElement(ModelElementId modelElementId) {
 		EObject modelElement = project.getModelElement(modelElementId);
 		if (modelElement == null) {
-			modelElement = searchForCreatedME(modelElementId, myChangePackage.getOperations());
+			for (ChangePackage cp : theirChangePackages) {
+				modelElement = searchForCreatedME(modelElementId, cp.getOperations());
+				if (modelElement != null) {
+					break;
+				}
+			}
 			if (modelElement == null) {
 				for (ChangePackage cp : theirChangePackages) {
 					modelElement = searchForCreatedME(modelElementId, cp.getOperations());
@@ -657,7 +669,7 @@ public class DecisionManager {
 	public ChangePackageVisualizationHelper getChangePackageVisualizationHelper() {
 		if (visualizationHelper == null) {
 			ArrayList<ChangePackage> list = new ArrayList<ChangePackage>();
-			list.add(myChangePackage);
+			list.addAll(myChangePackages);
 			list.addAll(theirChangePackages);
 			visualizationHelper = new ChangePackageVisualizationHelper(list, project);
 		}
