@@ -1,5 +1,7 @@
 package org.eclipse.emf.emfstore.server.model.versioning;
 
+import org.eclipse.emf.ecore.util.EcoreUtil;
+
 public class Versions {
 
 	public static HeadVersionSpec HEAD_VERSION() {
@@ -34,5 +36,13 @@ public class Versions {
 		BranchVersionSpec branchSpec = VersioningFactory.eINSTANCE.createBranchVersionSpec();
 		branchSpec.setBranch(value);
 		return branchSpec;
+	}
+
+	public static VersionSpec ANCESTOR(PrimaryVersionSpec source, PrimaryVersionSpec target) {
+		AncestorVersionSpec ancestor = VersioningFactory.eINSTANCE.createAncestorVersionSpec();
+		ancestor.setBranch(source.getBranch());
+		ancestor.setSource(EcoreUtil.copy(source));
+		ancestor.setTarget(EcoreUtil.copy(target));
+		return ancestor;
 	}
 }

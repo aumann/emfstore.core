@@ -1,6 +1,8 @@
 package org.eclipse.emf.emfstore.client.ui.controller;
 
 import org.eclipse.emf.emfstore.client.model.ProjectSpace;
+import org.eclipse.emf.emfstore.client.model.impl.ProjectSpaceBase;
+import org.eclipse.emf.emfstore.client.ui.dialogs.merge.MergeProjectHandler;
 import org.eclipse.emf.emfstore.client.ui.handlers.AbstractEMFStoreUIController;
 import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
 import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
@@ -22,7 +24,7 @@ public class UIMergeController extends AbstractEMFStoreUIController {
 		MessageDialog.openInformation(getShell(), "", selectedSource.toString());
 		try {
 			openProgress();
-			// projectSpace.merge(target, conflictResolver);
+			((ProjectSpaceBase) projectSpace).mergeBranch(selectedSource, new MergeProjectHandler());
 		} finally {
 			closeProgress();
 		}

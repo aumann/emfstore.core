@@ -824,7 +824,17 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 		return true;
 	}
 
-	public void mergeBranch(PrimaryVersionSpec branch, ConflictResolver conflictResolver) {
+	// TODO BRANCH
+	public void mergeBranch(PrimaryVersionSpec branchSpec, ConflictResolver conflictResolver) throws EmfStoreException {
+
+		PrimaryVersionSpec commonAncestor = resolveVersionSpec(Versions.ANCESTOR(getBaseVersion(), branchSpec));
+
+		List<ChangePackage> baseChanges = getChanges(commonAncestor, getBaseVersion());
+		List<ChangePackage> incomingChanges = getChanges(commonAncestor, branchSpec);
+
+		if (conflictResolver.resolveConflicts(getProject(), baseChanges, incomingChanges, getBaseVersion(), null)) {
+			applyChanges(getBaseVersion(), baseChanges, conflictResolver.getMergedResult());
+		}
 
 	}
 

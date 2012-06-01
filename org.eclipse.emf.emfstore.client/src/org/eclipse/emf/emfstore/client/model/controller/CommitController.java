@@ -20,6 +20,7 @@ import org.eclipse.emf.emfstore.client.model.impl.ProjectSpaceBase;
 import org.eclipse.emf.emfstore.client.model.observers.CommitObserver;
 import org.eclipse.emf.emfstore.server.exceptions.BaseVersionOutdatedException;
 import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
+import org.eclipse.emf.emfstore.server.exceptions.InvalidVersionSpecException;
 import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.LogMessage;
@@ -102,10 +103,14 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 
 		if (branch != null) {
 			// TODO BRANCH
-			PrimaryVersionSpec resolvedVersion = getProjectSpace().resolveVersionSpec(branch);
-			if (resolvedVersion != null) {
+			try {
+				PrimaryVersionSpec resolvedVersion = getProjectSpace().resolveVersionSpec(branch);
 				// TODO BRANCH merge should have own controller
+				// or maybe not
 				throw new EmfStoreException("Branch already exists. You need to merge.");
+
+			} catch (InvalidVersionSpecException e) {
+				// branch doesn't exist, create.
 			}
 		} else {
 			// check if we need to update first
