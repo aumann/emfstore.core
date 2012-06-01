@@ -79,7 +79,7 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 	@Override
 	public void initSubInterface() throws FatalEmfStoreException {
 		super.initSubInterface();
-		historyCache = EmfStoreController.getInstance().getHistoryCache();
+		historyCache = EmfStoreController.getHistoryCache(getServerSpace());
 	}
 
 	/**

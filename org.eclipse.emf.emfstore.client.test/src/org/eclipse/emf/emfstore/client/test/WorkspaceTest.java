@@ -14,7 +14,9 @@ import org.eclipse.emf.emfstore.client.model.Configuration;
 import org.eclipse.emf.emfstore.client.model.ProjectSpace;
 import org.eclipse.emf.emfstore.client.model.Workspace;
 import org.eclipse.emf.emfstore.client.model.WorkspaceManager;
+import org.eclipse.emf.emfstore.client.model.connectionmanager.ConnectionManager;
 import org.eclipse.emf.emfstore.client.model.util.EMFStoreCommand;
+import org.eclipse.emf.emfstore.client.model.util.EMFStoreCommandWithResult;
 import org.eclipse.emf.emfstore.client.test.testmodel.TestElement;
 import org.eclipse.emf.emfstore.client.test.testmodel.TestmodelFactory;
 import org.eclipse.emf.emfstore.common.model.Project;
@@ -37,8 +39,14 @@ public abstract class WorkspaceTest {
 	 */
 	@Before
 	public void setupProjectSpace() {
+		beforeHook();
 		Configuration.setTesting(true);
-		final Workspace workspace = WorkspaceManager.getInstance().getCurrentWorkspace();
+		WorkspaceManager workspaceManager = WorkspaceManager.getInstance();
+		ConnectionManager connectionManager = initConnectionManager();
+		if (connectionManager != null) {
+			workspaceManager.setConnectionManager(connectionManager);
+		}
+		final Workspace workspace = workspaceManager.getCurrentWorkspace();
 		new EMFStoreCommand() {
 
 			@Override
@@ -49,6 +57,13 @@ public abstract class WorkspaceTest {
 			}
 		}.run(false);
 
+	}
+
+	public void beforeHook() {
+	}
+
+	public ConnectionManager initConnectionManager() {
+		return null;
 	}
 
 	/**
@@ -144,5 +159,33 @@ public abstract class WorkspaceTest {
 			element.setName(name);
 		}
 		return element;
+	}
+
+	public TestElement createTestElement() {
+		return createTestElement(null);
+	}
+
+	public TestElement createTestElement(final String name) {
+		return new EMFStoreCommandWithResult<TestElement>() {
+			@Override
+			protected TestElement doRun() {
+				return getTestElement(name);
+			}
+		}.run(false);
+	}
+
+	public TestElement createFilledTestElement(final int count) {
+		final TestElement testElement = createTestElement();
+
+		new EMFStoreCommand() {
+			@Override
+			protected void doRun() {
+				for (int i = 0; i < count; i++) {
+					testElement.getStrings().add("value" + i);
+				}
+			}
+		}.run(false);
+
+		return testElement;
 	}
 }
