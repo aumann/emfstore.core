@@ -40,6 +40,7 @@ import org.eclipse.emf.emfstore.client.model.WorkspaceManager;
 import org.eclipse.emf.emfstore.client.model.changeTracking.commands.EMFStoreCommandStack;
 import org.eclipse.emf.emfstore.client.model.changeTracking.notification.recording.NotificationRecorder;
 import org.eclipse.emf.emfstore.client.model.connectionmanager.ConnectionManager;
+import org.eclipse.emf.emfstore.client.model.connectionmanager.ServerCall;
 import org.eclipse.emf.emfstore.client.model.controller.CommitController;
 import org.eclipse.emf.emfstore.client.model.controller.ShareController;
 import org.eclipse.emf.emfstore.client.model.controller.UpdateController;
@@ -825,17 +826,24 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 	}
 
 	// TODO BRANCH
-	public void mergeBranch(PrimaryVersionSpec branchSpec, ConflictResolver conflictResolver) throws EmfStoreException {
+	public void mergeBranch(final PrimaryVersionSpec branchSpec, final ConflictResolver conflictResolver)
+		throws EmfStoreException {
+		new ServerCall<Void>(this) {
+			@Override
+			protected Void run() throws EmfStoreException {
 
-		PrimaryVersionSpec commonAncestor = resolveVersionSpec(Versions.ANCESTOR(getBaseVersion(), branchSpec));
+				PrimaryVersionSpec commonAncestor = resolveVersionSpec(Versions.ANCESTOR(getBaseVersion(), branchSpec));
 
-		List<ChangePackage> baseChanges = getChanges(commonAncestor, getBaseVersion());
-		List<ChangePackage> incomingChanges = getChanges(commonAncestor, branchSpec);
+				List<ChangePackage> baseChanges = getChanges(commonAncestor, getBaseVersion());
+				List<ChangePackage> incomingChanges = getChanges(commonAncestor, branchSpec);
 
-		if (conflictResolver.resolveConflicts(getProject(), baseChanges, incomingChanges, getBaseVersion(), null)) {
-			applyChanges(getBaseVersion(), baseChanges, conflictResolver.getMergedResult());
-		}
-
+				if (conflictResolver.resolveConflicts(getProject(), baseChanges, incomingChanges, getBaseVersion(),
+					null)) {
+					applyChanges(getBaseVersion(), baseChanges, conflictResolver.getMergedResult());
+				}
+				return null;
+			}
+		}.execute();
 	}
 
 	/**

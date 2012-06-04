@@ -10,7 +10,6 @@ import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.VersioningFactory;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 
 public class UIMergeController extends AbstractEMFStoreUIController {
@@ -21,9 +20,12 @@ public class UIMergeController extends AbstractEMFStoreUIController {
 
 	public void merge(ProjectSpace projectSpace) throws EmfStoreException {
 		PrimaryVersionSpec selectedSource = branchSelection(projectSpace);
-		MessageDialog.openInformation(getShell(), "", selectedSource.toString());
+		// TODO BRANCH
+		// debug
+		// MessageDialog.openInformation(getShell(), "", selectedSource.toString());
 		try {
 			openProgress();
+			// TODO BRANCH
 			((ProjectSpaceBase) projectSpace).mergeBranch(selectedSource, new MergeProjectHandler());
 		} finally {
 			closeProgress();
