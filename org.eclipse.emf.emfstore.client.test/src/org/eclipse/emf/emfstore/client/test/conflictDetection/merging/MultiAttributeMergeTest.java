@@ -2,9 +2,9 @@ package org.eclipse.emf.emfstore.client.test.conflictDetection.merging;
 
 import static java.util.Arrays.asList;
 
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.MultiAttributeSetConflict;
 import org.eclipse.emf.emfstore.client.model.util.EMFStoreCommand;
 import org.eclipse.emf.emfstore.client.test.testmodel.TestElement;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.MultiAttributeSetConflict;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.MultiAttributeOperation;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.MultiAttributeSetOperation;
 import org.junit.Test;

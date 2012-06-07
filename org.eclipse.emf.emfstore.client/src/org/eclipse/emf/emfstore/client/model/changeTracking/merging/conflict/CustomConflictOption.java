@@ -8,7 +8,7 @@
  * 
  * Contributors:
  ******************************************************************************/
-package org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict;
+package org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict;
 
 /**
  * Abstract superclass for custom options.

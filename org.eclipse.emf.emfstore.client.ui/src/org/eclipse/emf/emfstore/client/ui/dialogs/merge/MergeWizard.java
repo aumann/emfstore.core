@@ -10,7 +10,8 @@
  ******************************************************************************/
 package org.eclipse.emf.emfstore.client.ui.dialogs.merge;
 
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.util.DecisionUtil;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.DecisionManager;
+import org.eclipse.emf.emfstore.client.ui.dialogs.merge.util.UIDecisionUtil;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.wizard.Wizard;
 
@@ -32,7 +33,7 @@ public class MergeWizard extends Wizard {
 	public MergeWizard(DecisionManager decisionManager) {
 		super();
 		setWindowTitle("Merge Wizard");
-		setDefaultPageImageDescriptor(DecisionUtil.getImageDescriptor("merge_wizard2.gif"));
+		setDefaultPageImageDescriptor(UIDecisionUtil.getImageDescriptor("merge_wizard2.gif"));
 
 		this.decisionManager = decisionManager;
 	}

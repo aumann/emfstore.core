@@ -8,17 +8,16 @@
  * 
  * Contributors:
  ******************************************************************************/
-package org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts;
+package org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts;
 
 import java.util.List;
 
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.DecisionManager;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.Conflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictDescription;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictOption;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.options.MergeTextOption;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.util.DecisionConfig;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.util.DecisionUtil;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.DecisionManager;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.Conflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.ConflictDescription;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.ConflictOption;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.options.MergeTextOption;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.util.DecisionUtil;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.AbstractOperation;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.AttributeOperation;
 
@@ -72,13 +71,13 @@ public class AttributeConflict extends Conflict {
 	protected void initOptionsWithOutMerge(List<ConflictOption> options, boolean withMerge) {
 		ConflictOption myOption = new ConflictOption(getMyOperation(AttributeOperation.class).getNewValue(),
 			ConflictOption.OptionType.MyOperation);
-		myOption.setDetailProvider(DecisionConfig.WIDGET_MULTILINE);
+		myOption.setDetailProvider(DecisionUtil.WIDGET_MULTILINE);
 		myOption.addOperations(getMyOperations());
 		options.add(myOption);
 
 		ConflictOption theirOption = new ConflictOption(getTheirOperation(AttributeOperation.class).getNewValue(),
 			ConflictOption.OptionType.TheirOperation);
-		theirOption.setDetailProvider(DecisionConfig.WIDGET_MULTILINE);
+		theirOption.setDetailProvider(DecisionUtil.WIDGET_MULTILINE);
 		theirOption.addOperations(getTheirOperations());
 		options.add(theirOption);
 

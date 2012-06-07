@@ -8,7 +8,7 @@
  * 
  * Contributors:
  ******************************************************************************/
-package org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict;
+package org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict;
 
 /**
  * Interface for extension point. This is used to register new options for a

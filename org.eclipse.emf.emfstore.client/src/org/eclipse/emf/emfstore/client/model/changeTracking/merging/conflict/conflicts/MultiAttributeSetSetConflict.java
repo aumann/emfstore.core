@@ -8,7 +8,7 @@
  * 
  * Contributors:
  ******************************************************************************/
-package org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts;
+package org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts;
 
 // BEGIN COMPLEX CODE
 //
@@ -17,11 +17,11 @@ package org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts;
 
 import java.util.List;
 
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.DecisionManager;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.Conflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictDescription;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictOption;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictOption.OptionType;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.DecisionManager;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.Conflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.ConflictDescription;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.ConflictOption;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.ConflictOption.OptionType;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.AbstractOperation;
 
 public class MultiAttributeSetSetConflict extends Conflict {

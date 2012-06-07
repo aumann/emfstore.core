@@ -8,7 +8,7 @@
  * 
  * Contributors:
  ******************************************************************************/
-package org.eclipse.emf.emfstore.client.ui.dialogs.merge;
+package org.eclipse.emf.emfstore.client.model.changeTracking.merging;
 
 import static org.eclipse.emf.emfstore.server.model.versioning.operations.util.OperationUtil.isAttribute;
 import static org.eclipse.emf.emfstore.server.model.versioning.operations.util.OperationUtil.isComposite;
@@ -30,26 +30,24 @@ import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.Conflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.AttributeConflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.CompositeConflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.DeletionConflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.DiagramLayoutConflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.MultiAttributeConflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.MultiAttributeMoveConflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.MultiAttributeMoveSetConflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.MultiAttributeSetConflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.MultiAttributeSetSetConflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.MultiReferenceConflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.MultiReferenceSetConflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.MultiReferenceSetSetConflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.MultiReferenceSetSingleConflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.MultiReferenceSingleConflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.ReferenceConflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.SingleReferenceConflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.util.DecisionUtil;
-import org.eclipse.emf.emfstore.client.ui.views.changes.ChangePackageVisualizationHelper;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.Conflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.AttributeConflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.CompositeConflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.DeletionConflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.DiagramLayoutConflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.MultiAttributeConflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.MultiAttributeMoveConflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.MultiAttributeMoveSetConflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.MultiAttributeSetConflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.MultiAttributeSetSetConflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.MultiReferenceConflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.MultiReferenceSetConflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.MultiReferenceSetSetConflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.MultiReferenceSetSingleConflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.MultiReferenceSingleConflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.ReferenceConflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.SingleReferenceConflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.util.DecisionUtil;
 import org.eclipse.emf.emfstore.common.model.ModelElementId;
 import org.eclipse.emf.emfstore.common.model.Project;
 import org.eclipse.emf.emfstore.common.model.util.ModelUtil;
@@ -83,7 +81,6 @@ public class DecisionManager {
 	private ArrayList<AbstractOperation> rejectedTheirs;
 	private final PrimaryVersionSpec baseVersion;
 	private final PrimaryVersionSpec targetVersion;
-	private ChangePackageVisualizationHelper visualizationHelper;
 
 	/**
 	 * Default constructor.
@@ -550,8 +547,7 @@ public class DecisionManager {
 	 * @return name as string
 	 */
 	public String getModelElementName(EObject modelElement) {
-		AdapterFactoryLabelProvider adapterFactory = DecisionUtil.getAdapterFactory();
-		return adapterFactory.getText(modelElement);
+		return DecisionUtil.getModelElementName(modelElement);
 	}
 
 	/**
@@ -662,21 +658,6 @@ public class DecisionManager {
 	}
 
 	/**
-	 * Returns the visualizationhelper.
-	 * 
-	 * @return visualizationhelper
-	 */
-	public ChangePackageVisualizationHelper getChangePackageVisualizationHelper() {
-		if (visualizationHelper == null) {
-			ArrayList<ChangePackage> list = new ArrayList<ChangePackage>();
-			list.addAll(myChangePackages);
-			list.addAll(theirChangePackages);
-			visualizationHelper = new ChangePackageVisualizationHelper(list, project);
-		}
-		return visualizationHelper;
-	}
-
-	/**
 	 * Returns the baseVersion of the project which is updating.
 	 * 
 	 * @return version
@@ -692,6 +673,36 @@ public class DecisionManager {
 	 */
 	public PrimaryVersionSpec getTargetVersion() {
 		return targetVersion;
+	}
+
+	/**
+	 * Gives Access to internal values. Use with care.
+	 */
+	public DecisionManager.Internal Internal = this.new Internal();
+
+	/**
+	 * This class allows access to internal values. Use with care.
+	 * 
+	 * @author wesendon
+	 */
+	public class Internal {
+		/**
+		 * My CP.
+		 * 
+		 * @return list of cp
+		 */
+		public List<ChangePackage> getMyChangePackages() {
+			return myChangePackages;
+		}
+
+		/**
+		 * Their CP.
+		 * 
+		 * @return list of cp
+		 */
+		public List<ChangePackage> getTheirChangePackages() {
+			return theirChangePackages;
+		}
 	}
 
 	/**

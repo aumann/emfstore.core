@@ -8,16 +8,16 @@
  * 
  * Contributors:
  ******************************************************************************/
-package org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict;
+package org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.DecisionManager;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictOption.OptionType;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.util.DecisionUtil;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.DecisionManager;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.ConflictOption.OptionType;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.util.DecisionUtil;
 import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionElement;
 import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionPoint;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.AbstractOperation;
@@ -68,15 +68,6 @@ public abstract class Conflict extends Observable {
 	}
 
 	/**
-	 * Determines whether left operations are my.
-	 * 
-	 * @return boolean
-	 */
-	public boolean isLeftMy() {
-		return leftIsMy;
-	}
-
-	/**
 	 * Additional constructor, which allows deactivating initialization.
 	 * 
 	 * @see #Conflict(List, List, DecisionManager)
@@ -101,6 +92,15 @@ public abstract class Conflict extends Observable {
 		if (init) {
 			init();
 		}
+	}
+
+	/**
+	 * Determines whether left operations are my.
+	 * 
+	 * @return boolean
+	 */
+	public boolean isLeftMy() {
+		return leftIsMy;
 	}
 
 	/**

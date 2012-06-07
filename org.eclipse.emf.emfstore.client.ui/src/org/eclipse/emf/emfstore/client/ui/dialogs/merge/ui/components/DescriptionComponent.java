@@ -15,10 +15,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.Conflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictDescription;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.Conflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.ConflictDescription;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.util.DecisionUtil;
 import org.eclipse.emf.emfstore.client.ui.dialogs.merge.ui.DecisionBox;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.util.DecisionUtil;
+import org.eclipse.emf.emfstore.client.ui.dialogs.merge.util.UIDecisionUtil;
 import org.eclipse.emf.emfstore.client.ui.views.changes.ChangePackageVisualizationHelper;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.AbstractOperation;
 import org.eclipse.swt.SWT;
@@ -54,7 +55,7 @@ public class DescriptionComponent extends Composite {
 		setLayoutData(new GridData(GridData.FILL_BOTH));
 
 		Label image = new Label(this, SWT.NONE);
-		image.setImage(DecisionUtil.getImage(conflict.getConflictDescription().getImage()));
+		image.setImage(UIDecisionUtil.getImage(conflict.getConflictDescription().getImage()));
 		image.setToolTipText(conflict.getClass().getSimpleName());
 		image.setLayoutData(new GridData(GridData.VERTICAL_ALIGN_BEGINNING));
 		image.setBackground(parent.getBackground());
@@ -99,7 +100,8 @@ public class DescriptionComponent extends Composite {
 	private List<String> splitText(DecisionBox box, ConflictDescription conflict) {
 		String description = conflict.getDescription();
 		// for(String string : description.split("\\["+"[a-zA-Z]*"+"\\]")) {
-		ChangePackageVisualizationHelper visualHelper = box.getDecisionManager().getChangePackageVisualizationHelper();
+		ChangePackageVisualizationHelper visualHelper = UIDecisionUtil.getChangePackageVisualizationHelper(box
+			.getDecisionManager());
 		ArrayList<String> result = new ArrayList<String>();
 		for (String string : description.split("\\[")) {
 			String[] split = string.split("\\]");
@@ -114,11 +116,11 @@ public class DescriptionComponent extends Composite {
 					visualHelper.dispose();
 				} else if (obj != null) {
 					tmp = obj.toString();
-					tmp = DecisionUtil.cutString(tmp, 85, true);
+					tmp = UIDecisionUtil.cutString(tmp, 85, true);
 				} else {
 					tmp = "";
 				}
-				tmp = DecisionUtil.stripNewLine(tmp);
+				tmp = UIDecisionUtil.stripNewLine(tmp);
 				split[0] = "::" + tmp;
 			}
 			result.addAll(Arrays.asList(split));

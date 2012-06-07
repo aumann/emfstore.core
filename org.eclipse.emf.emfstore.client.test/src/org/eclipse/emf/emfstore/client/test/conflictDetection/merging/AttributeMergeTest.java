@@ -8,11 +8,11 @@ package org.eclipse.emf.emfstore.client.test.conflictDetection.merging;
 
 import java.util.ArrayList;
 
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.Conflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.AttributeConflict;
 import org.eclipse.emf.emfstore.client.model.util.EMFStoreCommand;
 import org.eclipse.emf.emfstore.client.test.model.task.ActionItem;
 import org.eclipse.emf.emfstore.client.test.model.task.TaskFactory;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.Conflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts.AttributeConflict;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.AttributeOperation;
 import org.junit.Test;
 

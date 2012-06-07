@@ -8,7 +8,7 @@
  * 
  * Contributors:
  ******************************************************************************/
-package org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts;
+package org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts;
 
 // BEGIN COMPLEX CODE
 //
@@ -17,22 +17,22 @@ package org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts;
 
 import java.util.List;
 
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.DecisionManager;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.Conflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictDescription;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictOption;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictOption.OptionType;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.DecisionManager;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.Conflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.ConflictDescription;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.ConflictOption;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.ConflictOption.OptionType;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.AbstractOperation;
 
-public class MultiAttributeMoveSetConflict extends Conflict {
+public class MultiAttributeSetConflict extends Conflict {
 
-	public MultiAttributeMoveSetConflict(List<AbstractOperation> opsA, List<AbstractOperation> opsB,
-		DecisionManager decisionManager, boolean isMySet) {
-		super(opsA, opsB, decisionManager, isMySet, true);
+	public MultiAttributeSetConflict(List<AbstractOperation> opsA, List<AbstractOperation> opsB,
+		DecisionManager decisionManager, boolean isMyRemove) {
+		super(opsA, opsB, decisionManager, isMyRemove, true);
 	}
 
 	/**
-	 * LEFT: Set, RIGHT: Move
+	 * LEFT: Remove, RIGHT: set
 	 */
 
 	/**
@@ -45,10 +45,10 @@ public class MultiAttributeMoveSetConflict extends Conflict {
 
 		if (isLeftMy()) {
 			description
-				.setDescription("You have changed an element from the [feature] attribute of [modelelement], which was moved in the repository.");
+				.setDescription("You have removed an element from the [feature] attribute of [modelelement], which was changed in the repository");
 		} else {
 			description
-				.setDescription("You have moved an element  from the [feature] attribute of [modelelement], which was changed in the repository. ");
+				.setDescription("You have changed an element from the [feature] attribute of [modelelement], which was removed in the repository");
 		}
 
 		return description;
@@ -67,11 +67,11 @@ public class MultiAttributeMoveSetConflict extends Conflict {
 		theirOption.addOperations(getTheirOperations());
 
 		if (isLeftMy()) {
-			myOption.setOptionLabel("Change element");
-			theirOption.setOptionLabel("Move element");
-		} else {
-			myOption.setOptionLabel("Move element");
+			myOption.setOptionLabel("Remove element");
 			theirOption.setOptionLabel("Change element");
+		} else {
+			myOption.setOptionLabel("Change element");
+			theirOption.setOptionLabel("Remove element");
 		}
 
 		options.add(myOption);

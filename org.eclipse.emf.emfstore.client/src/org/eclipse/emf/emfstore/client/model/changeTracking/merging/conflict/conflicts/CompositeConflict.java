@@ -8,18 +8,17 @@
  * 
  * Contributors:
  ******************************************************************************/
-package org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.conflicts;
+package org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts;
 
 import java.util.List;
 
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.DecisionManager;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.Conflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictContext;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictDescription;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictOption;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictOption.OptionType;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.util.DecisionConfig;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.util.DecisionUtil;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.DecisionManager;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.Conflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.ConflictContext;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.ConflictDescription;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.ConflictOption;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.ConflictOption.OptionType;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.util.DecisionUtil;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.AbstractOperation;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.CompositeOperation;
 
@@ -92,10 +91,10 @@ public class CompositeConflict extends Conflict {
 			myOption.setOptionLabel(composite);
 
 			theirOption.setOptionLabel(other);
-			theirOption.setDetailProvider(DecisionConfig.WIDGET_OTHERINVOLVED);
+			theirOption.setDetailProvider(DecisionUtil.WIDGET_OTHERINVOLVED);
 		} else {
 			myOption.setOptionLabel(other);
-			myOption.setDetailProvider(DecisionConfig.WIDGET_OTHERINVOLVED);
+			myOption.setDetailProvider(DecisionUtil.WIDGET_OTHERINVOLVED);
 
 			theirOption.setOptionLabel(composite);
 		}

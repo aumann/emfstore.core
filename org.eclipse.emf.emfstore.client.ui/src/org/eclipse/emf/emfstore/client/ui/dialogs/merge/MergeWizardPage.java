@@ -12,11 +12,12 @@ package org.eclipse.emf.emfstore.client.ui.dialogs.merge;
 
 import java.util.ArrayList;
 
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.Conflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictOption;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictOption.OptionType;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.DecisionManager;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.Conflict;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.ConflictOption;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.ConflictOption.OptionType;
 import org.eclipse.emf.emfstore.client.ui.dialogs.merge.ui.DecisionBox;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.util.DecisionConfig;
+import org.eclipse.emf.emfstore.client.ui.dialogs.merge.util.UIDecisionConfig;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -193,7 +194,7 @@ public class MergeWizardPage extends WizardPage {
 
 		public Color getColor() {
 			color = !color;
-			return (color) ? DecisionConfig.getFirstDecisionBoxColor() : DecisionConfig.getSecondDecisionBoxColor();
+			return (color) ? UIDecisionConfig.getFirstDecisionBoxColor() : UIDecisionConfig.getSecondDecisionBoxColor();
 		}
 	}
 

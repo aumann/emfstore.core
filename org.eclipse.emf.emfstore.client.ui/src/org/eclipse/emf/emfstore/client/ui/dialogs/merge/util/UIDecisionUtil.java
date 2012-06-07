@@ -10,15 +10,14 @@
  ******************************************************************************/
 package org.eclipse.emf.emfstore.client.ui.dialogs.merge.util;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.DecisionManager;
 import org.eclipse.emf.emfstore.client.ui.Activator;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.Conflict;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictOption;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictOption.OptionType;
+import org.eclipse.emf.emfstore.client.ui.views.changes.ChangePackageVisualizationHelper;
+import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
@@ -30,12 +29,9 @@ import org.eclipse.swt.widgets.Display;
  * 
  * @author wesendon
  */
-public final class DecisionUtil {
+public final class UIDecisionUtil {
 
-	private static final AdapterFactoryLabelProvider ADAPTER_FACTORY_LABEL_PROVIDER = new AdapterFactoryLabelProvider(
-		new ComposedAdapterFactory(ComposedAdapterFactory.Descriptor.Registry.INSTANCE));
-
-	private DecisionUtil() {
+	private UIDecisionUtil() {
 	}
 
 	private static FontRegistry fontRegistry;
@@ -113,93 +109,36 @@ public final class DecisionUtil {
 	 * 
 	 * @return fonts
 	 */
-	public synchronized static FontRegistry getFontRegistry() {
+	public static synchronized FontRegistry getFontRegistry() {
 		if (fontRegistry == null) {
 			fontRegistry = new FontRegistry(Display.getCurrent());
-			DecisionConfig.initFonts(fontRegistry);
+			UIDecisionConfig.initFonts(fontRegistry);
 		}
 		return fontRegistry;
 	}
 
+	// TODO BRANCH
 	/**
-	 * Get Option by is type.
+	 * Returns the visualizationhelper.
 	 * 
-	 * @param options
-	 *            list of options
-	 * @param type
-	 *            type
-	 * @return resulting option or null
+	 * @param decisionManager instance of the decisionManager
+	 * 
+	 * @return visualizationhelper
 	 */
-	public static ConflictOption getConflictOptionByType(List<ConflictOption> options, OptionType type) {
-		for (ConflictOption option : options) {
-			if (option.getType().equals(type)) {
-				return option;
-			}
-		}
-		return null;
+	public static ChangePackageVisualizationHelper getChangePackageVisualizationHelper(DecisionManager decisionManager) {
+		ArrayList<ChangePackage> list = new ArrayList<ChangePackage>();
+		list.addAll(decisionManager.Internal.getMyChangePackages());
+		list.addAll(decisionManager.Internal.getTheirChangePackages());
+		return new ChangePackageVisualizationHelper(list, decisionManager.getProject());
 	}
 
 	/**
-	 * Checks whether a conflict needs details.
+	 * Returns a label provider.
 	 * 
-	 * @param conflict
-	 *            conflict
-	 * @return true, if so
-	 */
-	public static boolean detailsNeeded(Conflict conflict) {
-		if (!conflict.hasDetails()) {
-			return false;
-		}
-		for (ConflictOption option : conflict.getOptions()) {
-			if (!option.isDetailsProvider()) {
-				continue;
-			}
-			if (option.getDetailProvider().startsWith(DecisionConfig.WIDGET_MULTILINE)) {
-				if (option.getOptionLabel().length() > DecisionConfig.OPTION_LENGTH) {
-					return true;
-				}
-			} else {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Uses the object's toString method or returns unset string.
-	 * 
-	 * @param obj
-	 *            obj to string
-	 * @param unset
-	 *            unset string
-	 * @return obj.toString or unset
-	 */
-	public static String getLabel(Object obj, String unset) {
-		return (obj != null && obj.toString().length() > 1) ? obj.toString() : unset;
-	}
-
-	/**
-	 * Returns Class and Name of {@link EObject}.
-	 * 
-	 * @param modelElement
-	 *            modelelement
-	 * @return string
-	 */
-	public static String getClassAndName(EObject modelElement) {
-		if (modelElement == null) {
-			return "";
-		}
-		String name = getAdapterFactory().getText(modelElement);
-		return modelElement.eClass().getName() + " \"" + name + "\"";
-	}
-
-	/**
-	 * Returns label provider.
-	 * 
-	 * @return label proivder
+	 * @return label provider
 	 */
 	public static AdapterFactoryLabelProvider getAdapterFactory() {
-		AdapterFactoryLabelProvider adapterFactoryLabelProvider = ADAPTER_FACTORY_LABEL_PROVIDER;
-		return adapterFactoryLabelProvider;
+		return new AdapterFactoryLabelProvider(new ComposedAdapterFactory(
+			ComposedAdapterFactory.Descriptor.Registry.INSTANCE));
 	}
 }

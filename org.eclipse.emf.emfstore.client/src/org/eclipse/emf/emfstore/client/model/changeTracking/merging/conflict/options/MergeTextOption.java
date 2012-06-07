@@ -8,15 +8,14 @@
  * 
  * Contributors:
  ******************************************************************************/
-package org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.options;
+package org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.options;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.conflict.ConflictOption;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.util.DecisionConfig;
-import org.eclipse.emf.emfstore.client.ui.dialogs.merge.util.DecisionUtil;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.ConflictOption;
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.util.DecisionUtil;
 import org.eclipse.emf.emfstore.common.model.util.ModelUtil;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.AbstractOperation;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.AttributeOperation;
@@ -37,7 +36,7 @@ public class MergeTextOption extends ConflictOption {
 	public MergeTextOption() {
 		super("Select Edited/Merged Value", OptionType.MergeText);
 		list = new ArrayList<ConflictOption>();
-		setDetailProvider(DecisionConfig.WIDGET_MULTILINE_EDITABLE);
+		setDetailProvider(DecisionUtil.WIDGET_MULTILINE_EDITABLE);
 	}
 
 	/**

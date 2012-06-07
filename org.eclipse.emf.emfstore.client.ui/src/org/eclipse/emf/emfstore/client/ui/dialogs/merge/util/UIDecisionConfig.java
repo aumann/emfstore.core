@@ -22,40 +22,10 @@ import org.eclipse.swt.widgets.Display;
  * 
  * @author wesendon
  */
-public final class DecisionConfig {
+public final class UIDecisionConfig {
 
-	private DecisionConfig() {
+	private UIDecisionConfig() {
 	}
-
-	/**
-	 * Length of option label.
-	 */
-	public static final int OPTION_LENGTH = 50;
-
-	/**
-	 * Seperator symbol for detail proivder.
-	 */
-	public static final String SEPERATOR = "#";
-
-	/**
-	 * Editable detail provider.
-	 */
-	public static final String EDITABLE = "editable";
-
-	/**
-	 * Multiline widget detail provider.
-	 */
-	public static final String WIDGET_MULTILINE = "org.eclipse.emf.emfstore.client.ui.merge.widget.multiline";
-
-	/**
-	 * Multiline editable widget detail provider.
-	 */
-	public static final String WIDGET_MULTILINE_EDITABLE = WIDGET_MULTILINE + SEPERATOR + EDITABLE;
-
-	/**
-	 * Option for other involved detail provider.
-	 */
-	public static final String WIDGET_OTHERINVOLVED = "org.eclipse.emf.emfstore.client.ui.merge.widget.otherinvolved";
 
 	/**
 	 * Inits the fonts for the dialog.
