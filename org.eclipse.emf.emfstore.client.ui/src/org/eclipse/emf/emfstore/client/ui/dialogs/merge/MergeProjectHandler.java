@@ -71,8 +71,10 @@ public class MergeProjectHandler implements ConflictResolver {
 		DecisionManager decisionManager = new DecisionManager(project, myChangePackages, theirChangePackages, base,
 			target);
 
-		if (decisionManager.getConflicts().size() == 0) {
-			// conflict has been resolved automatically
+		if (decisionManager.isResolved()) {
+			decisionManager.calcResult();
+			acceptedMine = decisionManager.getAcceptedMine();
+			rejectedTheirs = decisionManager.getRejectedTheirs();
 			return true;
 		}
 

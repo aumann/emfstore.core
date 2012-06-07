@@ -21,11 +21,12 @@ public class UICreateBranchController extends AbstractEMFStoreUIController imple
 		super(shell);
 	}
 
-	public PrimaryVersionSpec commit(ProjectSpace projectSpace, BranchVersionSpec branch) throws EmfStoreException {
-		return commit(projectSpace, branch, null);
+	public PrimaryVersionSpec commitToBranch(ProjectSpace projectSpace, BranchVersionSpec branch)
+		throws EmfStoreException {
+		return commitToBranch(projectSpace, branch, null);
 	}
 
-	public PrimaryVersionSpec commit(ProjectSpace projectSpace, BranchVersionSpec branch, LogMessage logMessage)
+	public PrimaryVersionSpec commitToBranch(ProjectSpace projectSpace, BranchVersionSpec branch, LogMessage logMessage)
 		throws EmfStoreException {
 		if (branch == null) {
 			branch = branchSelection(projectSpace);
@@ -37,7 +38,6 @@ public class UICreateBranchController extends AbstractEMFStoreUIController imple
 	}
 
 	private BranchVersionSpec branchSelection(ProjectSpace projectSpace) throws EmfStoreException {
-
 		InputDialog inputDialog = new InputDialog(getShell(), "Branch Selection", "Please enter the branch's name.",
 			"", null);
 		if (inputDialog.open() != Dialog.OK) {

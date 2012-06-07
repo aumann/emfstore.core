@@ -177,7 +177,7 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 		// revert
 		revert();
 
-		// apply changes from repo
+		// apply changes from repo. incoming (aka theirs)
 		for (ChangePackage change : incoming) {
 			applyOperations(change.getCopyOfOperations(), false);
 		}
@@ -818,7 +818,7 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 		// merge the conflicts
 		ChangePackage myCp = this.getLocalChangePackage(true);
 		List<ChangePackage> theirCps = this.getChanges(getBaseVersion(), target);
-		if (conflictResolver.resolveConflicts(getProject(), theirCps, Arrays.asList(myCp), getBaseVersion(), target)) {
+		if (conflictResolver.resolveConflicts(getProject(), Arrays.asList(myCp), theirCps, getBaseVersion(), target)) {
 			ChangePackage mergedResult = conflictResolver.getMergedResult();
 			applyChanges(target, theirCps, mergedResult);
 		}
@@ -831,14 +831,12 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 		new ServerCall<Void>(this) {
 			@Override
 			protected Void run() throws EmfStoreException {
-
 				PrimaryVersionSpec commonAncestor = resolveVersionSpec(Versions.ANCESTOR(getBaseVersion(), branchSpec));
 
 				List<ChangePackage> baseChanges = getChanges(commonAncestor, getBaseVersion());
-				List<ChangePackage> incomingChanges = getChanges(commonAncestor, branchSpec);
+				List<ChangePackage> branchChanges = getChanges(commonAncestor, branchSpec);
 
-				if (conflictResolver.resolveConflicts(getProject(), baseChanges, incomingChanges, getBaseVersion(),
-					null)) {
+				if (conflictResolver.resolveConflicts(getProject(), branchChanges, baseChanges, getBaseVersion(), null)) {
 					applyChanges(getBaseVersion(), baseChanges, conflictResolver.getMergedResult());
 				}
 				return null;
@@ -877,9 +875,14 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 	 * @throws EmfStoreException
 	 * @generated NOT
 	 */
-	public PrimaryVersionSpec resolveVersionSpec(VersionSpec versionSpec) throws EmfStoreException {
-		ConnectionManager connectionManager = WorkspaceManager.getInstance().getConnectionManager();
-		return connectionManager.resolveVersionSpec(getUsersession().getSessionId(), getProjectId(), versionSpec);
+	public PrimaryVersionSpec resolveVersionSpec(final VersionSpec versionSpec) throws EmfStoreException {
+		return new ServerCall<PrimaryVersionSpec>(this) {
+			@Override
+			protected PrimaryVersionSpec run() throws EmfStoreException {
+				ConnectionManager connectionManager = WorkspaceManager.getInstance().getConnectionManager();
+				return connectionManager.resolveVersionSpec(getSessionId(), getProjectId(), versionSpec);
+			}
+		}.execute();
 	}
 
 	/**
