@@ -16,10 +16,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import javax.print.attribute.IntegerSyntax;
 
 import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionElement;
 import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionPoint;
@@ -117,10 +120,23 @@ public class ObserverBus {
 	 * @return call object
 	 */
 	public <T extends IObserver> T notify(Class<T> clazz) {
+		return (T) notify(clazz, false);
+	}
+
+	/**
+	 * This method allows you to notify all observers.
+	 * 
+	 * @param <T> class of observer
+	 * @param clazz class of observer
+	 * @param prioritized sort observer after {@link PrioritizedIObserver}
+	 * 
+	 * @return call object
+	 */
+	public <T extends IObserver> T notify(Class<T> clazz, boolean prioritized) {
 		if (clazz == null) {
 			return null;
 		}
-		return (T) createProxy(clazz);
+		return (T) createProxy(clazz, false);
 	}
 
 	/**
@@ -188,17 +204,31 @@ public class ObserverBus {
 		return list;
 	}
 
-	private List<IObserver> getObserverByClass(Class<IObserver> clazz) {
+	private List<IObserver> getObserverByClass(Class<? extends IObserver> clazz) {
 		List<IObserver> list = observerMap.get(clazz);
 		if (list == null) {
 			list = Collections.emptyList();
 		}
-		return Collections.unmodifiableList(list);
+		return new ArrayList<IObserver>(list);
+	}
+
+	private boolean isPrioritizedObserver(Class<?> clazz, Method method) {
+		// Only prioritize if requested class extends PrioritizedIObserver and method is part of this class and not part
+		// of some super class
+		if (!clazz.equals(method.getDeclaringClass())) {
+			return false;
+		}
+		for (Class<?> interfaceClass : clazz.getInterfaces()) {
+			if (PrioritizedIObserver.class.equals(interfaceClass)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T extends IObserver> T createProxy(Class<T> clazz) {
-		ProxyHandler handler = new ProxyHandler((Class<IObserver>) clazz);
+	private <T extends IObserver> T createProxy(Class<T> clazz, boolean prioritized) {
+		ProxyHandler handler = new ProxyHandler((Class<IObserver>) clazz, prioritized);
 		return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class[] { clazz, ObserverCall.class }, handler);
 
 	}
@@ -212,9 +242,11 @@ public class ObserverBus {
 
 		private Class<IObserver> clazz;
 		private List<ObserverCall.Result> lastResults;
+		private boolean prioritized;
 
-		public ProxyHandler(Class<IObserver> clazz) {
+		public ProxyHandler(Class<IObserver> clazz, boolean prioritized) {
 			this.clazz = clazz;
+			this.prioritized = prioritized;
 			this.lastResults = new ArrayList<ObserverCall.Result>();
 		}
 
@@ -225,6 +257,10 @@ public class ObserverBus {
 			}
 
 			List<IObserver> observers = getObserverByClass(clazz);
+
+			if (prioritized && isPrioritizedObserver(clazz, method)) {
+				sortObservers(observers);
+			}
 
 			// return default value if no observers are registered
 			if (observers.size() == 0) {
@@ -259,6 +295,24 @@ public class ObserverBus {
 		}
 
 		// END SUPRESS CATCH EXCEPTION
+	}
+
+	/**
+	 * Sorts Observers. Make sure they are {@link PrioritizedIObserver}!!
+	 * 
+	 * @param observers list of observers
+	 */
+	private void sortObservers(List<IObserver> observers) {
+		Collections.sort(observers, new Comparator<IObserver>() {
+			public int compare(IObserver o1, IObserver o2) {
+				int prio1 = ((PrioritizedIObserver) o1).getPriority();
+				int prio2 = ((PrioritizedIObserver) o2).getPriority();
+				if (prio1 == prio2) {
+					return 0;
+				}
+				return (prio1 > prio2) ? 1 : -1;
+			}
+		});
 	}
 
 	@SuppressWarnings("unchecked")
