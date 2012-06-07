@@ -1,17 +1,21 @@
 package org.eclipse.emf.emfstore.client.ui.controller;
 
+import java.util.List;
+
 import org.eclipse.emf.emfstore.client.model.ProjectSpace;
 import org.eclipse.emf.emfstore.client.model.controller.callbacks.CommitCallback;
+import org.eclipse.emf.emfstore.client.model.impl.ProjectSpaceBase;
+import org.eclipse.emf.emfstore.client.ui.dialogs.BranchSelectionDialog;
 import org.eclipse.emf.emfstore.client.ui.dialogs.CommitDialog;
 import org.eclipse.emf.emfstore.client.ui.handlers.AbstractEMFStoreUIController;
 import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.LogMessage;
 import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.Versions;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 
@@ -38,12 +42,15 @@ public class UICreateBranchController extends AbstractEMFStoreUIController imple
 	}
 
 	private BranchVersionSpec branchSelection(ProjectSpace projectSpace) throws EmfStoreException {
-		InputDialog inputDialog = new InputDialog(getShell(), "Branch Selection", "Please enter the branch's name.",
-			"", null);
-		if (inputDialog.open() != Dialog.OK) {
+		List<BranchInfo> branches = ((ProjectSpaceBase) projectSpace).getBranches();
+		BranchSelectionDialog.Creation dialog = new BranchSelectionDialog.Creation(getShell(),
+			projectSpace.getBaseVersion(), branches);
+		dialog.setBlockOnOpen(true);
+
+		if (dialog.open() != Dialog.OK || dialog.getNewBranch() == null) {
 			throw new EmfStoreException("No Branch specified");
 		}
-		return Versions.BRANCH(inputDialog.getValue());
+		return Versions.BRANCH(dialog.getNewBranch());
 	}
 
 	public void noLocalChanges(ProjectSpace projectSpace) {

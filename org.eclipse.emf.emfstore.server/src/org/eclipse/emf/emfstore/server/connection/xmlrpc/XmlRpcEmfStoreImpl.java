@@ -1,5 +1,8 @@
 /*******************************************************************************
- * Copyright (c) 2008-2011 Chair for Applied Software Engineering,
+ * public List<BranchInfo> getBranches(SessionId sessionId, ProjectId projectId) throws EmfStoreException {
+ * // TODO Auto-generated method stub
+ * return null;
+ * } * Copyright (c) 2008-2011 Chair for Applied Software Engineering,
  * Technische Universitaet Muenchen.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -30,6 +33,7 @@ import org.eclipse.emf.emfstore.server.model.SessionId;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.ACOrgUnitId;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.ACUser;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.OrgUnitProperty;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
@@ -135,6 +139,14 @@ public class XmlRpcEmfStoreImpl implements EmfStore, AuthenticationControl {
 	}
 
 	/**
+	 * 
+	 * {@inheritDoc}
+	 */
+	public List<BranchInfo> getBranches(SessionId sessionId, ProjectId projectId) throws EmfStoreException {
+		return getEmfStore().getBranches(sessionId, projectId);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public List<HistoryInfo> getHistoryInfo(SessionId sessionId, ProjectId projectId, HistoryQuery historyQuery)
@@ -222,4 +234,5 @@ public class XmlRpcEmfStoreImpl implements EmfStore, AuthenticationControl {
 	public List<EMFStoreProperty> getEMFProperties(SessionId sessionId, ProjectId projectId) throws EmfStoreException {
 		return getEmfStore().getEMFProperties(sessionId, projectId);
 	}
+
 }

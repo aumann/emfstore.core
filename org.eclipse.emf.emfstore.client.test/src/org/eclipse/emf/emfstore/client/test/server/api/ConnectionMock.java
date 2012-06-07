@@ -23,6 +23,7 @@ import org.eclipse.emf.emfstore.server.model.SessionId;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.ACOrgUnitId;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.ACUser;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.OrgUnitProperty;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
@@ -93,6 +94,11 @@ public class ConnectionMock implements ConnectionManager {
 		VersionSpec target) throws EmfStoreException {
 		checkSessionId(sessionId);
 		return emfStore.getChanges(sessionId, projectId, source, target);
+	}
+
+	public List<BranchInfo> getBranches(SessionId sessionId, ProjectId projectId) throws EmfStoreException {
+		checkSessionId(sessionId);
+		return emfStore.getBranches(sessionId, projectId);
 	}
 
 	public List<HistoryInfo> getHistoryInfo(SessionId sessionId, ProjectId projectId, HistoryQuery historyQuery)
@@ -175,5 +181,4 @@ public class ConnectionMock implements ConnectionManager {
 		checkSessionId(sessionId);
 		return emfStore.getEMFProperties(sessionId, projectId);
 	}
-
 }

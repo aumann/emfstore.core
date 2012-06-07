@@ -30,6 +30,7 @@ import org.eclipse.emf.emfstore.server.model.SessionId;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.ACOrgUnitId;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.ACUser;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.OrgUnitProperty;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
@@ -138,6 +139,17 @@ public class XmlRpcConnectionManager extends AbstractConnectionManager<XmlRpcCli
 	}
 
 	/**
+	 * 
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.server.EmfStore#getBranches(org.eclipse.emf.emfstore.server.model.SessionId,
+	 *      org.eclipse.emf.emfstore.server.model.ProjectId)
+	 */
+	public List<BranchInfo> getBranches(SessionId sessionId, ProjectId projectId) throws EmfStoreException {
+		return getConnectionProxy(sessionId).callWithListResult("getBranches", BranchInfo.class, sessionId, projectId);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public List<HistoryInfo> getHistoryInfo(SessionId sessionId, ProjectId projectId, HistoryQuery historyQuery)
@@ -238,4 +250,5 @@ public class XmlRpcConnectionManager extends AbstractConnectionManager<XmlRpcCli
 	public boolean isLoggedIn(SessionId id) {
 		return hasConnectionProxy(id);
 	}
+
 }

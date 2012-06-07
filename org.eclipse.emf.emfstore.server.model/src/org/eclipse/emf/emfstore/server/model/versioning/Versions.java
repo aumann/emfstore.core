@@ -38,7 +38,11 @@ public class Versions {
 		return branchSpec;
 	}
 
-	public static VersionSpec ANCESTOR(PrimaryVersionSpec source, PrimaryVersionSpec target) {
+	public static BranchVersionSpec BRANCH(VersionSpec head) {
+		return BRANCH(head.getBranch());
+	}
+
+	public static AncestorVersionSpec ANCESTOR(PrimaryVersionSpec source, PrimaryVersionSpec target) {
 		AncestorVersionSpec ancestor = VersioningFactory.eINSTANCE.createAncestorVersionSpec();
 		ancestor.setBranch(source.getBranch());
 		ancestor.setSource(EcoreUtil.copy(source));

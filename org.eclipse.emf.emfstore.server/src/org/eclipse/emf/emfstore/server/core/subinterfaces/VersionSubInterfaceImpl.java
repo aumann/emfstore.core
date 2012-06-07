@@ -384,6 +384,20 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 	}
 
 	/**
+	 * {@inheritDocf}
+	 */
+	public List<BranchInfo> getBranches(ProjectId projectId) throws EmfStoreException {
+		synchronized (getMonitor()) {
+			ProjectHistory projectHistory = getSubInterface(ProjectSubInterfaceImpl.class).getProject(projectId);
+			ArrayList<BranchInfo> result = new ArrayList<BranchInfo>();
+			for (BranchInfo branch : projectHistory.getBranches()) {
+				result.add(EcoreUtil.copy(branch));
+			}
+			return result;
+		}
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	// TODO what's the purpose of this task

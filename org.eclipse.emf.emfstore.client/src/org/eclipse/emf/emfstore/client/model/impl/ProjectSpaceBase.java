@@ -74,6 +74,7 @@ import org.eclipse.emf.emfstore.server.model.ProjectInfo;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.ACUser;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.OrgUnitProperty;
 import org.eclipse.emf.emfstore.server.model.url.ModelElementUrlFragment;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
@@ -844,6 +845,16 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 		}.execute();
 	}
 
+	public List<BranchInfo> getBranches() throws EmfStoreException {
+		return new ServerCall<List<BranchInfo>>(this) {
+			@Override
+			protected List<BranchInfo> run() throws EmfStoreException {
+				final ConnectionManager cm = WorkspaceManager.getInstance().getConnectionManager();
+				return cm.getBranches(getSessionId(), getProjectId());
+			};
+		}.execute();
+	}
+
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -1129,5 +1140,4 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 	public void updateDirtyState() {
 		setDirty(!getOperations().isEmpty());
 	}
-
 }
