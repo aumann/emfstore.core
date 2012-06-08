@@ -20,11 +20,13 @@ import org.eclipse.emf.emfstore.client.model.impl.ProjectSpaceBase;
 import org.eclipse.emf.emfstore.client.model.observers.CommitObserver;
 import org.eclipse.emf.emfstore.server.exceptions.BaseVersionOutdatedException;
 import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
+import org.eclipse.emf.emfstore.server.exceptions.InvalidVersionSpecException;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.LogMessage;
 import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
-import org.eclipse.emf.emfstore.server.model.versioning.VersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.VersioningFactory;
+import org.eclipse.emf.emfstore.server.model.versioning.Versions;
 
 /**
  * The controller responsible for performing a commit.
@@ -35,6 +37,7 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 
 	private LogMessage logMessage;
 	private CommitCallback callback;
+	private BranchVersionSpec branch;
 
 	/**
 	 * Constructor.
@@ -52,7 +55,28 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 	 */
 	public CommitController(ProjectSpaceBase projectSpace, LogMessage logMessage, CommitCallback callback,
 		IProgressMonitor monitor) {
+		this(projectSpace, null, logMessage, callback, monitor);
+	}
+
+	/**
+	 * Branching Constructor.
+	 * 
+	 * @param projectSpace
+	 *            the project space whose pending changes should be commited
+	 * @param branch Specification of the branch to which the changes should be commited.
+	 * @param logMessage
+	 *            a log message documenting the commit
+	 * @param callback
+	 *            an callback that will be called during and at the end of the commit.
+	 *            May be <code>null</code>.
+	 * @param monitor
+	 *            an {@link IProgressMonitor} that will be used to inform clients about the commit progress.
+	 *            May be <code>null</code>.
+	 */
+	public CommitController(ProjectSpaceBase projectSpace, BranchVersionSpec branch, LogMessage logMessage,
+		CommitCallback callback, IProgressMonitor monitor) {
 		super(projectSpace);
+		this.branch = branch;
 		this.logMessage = (logMessage == null) ? createLogMessage() : logMessage;
 		this.callback = callback == null ? CommitCallback.NOCALLBACK : callback;
 		setProgressMonitor(monitor);
@@ -60,10 +84,10 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 
 	@Override
 	protected PrimaryVersionSpec run() throws EmfStoreException {
-		return commit(this.logMessage);
+		return commit(this.logMessage, this.branch);
 	}
 
-	private PrimaryVersionSpec commit(LogMessage logMessage) throws EmfStoreException {
+	private PrimaryVersionSpec commit(LogMessage logMessage, BranchVersionSpec branch) throws EmfStoreException {
 		getProgressMonitor().beginTask("Commiting Changes", 100);
 		getProgressMonitor().worked(1);
 
@@ -77,11 +101,25 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 
 		getProgressMonitor().subTask("Resolving new version");
 
-		// check if we need to update first
-		PrimaryVersionSpec resolvedVersion = getProjectSpace().resolveVersionSpec(VersionSpec.HEAD_VERSION);
-		if (!getProjectSpace().getBaseVersion().equals(resolvedVersion)) {
-			if (!callback.baseVersionOutOfDate(getProjectSpace())) {
-				throw new BaseVersionOutdatedException();
+		if (branch != null) {
+			// TODO BRANCH
+			try {
+				PrimaryVersionSpec resolvedVersion = getProjectSpace().resolveVersionSpec(branch);
+				// TODO BRANCH merge should have own controller
+				// or maybe not
+				throw new EmfStoreException("Branch already exists. You need to merge.");
+
+			} catch (InvalidVersionSpecException e) {
+				// branch doesn't exist, create.
+			}
+		} else {
+			// check if we need to update first
+			PrimaryVersionSpec resolvedVersion = getProjectSpace().resolveVersionSpec(
+				Versions.HEAD_VERSION(getProjectSpace().getBaseVersion()));
+			if (!getProjectSpace().getBaseVersion().equals(resolvedVersion)) {
+				if (!callback.baseVersionOutOfDate(getProjectSpace())) {
+					throw new BaseVersionOutdatedException();
+				}
 			}
 		}
 
@@ -102,9 +140,15 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 		getProgressMonitor().worked(30);
 
 		getProgressMonitor().subTask("Sending changes to server");
-		PrimaryVersionSpec newBaseVersion = getConnectionManager().createVersion(getUsersession().getSessionId(),
-			getProjectSpace().getProjectId(), getProjectSpace().getBaseVersion(), changePackage,
+
+		PrimaryVersionSpec newBaseVersion = null;
+
+		// TODO BRANCH
+		// Branching case: branch specifier added
+		newBaseVersion = getConnectionManager().createVersion(getUsersession().getSessionId(),
+			getProjectSpace().getProjectId(), getProjectSpace().getBaseVersion(), changePackage, branch, null,
 			changePackage.getLogMessage());
+
 		getProgressMonitor().worked(35);
 
 		getProgressMonitor().subTask("Finalizing commit");

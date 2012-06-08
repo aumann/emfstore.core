@@ -60,6 +60,7 @@ public class UIUpdateProjectController extends AbstractEMFStoreUIController impl
 		ProjectSpace projectSpace = conflictException.getProjectSpace();
 		boolean mergeSuccessful = false;
 		try {
+			// TODO BRANCH
 			PrimaryVersionSpec targetVersion = projectSpace.resolveVersionSpec(VersionSpec.HEAD_VERSION);
 			mergeSuccessful = projectSpace.merge(targetVersion, new MergeProjectHandler());
 		} catch (EmfStoreException e) {
@@ -79,16 +80,6 @@ public class UIUpdateProjectController extends AbstractEMFStoreUIController impl
 	}
 
 	public void updateCompleted(ProjectSpace projectSpace, PrimaryVersionSpec oldVersion, PrimaryVersionSpec newVersion) {
-		// explicitly refresh the decorator since no simple attribute has
-		// been changed
-		// (as opposed to committing where the dirty property is being set)
-		// TODO replace by Observerbus or listener mechanism
-		// Display.getDefault().asyncExec(new Runnable() {
-		// public void run() {
-		// PlatformUI.getWorkbench().getDecoratorManager()
-		// .update("org.eclipse.emf.emfstore.client.ui.decorators.VersionDecorator");
-		// }
-		// });
 		closeProgress();
 	}
 

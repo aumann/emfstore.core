@@ -85,6 +85,41 @@
            </and>
         </enabledWhen>
      </handler>
+     <handler
+           class="org.eclipse.emf.emfstore.client.ui.handlers.CreateBranchHandler"
+           commandId="org.eclipse.emf.emfstore.client.ui.createBranch">
+        <enabledWhen>
+           <and>
+              <iterate
+                    ifEmpty="true"
+                    operator="and">
+                 <instanceof
+                       value="org.eclipse.emf.emfstore.client.model.ProjectSpace">
+                 </instanceof>
+                 <test
+                       forcePluginActivation="true"
+                       property="org.eclipse.emf.emfstore.client.ui.commands.projectHasLocalChanges"
+                       value="true">
+                 </test>
+              </iterate>
+           </and>
+        </enabledWhen>
+     </handler>
+     <handler
+           class="org.eclipse.emf.emfstore.client.ui.handlers.MergeBranchHandler"
+           commandId="org.eclipse.emf.emfstore.client.ui.mergeBranch">
+        <enabledWhen>
+           <and>
+              <iterate
+                    ifEmpty="true"
+                    operator="and">
+                 <instanceof
+                       value="org.eclipse.emf.emfstore.client.model.ProjectSpace">
+                 </instanceof>
+              </iterate>
+           </and>
+        </enabledWhen>
+     </handler>
   </extension>
   <extension
         point="org.eclipse.ui.commands">
@@ -643,6 +678,11 @@
             id="org.eclipse.emf.emfstore.client.ui.commitProject"
             name="commit">
       </command>
+      <command
+            categoryId="org.eclipse.emf.emfstore.client.ui.project"
+            id="org.eclipse.emf.emfstore.client.ui.createBranch"
+            name="create branch">
+      </command>
          <command
            categoryId="org.eclipse.emf.emfstore.client.ui.project"
            defaultHandler="org.eclipse.emf.emfstore.client.ui.handlers.UpdateProjectHandler"
@@ -693,6 +733,11 @@
            defaultHandler="org.eclipse.emf.emfstore.client.ui.handlers.CompareProjectsHandler"
            id="org.eclipse.emf.emfstore.client.ui.compareProjects"
            name="compareProjects">
+     </command>
+     <command
+           categoryId="org.eclipse.emf.emfstore.client.ui.project"
+           id="org.eclipse.emf.emfstore.client.ui.mergeBranch"
+           name="mergeBranch">
      </command>
    </extension>
    <extension

@@ -47,6 +47,8 @@ import org.eclipse.emf.emfstore.server.model.versioning.operations.AbstractOpera
  */
 public class HistorySubInterfaceImpl extends AbstractSubEmfstoreInterface {
 
+	private HistoryCache historyCache;
+
 	/**
 	 * Default constructor.
 	 * 
@@ -57,6 +59,12 @@ public class HistorySubInterfaceImpl extends AbstractSubEmfstoreInterface {
 	 */
 	public HistorySubInterfaceImpl(AbstractEmfstoreInterface parentInterface) throws FatalEmfStoreException {
 		super(parentInterface);
+	}
+
+	@Override
+	protected void initSubInterface() throws FatalEmfStoreException {
+		super.initSubInterface();
+		historyCache = EmfStoreController.getHistoryCache(getServerSpace());
 	}
 
 	/**
@@ -119,7 +127,6 @@ public class HistorySubInterfaceImpl extends AbstractSubEmfstoreInterface {
 
 	private List<HistoryInfo> getHistoryInfo(ProjectId projectId, List<ModelElementId> moList,
 		boolean includeChangePackage) throws EmfStoreException {
-		HistoryCache historyCache = EmfStoreController.getInstance().getHistoryCache();
 		// TODO only the first modelelement is included in the request.
 		ModelElementId modelElementId = moList.get(0);
 		TreeSet<Version> elements = historyCache.getChangesForModelElement(projectId, modelElementId);
