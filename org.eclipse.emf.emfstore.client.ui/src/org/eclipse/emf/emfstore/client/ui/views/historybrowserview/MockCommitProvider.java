@@ -19,6 +19,8 @@ public class MockCommitProvider implements IMockCommitProvider {
 	}
 
 	// create the 10 commits. index 0 represents oldest, 9 newest comit
+	// TODO it is possible that we need to turn this around, because of the
+	// index-parameter in enter-method. time will show
 	private void setup() {
 		// init commits array
 		commits = new MockCommit[10];
