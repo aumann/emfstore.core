@@ -2,6 +2,8 @@ package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
 
 import java.util.ArrayList;
 
+import org.eclipse.swt.widgets.Widget;
+
 public class MockCommit implements IMockCommit {
 
 	private PlotLane lane;
@@ -13,6 +15,8 @@ public class MockCommit implements IMockCommit {
 	ArrayList<IMockCommit> children;
 
 	private String shortMsg;
+
+	private Widget widget;
 
 	public MockCommit(PlotLane lane, String shortMsg) {
 		this.lane = lane;
@@ -49,6 +53,14 @@ public class MockCommit implements IMockCommit {
 
 	public String getShortMessage() {
 		return shortMsg;
+	}
+
+	public Widget getWidget() {
+		return widget;
+	}
+
+	public void setWidget(Widget widget) {
+		this.widget = widget;
 	}
 
 }
