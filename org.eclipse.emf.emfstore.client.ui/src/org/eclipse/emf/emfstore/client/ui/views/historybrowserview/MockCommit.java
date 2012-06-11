@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class MockCommit implements IMockCommit {
 
-	private PlotLane lane;
+	PlotLane lane;
 
 	ArrayList<PlotLane> passingLines;
 
@@ -12,14 +12,14 @@ public class MockCommit implements IMockCommit {
 
 	ArrayList<IMockCommit> children;
 
-	private String shortMsg;
+	String shortMsg;
 
-	public MockCommit(PlotLane lane, String shortMsg) {
-		this.lane = lane;
+	public MockCommit() {
+		this.lane = null;
 		this.passingLines = new ArrayList<PlotLane>();
 		this.parents = new ArrayList<IMockCommit>();
 		this.children = new ArrayList<IMockCommit>();
-		this.shortMsg = shortMsg;
+		this.shortMsg = "foo";
 	}
 
 	public PlotLane getLane() {
@@ -27,7 +27,7 @@ public class MockCommit implements IMockCommit {
 	}
 
 	public PlotLane[] getPassingLanes() {
-		return passingLines.toArray();
+		return passingLines.toArray(new PlotLane[passingLines.size()]);
 	}
 
 	public int getParentCount() {
@@ -49,6 +49,14 @@ public class MockCommit implements IMockCommit {
 
 	public String getShortMessage() {
 		return shortMsg;
+	}
+
+	public boolean isChild(IMockCommit c) {
+		for (IMockCommit mc : children) {
+			if (mc == c)
+				return true;
+		}
+		return false;
 	}
 
 }
