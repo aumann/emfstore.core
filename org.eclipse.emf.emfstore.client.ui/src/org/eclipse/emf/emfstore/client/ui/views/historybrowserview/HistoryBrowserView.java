@@ -17,8 +17,14 @@ public class HistoryBrowserView extends ViewPart {
 		List<IMockCommit> commits = new ArrayList<IMockCommit>();
 
 		IMockCommit[] commArr = provider.getCommits();
-		for (IMockCommit comm : commArr) {
+
+		for (int i = 0; i < commArr.length; i++) {
+			IMockCommit comm = commArr[commArr.length - i - 1];
 			commits.add(comm);
+		}
+
+		for (int i = 0; i < commits.size(); i++) {
+			commArr[i] = commits.get(i);
 		}
 
 		tab.setInput(commits, commArr, true);
