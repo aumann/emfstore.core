@@ -35,9 +35,9 @@ class GraphLabelProvider extends BaseLabelProvider implements ITableLabelProvide
 		//			return ""; //$NON-NLS-1$
 		// }
 		if (columnIndex == 0)
-			return c.getId();
-		if (columnIndex == 1)
 			return c.getShortMessage();
+		if (columnIndex == 1)
+			return c.getId();
 		if (columnIndex == 2 || columnIndex == 3) {
 			final String author = committerOf(c);
 			if (author != null)

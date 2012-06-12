@@ -26,7 +26,7 @@ public class MockCommitProvider implements IMockCommitProvider {
 		commits = new MockCommit[10];
 		for (int i = 0; i < commits.length; i++) {
 			MockCommit mock = new MockCommit();
-			mock.shortMsg = "Commit Nr. " + i;
+			mock.shortMsg = "Message for Commit Nr. " + i;
 			commits[i] = mock;
 		}
 
