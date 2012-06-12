@@ -9,7 +9,7 @@ public class MockCommit implements IMockCommit {
 
 	PlotLane lane;
 
-	ArrayList<PlotLane> passingLines;
+	PlotLane[] passingLanes;
 
 	ArrayList<IMockCommit> parents;
 
@@ -21,7 +21,7 @@ public class MockCommit implements IMockCommit {
 
 	public MockCommit() {
 		this.lane = null;
-		this.passingLines = new ArrayList<PlotLane>();
+		this.passingLanes = new PlotLane[0];
 		this.parents = new ArrayList<IMockCommit>();
 		this.children = new ArrayList<IMockCommit>();
 		this.shortMsg = "foo";
@@ -32,7 +32,7 @@ public class MockCommit implements IMockCommit {
 	}
 
 	public PlotLane[] getPassingLanes() {
-		return passingLines.toArray(new PlotLane[passingLines.size()]);
+		return passingLanes;
 	}
 
 	public int getParentCount() {
@@ -88,5 +88,19 @@ public class MockCommit implements IMockCommit {
 	public void dispose() {
 		if (widget != null)
 			widget.dispose();
+	}
+
+	void addPassingLane(final PlotLane c) {
+		final int cnt = passingLanes.length;
+		if (cnt == 0)
+			passingLanes = new PlotLane[] { c };
+		else if (cnt == 1)
+			passingLanes = new PlotLane[] { passingLanes[0], c };
+		else {
+			final PlotLane[] n = new PlotLane[cnt + 1];
+			System.arraycopy(passingLanes, 0, n, 0, cnt);
+			n[cnt] = c;
+			passingLanes = n;
+		}
 	}
 }

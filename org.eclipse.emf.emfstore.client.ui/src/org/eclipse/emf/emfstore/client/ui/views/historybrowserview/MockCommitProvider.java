@@ -18,42 +18,40 @@ public class MockCommitProvider implements IMockCommitProvider {
 		setup();
 	}
 
-	// create the 10 commits. index 0 represents oldest, 9 newest comit
-	// TODO it is possible that we need to turn this around, because of the
-	// index-parameter in enter-method. time will show
+	// create the 10 commits. index 0 represents newest element named 9
 	private void setup() {
 		// init commits array
 		commits = new MockCommit[10];
 		for (int i = 0; i < commits.length; i++) {
 			MockCommit mock = new MockCommit();
-			mock.shortMsg = "Message for Commit Nr. " + i;
+			mock.shortMsg = "Message for Commit Nr. " + (9 - i);
 			commits[i] = mock;
 		}
 
-		// set parents
-		commits[9].parents.add(commits[8]);
+		// set parents (9 - "nameofcommit")
+		commits[9 - 9].parents.add(commits[9 - 8]);
 
-		commits[8].parents.add(commits[7]);
-		commits[8].parents.add(commits[6]);
+		commits[9 - 8].parents.add(commits[9 - 7]);
+		commits[9 - 8].parents.add(commits[9 - 6]);
 
-		commits[7].parents.add(commits[3]);
+		commits[9 - 7].parents.add(commits[9 - 3]);
 
-		commits[6].parents.add(commits[5]);
-		commits[6].parents.add(commits[4]);
+		commits[9 - 6].parents.add(commits[9 - 5]);
+		commits[9 - 6].parents.add(commits[9 - 4]);
 
-		commits[5].parents.add(commits[1]);
+		commits[9 - 5].parents.add(commits[9 - 1]);
 
-		commits[4].parents.add(commits[2]);
+		commits[9 - 4].parents.add(commits[9 - 2]);
 
-		commits[3].parents.add(commits[1]);
+		commits[9 - 3].parents.add(commits[9 - 1]);
 
-		commits[2].parents.add(commits[1]);
+		commits[9 - 2].parents.add(commits[9 - 1]);
 
-		commits[1].parents.add(commits[0]);
+		commits[9 - 1].parents.add(commits[9 - 0]);
 
 		// "enter" commits
-		for (int i = 9; i >= 0; i--) {
-			enter(10 - i, commits[i]);
+		for (int i = 0; i < 10; i++) {
+			enter(i, commits[i]);
 		}
 	}
 
@@ -76,13 +74,10 @@ public class MockCommitProvider implements IMockCommitProvider {
 				activeLanes.add(c.lane);
 			}
 			for (int r = index - 1; r >= 0; r--) {
-				final MockCommit rObj = commits[r]; // TODO stimmt das hier mit
-													// r so??
+				final MockCommit rObj = commits[r];
 				if (rObj == c)
 					break;
-				// rObj.addPassingLane(c.lane); //TODO passiert hier was
-				// magisches?
-				rObj.passingLines.add(c.lane);
+				rObj.addPassingLane(c.lane);
 			}
 
 			currCommit.lane = c.lane;
@@ -157,12 +152,13 @@ public class MockCommitProvider implements IMockCommitProvider {
 		return p;
 	}
 
-	private void handleBlockedLanes(final int index, final MockCommit commit, final int nChildren) {
+	private void handleBlockedLanes(final int index, final MockCommit commit,
+			final int nChildren) {
 		// take care:
 		int remaining = nChildren;
 		BitSet blockedPositions = new BitSet();
 		for (int r = index - 1; r >= 0; r--) {
-			final MockCommit rObj = commits[r]; // TODO stimmt das so?
+			final MockCommit rObj = commits[r];
 			if (commit.isChild(rObj)) {
 				if (--remaining == 0)
 					break;
@@ -171,9 +167,7 @@ public class MockCommitProvider implements IMockCommitProvider {
 				PlotLane lane = rObj.getLane();
 				if (lane != null)
 					blockedPositions.set(lane.getPosition());
-				// rObj.addPassingLane(commit.lane); //TODO passiert hier was
-				// magisches?
-				rObj.passingLines.add(commit.lane);
+				rObj.addPassingLane(commit.lane);
 			}
 		}
 		// Now let's check whether we have to reposition the lane
