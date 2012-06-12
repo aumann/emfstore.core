@@ -304,6 +304,13 @@ class CommitGraphTable {
 	}
 
 	private void createColumns(final Table rawTable, final TableLayout layout) {
+
+		final TableColumn graph = new TableColumn(rawTable, SWT.NONE);
+		graph.setResizable(true);
+		graph.setText("Message");
+		graph.setWidth(250);
+		layout.addColumnData(new ColumnWeightData(20, true));
+
 		final TableColumn commitId = new TableColumn(rawTable, SWT.NONE);
 		commitId.setResizable(true);
 		commitId.setText("Commit ID");
@@ -316,12 +323,6 @@ class CommitGraphTable {
 			gc.dispose();
 		}
 		layout.addColumnData(new ColumnWeightData(3, minWidth, true));
-
-		final TableColumn graph = new TableColumn(rawTable, SWT.NONE);
-		graph.setResizable(true);
-		graph.setText("Message");
-		graph.setWidth(250);
-		layout.addColumnData(new ColumnWeightData(20, true));
 
 		final TableColumn committer = new TableColumn(rawTable, SWT.NONE);
 		committer.setResizable(true);

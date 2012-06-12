@@ -157,8 +157,7 @@ public class MockCommitProvider implements IMockCommitProvider {
 		return p;
 	}
 
-	private void handleBlockedLanes(final int index, final MockCommit commit,
-			final int nChildren) {
+	private void handleBlockedLanes(final int index, final MockCommit commit, final int nChildren) {
 		// take care:
 		int remaining = nChildren;
 		BitSet blockedPositions = new BitSet();
@@ -198,5 +197,9 @@ public class MockCommitProvider implements IMockCommitProvider {
 		if (activeLanes.remove(lane)) {
 			freePositions.add(Integer.valueOf(lane.getPosition()));
 		}
+	}
+
+	public IMockCommit[] getCommits() {
+		return commits;
 	}
 }

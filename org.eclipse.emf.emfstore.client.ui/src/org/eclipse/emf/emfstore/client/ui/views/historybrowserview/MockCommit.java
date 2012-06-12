@@ -74,13 +74,11 @@ public class MockCommit implements IMockCommit {
 	}
 
 	public String getCommitterName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "Pot Committed";
 	}
 
 	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
+		return "co_38423";
 	}
 
 	public Date getCommitDate() {

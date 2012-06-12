@@ -38,7 +38,9 @@ package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
 
 import java.io.Serializable;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.ui.PlatformUI;
 
 /**
  * A line space within the graph.
@@ -50,7 +52,7 @@ public class PlotLane implements Serializable {
 
 	int position;
 
-	Color color;
+	Color color = PlatformUI.getWorkbench().getDisplay().getSystemColor(SWT.COLOR_BLACK);
 
 	/**
 	 * Logical location of this lane within the graphing plane.
