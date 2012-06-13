@@ -113,6 +113,15 @@ public class ProjectSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 					&& next.getPrimarySpec().compareTo(resolvedVersion) < 1; next = next.getNextVersion()) {
 					next.getChanges().apply(projectState);
 				}
+
+				// TODO BRANCH implement
+				// ArrayList<Version> versions = new ArrayList<Version>();
+				// Version currentVersion = version;
+				// while (currentVersion.getProjectState() == null) {
+				// versions.add(currentVersion);
+				// currentVersion = VersionSubInterfaceImpl.findNextVersion(currentVersion);
+				// }
+
 				return projectState;
 			}
 			return version.getProjectState();

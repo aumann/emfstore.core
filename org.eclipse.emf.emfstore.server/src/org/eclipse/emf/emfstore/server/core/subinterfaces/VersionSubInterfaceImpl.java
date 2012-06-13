@@ -630,14 +630,22 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 		}
 	}
 
-	private Version findNextVersion(Version currentVersion) throws InvalidVersionSpecException {
+	/**
+	 * Helper method which retrieves the next version in the history tree. This method must be used in reversed order.
+	 * TODO better documentation
+	 * 
+	 * @param currentVersion
+	 * @return
+	 * @throws InvalidVersionSpecException
+	 */
+	public static Version findNextVersion(Version currentVersion) throws InvalidVersionSpecException {
 		// find next version
 		if (currentVersion.getPreviousVersion() != null) {
 			currentVersion = currentVersion.getPreviousVersion();
 		} else if (currentVersion.getAncestorVersion() != null) {
 			currentVersion = currentVersion.getAncestorVersion();
 		} else {
-			throw new InvalidVersionSpecException();
+			throw new InvalidVersionSpecException("Couldn't determine next version in history.");
 		}
 		return currentVersion;
 	}
