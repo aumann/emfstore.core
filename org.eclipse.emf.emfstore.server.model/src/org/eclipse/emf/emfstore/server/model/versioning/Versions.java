@@ -32,6 +32,10 @@ public class Versions {
 		return PRIMARY(versionSpec.getBranch(), index);
 	}
 
+	public static PrimaryVersionSpec PRIMARY(int i) {
+		return PRIMARY(VersionSpec.BRANCH_DEFAULT_NAME, i);
+	}
+
 	public static BranchVersionSpec BRANCH(String value) {
 		BranchVersionSpec branchSpec = VersioningFactory.eINSTANCE.createBranchVersionSpec();
 		branchSpec.setBranch(value);
@@ -49,4 +53,5 @@ public class Versions {
 		ancestor.setTarget(EcoreUtil.copy(target));
 		return ancestor;
 	}
+
 }

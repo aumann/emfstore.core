@@ -24,7 +24,7 @@ import org.eclipse.emf.emfstore.client.test.conflictDetection.ConflictDetectionT
 import org.eclipse.emf.emfstore.common.model.ModelElementId;
 import org.eclipse.emf.emfstore.common.model.Project;
 import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
-import org.eclipse.emf.emfstore.server.model.versioning.VersioningFactory;
+import org.eclipse.emf.emfstore.server.model.versioning.Versions;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.AbstractOperation;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.AttributeOperation;
 
@@ -50,6 +50,7 @@ public class MergeTest extends ConflictDetectionTest {
 	public MergeCase newMergeCase(EObject... objs) {
 		MergeCase mCase = newMergeCase();
 		mCase.add(objs);
+		mCase.ensureCopy();
 		return mCase;
 	}
 
@@ -82,7 +83,7 @@ public class MergeTest extends ConflictDetectionTest {
 
 		private ProjectSpace theirProjectSpace;
 
-		public void add(EObject... objs) {
+		private void add(EObject... objs) {
 			for (EObject obj : objs) {
 				getProject().addModelElement(obj);
 			}
@@ -105,7 +106,7 @@ public class MergeTest extends ConflictDetectionTest {
 		}
 
 		public ModelElementId getTheirId(EObject obj) {
-			return getTheirProject().getModelElementId(obj);
+			return getTheirProject().getModelElementId(getTheirItem(obj));
 		}
 
 		@SuppressWarnings("unchecked")
@@ -118,7 +119,7 @@ public class MergeTest extends ConflictDetectionTest {
 			return getProject().getModelElementId(id);
 		}
 
-		private void ensureCopy() {
+		public void ensureCopy() {
 			if (theirProjectSpace == null) {
 				clearOperations();
 				this.theirProjectSpace = cloneProjectSpace(getProjectSpace());
@@ -137,8 +138,7 @@ public class MergeTest extends ConflictDetectionTest {
 
 		public DecisionManager execute() {
 			ensureCopy();
-			PrimaryVersionSpec spec = VersioningFactory.eINSTANCE.createPrimaryVersionSpec();
-			spec.setIdentifier(23);
+			PrimaryVersionSpec spec = Versions.PRIMARY(23);
 
 			DecisionManager manager = new DecisionManager(getProject(), Arrays.asList(getProjectSpace()
 				.getLocalChangePackage(true)), Arrays.asList(getTheirProjectSpace().getLocalChangePackage(true)), spec,
