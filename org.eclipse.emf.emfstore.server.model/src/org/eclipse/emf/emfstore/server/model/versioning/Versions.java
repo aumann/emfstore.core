@@ -54,4 +54,13 @@ public class Versions {
 		return ancestor;
 	}
 
+	public static boolean isSameBranch(VersionSpec spec1, VersionSpec spec2) {
+		if (spec1 == null || spec2 == null) {
+			return false;
+		}
+		if (spec1.getBranch() != null && spec1.getBranch().equals(spec2.getBranch())) {
+			return true;
+		}
+		return false;
+	}
 }

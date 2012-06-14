@@ -1,5 +1,7 @@
 package org.eclipse.emf.emfstore.client.ui.dialogs;
 
+import java.util.List;
+
 import org.eclipse.emf.emfstore.server.model.versioning.BranchInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -130,6 +132,20 @@ public class BranchSelectionDialog extends TitleAreaDialog {
 	@Override
 	protected Point getInitialSize() {
 		return new Point(400, 350);
+	}
+
+	static public class CheckoutSelection extends BranchSelectionDialog {
+
+		public CheckoutSelection(Shell parentShell, List<BranchInfo> branches) {
+			super(parentShell, null, branches);
+		}
+
+		@Override
+		protected void setHeaderTexts() {
+			setTitle("Checkout Branch");
+			setMessage("Please choose which Branch should be checked out.");
+		}
+
 	}
 
 	static public class Creation extends BranchSelectionDialog {

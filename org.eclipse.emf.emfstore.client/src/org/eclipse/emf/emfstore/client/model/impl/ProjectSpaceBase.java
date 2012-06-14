@@ -69,6 +69,7 @@ import org.eclipse.emf.emfstore.common.model.util.FileUtil;
 import org.eclipse.emf.emfstore.common.model.util.ModelUtil;
 import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
 import org.eclipse.emf.emfstore.server.exceptions.FileTransferException;
+import org.eclipse.emf.emfstore.server.exceptions.InvalidVersionSpecException;
 import org.eclipse.emf.emfstore.server.model.FileIdentifier;
 import org.eclipse.emf.emfstore.server.model.ProjectInfo;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.ACUser;
@@ -840,6 +841,11 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 		new ServerCall<Void>(this) {
 			@Override
 			protected Void run() throws EmfStoreException {
+
+				if (Versions.isSameBranch(getBaseVersion(), branchSpec)) {
+					throw new InvalidVersionSpecException("Can't merge branch with itself.");
+				}
+
 				PrimaryVersionSpec commonAncestor = resolveVersionSpec(Versions.ANCESTOR(getBaseVersion(), branchSpec));
 
 				List<ChangePackage> baseChanges = getChanges(commonAncestor, getBaseVersion());
