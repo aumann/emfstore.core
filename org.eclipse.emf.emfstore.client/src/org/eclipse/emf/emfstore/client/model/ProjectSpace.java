@@ -315,6 +315,35 @@ public interface ProjectSpace extends IdentifiableElement {
 	void setLocalChangePackage(ChangePackage value);
 
 	/**
+	 * Returns the value of the '<em><b>Merged Version</b></em>' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <p>
+	 * If the meaning of the '<em>Merged Version</em>' containment reference isn't clear, there really should be more of
+	 * a description here...
+	 * </p>
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the value of the '<em>Merged Version</em>' containment reference.
+	 * @see #setMergedVersion(PrimaryVersionSpec)
+	 * @see org.eclipse.emf.emfstore.client.model.ModelPackage#getProjectSpace_MergedVersion()
+	 * @model containment="true" resolveProxies="true"
+	 * @generated
+	 */
+	PrimaryVersionSpec getMergedVersion();
+
+	/**
+	 * Sets the value of the '{@link org.eclipse.emf.emfstore.client.model.ProjectSpace#getMergedVersion
+	 * <em>Merged Version</em>}' containment reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @param value the new value of the '<em>Merged Version</em>' containment reference.
+	 * @see #getMergedVersion()
+	 * @generated
+	 */
+	void setMergedVersion(PrimaryVersionSpec value);
+
+	/**
 	 * @return a list of the change packages between two PrimarySpecVersions.
 	 * @param sourceVersion
 	 *            the source version spec
