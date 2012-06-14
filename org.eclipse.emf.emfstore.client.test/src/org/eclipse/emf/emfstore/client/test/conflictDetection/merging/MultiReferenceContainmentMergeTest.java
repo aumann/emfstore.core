@@ -2,11 +2,13 @@ package org.eclipse.emf.emfstore.client.test.conflictDetection.merging;
 
 import static java.util.Arrays.asList;
 
+import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.DeletionConflict;
 import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.MultiReferenceConflict;
 import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.MultiReferenceSetConflict;
 import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.MultiReferenceSetSetConflict;
 import org.eclipse.emf.emfstore.client.model.util.EMFStoreCommand;
 import org.eclipse.emf.emfstore.client.test.testmodel.TestElement;
+import org.eclipse.emf.emfstore.server.model.versioning.operations.CreateDeleteOperation;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.MultiReferenceOperation;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.MultiReferenceSetOperation;
 import org.junit.Test;
@@ -128,9 +130,9 @@ public class MultiReferenceContainmentMergeTest extends MergeTest {
 		final TestElement parent = createTestElement();
 		final TestElement parent2 = createTestElement();
 		final TestElement child = createTestElement();
-		parent2.getContainedElements().add(child);
+		// parent2.getContainedElements().add(child);
 
-		final MergeCase mc = newMergeCase(parent, parent2);
+		final MergeCase mc = newMergeCase(parent, parent2, child);
 
 		new EMFStoreCommand() {
 			@Override
@@ -143,21 +145,16 @@ public class MultiReferenceContainmentMergeTest extends MergeTest {
 			@Override
 			protected void doRun() {
 				// V1
+				mc.getTheirItem(parent2).getContainedElements().add(mc.getTheirItem(child));
 				mc.getTheirItem(parent2).getContainedElements().remove(mc.getTheirItem(child));
-				// V2
-				// mc.getTheirItem(parent).setContainedElement(mc.getTheirItem(child));
-				// V3
-				// TestElement theirItem = mc.getTheirItem(child);
-				// mc.getTheirItem(parent2).getContainedElements().remove(theirItem);
-				// mc.getTheirProject().addModelElement(theirItem);
 			}
 		}.run(false);
 
-		mc.hasConflict(MultiReferenceConflict.class)
+		mc.hasConflict(DeletionConflict.class)
 		// My
-			.myIs(MultiReferenceOperation.class).andReturns("isAdd", true).andNoOtherMyOps()
+			.myIs(MultiReferenceOperation.class).andReturns("isAdd", true)
 			// Theirs
-			.theirsIs(MultiReferenceOperation.class).andReturns("isAdd", false).andNoOtherTheirOps();
+			.theirsIs(CreateDeleteOperation.class).andReturns("isDelete", true);
 	}
 
 	@Test
@@ -282,6 +279,7 @@ public class MultiReferenceContainmentMergeTest extends MergeTest {
 			}
 		}.run(false);
 
-		mc.hasConflict(null);
+		// false negative
+		mc.hasConflict(DeletionConflict.class, 2);
 	}
 }
