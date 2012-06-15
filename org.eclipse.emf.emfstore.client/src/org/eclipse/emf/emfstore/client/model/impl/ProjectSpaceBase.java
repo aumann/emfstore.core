@@ -29,6 +29,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.EcoreUtil.UsageCrossReferencer;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.emfstore.client.model.CompositeOperationHandle;
@@ -853,6 +854,7 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 
 				if (conflictResolver.resolveConflicts(getProject(), branchChanges, baseChanges, getBaseVersion(), null)) {
 					applyChanges(getBaseVersion(), baseChanges, conflictResolver.getMergedResult());
+					setMergedVersion(EcoreUtil.copy(branchSpec));
 				}
 				return null;
 			}

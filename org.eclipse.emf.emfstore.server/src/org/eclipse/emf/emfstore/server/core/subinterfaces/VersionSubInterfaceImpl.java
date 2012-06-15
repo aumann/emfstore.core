@@ -248,6 +248,7 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 			// defined here fore scoping reasons
 			Version newVersion = null;
 
+			// normal commit
 			if (targetBranch == null || (baseVersion.getPrimarySpec().getBranch().equals(targetBranch.getBranch()))) {
 
 				// If branch is null or branch equals base branch, create new version for specific branch
@@ -269,8 +270,10 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 				// TODO BRANCH custom exception
 				throw new EmfStoreException("invalid.");
 			}
+
+			// TODO BRANCH review
 			if (sourceVersion != null) {
-				// TODO BRANCH add sources
+				newVersion.getMergedFromVersion().add(getVersion(projectHistory, sourceVersion));
 			}
 
 			// TODO BRANCH fix in memory first, then persistence
@@ -384,7 +387,7 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 	}
 
 	/**
-	 * {@inheritDocf}
+	 * {@inheritDoc}
 	 */
 	public List<BranchInfo> getBranches(ProjectId projectId) throws EmfStoreException {
 		synchronized (getMonitor()) {
