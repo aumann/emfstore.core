@@ -96,11 +96,11 @@
                  <instanceof
                        value="org.eclipse.emf.emfstore.client.model.ProjectSpace">
                  </instanceof>
-                 <test
+                 <!-- <test
                        forcePluginActivation="true"
                        property="org.eclipse.emf.emfstore.client.ui.commands.projectHasLocalChanges"
                        value="true">
-                 </test>
+                 </test> -->
               </iterate>
            </and>
         </enabledWhen>

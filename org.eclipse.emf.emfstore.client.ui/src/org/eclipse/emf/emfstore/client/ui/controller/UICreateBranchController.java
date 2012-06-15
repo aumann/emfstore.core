@@ -74,9 +74,11 @@ public class UICreateBranchController extends AbstractEMFStoreUIController imple
 
 	public boolean inspectChanges(ProjectSpace projectSpace, ChangePackage changePackage) {
 		if (changePackage.getOperations().isEmpty()) {
-			MessageDialog.openInformation(getShell(), "No local changes",
-				"Your local changes were mutually exclusive.\nThey are no changes pending for commit.");
-			return false;
+			// MessageDialog.openInformation(getShell(), "No local changes",
+			// "Your local changes were mutually exclusive.\nThey are no changes pending for commit.");
+			// return false;
+			// TODO BRANCH allow empty commit (branch creation)
+			return true;
 		}
 		CommitDialog commitDialog = new CommitDialog(getShell(), changePackage, projectSpace);
 		if (commitDialog.open() == Dialog.OK) {

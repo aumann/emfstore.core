@@ -93,7 +93,8 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 
 		getProgressMonitor().subTask("Checking changes");
 		// check if there are any changes
-		if (!getProjectSpace().isDirty()) {
+		// TODO BRANCH review
+		if (!getProjectSpace().isDirty() && branch == null) {
 			callback.noLocalChanges(getProjectSpace());
 			return getProjectSpace().getBaseVersion();
 		}
