@@ -85,7 +85,7 @@ import org.eclipse.ui.part.ViewPart;
  * @author Wesendonk
  * @author Shterev
  */
-public class HistoryBrowserViewOld extends ViewPart implements ProjectSpaceContainer {
+public class HistoryBrowserView extends ViewPart implements ProjectSpaceContainer {
 
 	/**
 	 * Treeviewer that provides a model element selection for selected
@@ -209,7 +209,7 @@ public class HistoryBrowserViewOld extends ViewPart implements ProjectSpaceConta
 	/**
 	 * Constructor.
 	 */
-	public HistoryBrowserViewOld() {
+	public HistoryBrowserView() {
 		historyInfos = new ArrayList<HistoryInfo>();
 		changePackageCache = new HashMap<Integer, ChangePackage>();
 	}
