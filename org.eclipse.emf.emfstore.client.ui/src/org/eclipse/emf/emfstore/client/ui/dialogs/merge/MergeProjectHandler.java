@@ -11,7 +11,6 @@
 package org.eclipse.emf.emfstore.client.ui.dialogs.merge;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.emf.emfstore.client.model.WorkspaceManager;
@@ -117,21 +116,5 @@ public class MergeProjectHandler implements ConflictResolver {
 		result.getOperations().addAll(mergeResult);
 
 		return result;
-	}
-
-	/**
-	 * Adapter Until "Branch" branch is merged into master
-	 * 
-	 * {@inheritDoc}
-	 * 
-	 * @see org.eclipse.emf.emfstore.client.model.observers.ConflictResolver#resolveConflicts(org.eclipse.emf.emfstore.common.model.Project,
-	 *      java.util.List, org.eclipse.emf.emfstore.server.model.versioning.ChangePackage,
-	 *      org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec,
-	 *      org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec)
-	 */
-	public boolean resolveConflicts(Project project, List<ChangePackage> theirChangePackages,
-		ChangePackage myChangePackage, PrimaryVersionSpec baseVersion, PrimaryVersionSpec targetVersion) {
-		return resolveConflicts(project, Arrays.asList(myChangePackage), theirChangePackages, baseVersion,
-			targetVersion);
 	}
 }

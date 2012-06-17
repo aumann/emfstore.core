@@ -14,6 +14,7 @@ import org.eclipse.emf.emfstore.client.model.Configuration;
 import org.eclipse.emf.emfstore.client.model.ProjectSpace;
 import org.eclipse.emf.emfstore.client.model.Workspace;
 import org.eclipse.emf.emfstore.client.model.WorkspaceManager;
+import org.eclipse.emf.emfstore.client.model.connectionmanager.ConnectionManager;
 import org.eclipse.emf.emfstore.client.model.util.EMFStoreCommand;
 import org.eclipse.emf.emfstore.client.model.util.EMFStoreCommandWithResult;
 import org.eclipse.emf.emfstore.client.test.testmodel.TestElement;
@@ -38,8 +39,14 @@ public abstract class WorkspaceTest {
 	 */
 	@Before
 	public void setupProjectSpace() {
+		beforeHook();
 		Configuration.setTesting(true);
-		final Workspace workspace = WorkspaceManager.getInstance().getCurrentWorkspace();
+		WorkspaceManager workspaceManager = WorkspaceManager.getInstance();
+		ConnectionManager connectionManager = initConnectionManager();
+		if (connectionManager != null) {
+			workspaceManager.setConnectionManager(connectionManager);
+		}
+		final Workspace workspace = workspaceManager.getCurrentWorkspace();
 		new EMFStoreCommand() {
 
 			@Override
@@ -52,17 +59,33 @@ public abstract class WorkspaceTest {
 
 	}
 
+	public void beforeHook() {
+	}
+
+	public ConnectionManager initConnectionManager() {
+		return null;
+	}
+
 	/**
 	 * Clean workspace.
 	 */
 	@After
 	public void cleanProjectSpace() {
+		cleanProjectSpace(getProjectSpace());
+	}
+
+	/**
+	 * Clean workspace.
+	 * 
+	 * @param ps projectSpace
+	 */
+	public void cleanProjectSpace(final ProjectSpace ps) {
 		new EMFStoreCommand() {
 
 			@Override
 			protected void doRun() {
 				try {
-					WorkspaceManager.getInstance().getCurrentWorkspace().deleteProjectSpace(getProjectSpace());
+					WorkspaceManager.getInstance().getCurrentWorkspace().deleteProjectSpace(ps);
 				} catch (IOException e) {
 					fail();
 				}
@@ -132,15 +155,21 @@ public abstract class WorkspaceTest {
 	 */
 	protected TestElement getTestElement(String name) {
 		TestElement element = TestmodelFactory.eINSTANCE.createTestElement();
-		element.setName(name);
+		if (name != null) {
+			element.setName(name);
+		}
 		return element;
 	}
 
 	public TestElement createTestElement() {
+		return createTestElement(null);
+	}
+
+	public TestElement createTestElement(final String name) {
 		return new EMFStoreCommandWithResult<TestElement>() {
 			@Override
 			protected TestElement doRun() {
-				return getTestElement();
+				return getTestElement(name);
 			}
 		}.run(false);
 	}

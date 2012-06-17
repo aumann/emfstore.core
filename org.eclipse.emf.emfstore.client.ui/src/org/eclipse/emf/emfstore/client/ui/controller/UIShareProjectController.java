@@ -30,15 +30,12 @@ public class UIShareProjectController extends AbstractEMFStoreUIController {
 	public void share(ProjectSpace projectSpace) {
 		ProgressMonitorDialog progressDialog = openProgress();
 		try {
-			((ProjectSpaceImpl) projectSpace).shareProject(null,
-					progressDialog.getProgressMonitor());
-			MessageDialog.openInformation(getShell(), "Share completed",
-					"The project was successfully shared.");
+			((ProjectSpaceImpl) projectSpace).shareProject(null, progressDialog.getProgressMonitor());
+			MessageDialog.openInformation(getShell(), "Share completed", "The project was successfully shared.");
 		} catch (LoginCanceledException e) {
 			// fail silently
 		} catch (EmfStoreException e) {
-			MessageDialog.openError(Display.getCurrent().getActiveShell(),
-					"Error", e.getMessage());
+			MessageDialog.openError(Display.getCurrent().getActiveShell(), "Error", e.getMessage());
 		} finally {
 			closeProgress();
 		}
