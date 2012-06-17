@@ -248,6 +248,7 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 			// defined here fore scoping reasons
 			Version newVersion = null;
 
+			// normal commit
 			if (targetBranch == null || (baseVersion.getPrimarySpec().getBranch().equals(targetBranch.getBranch()))) {
 
 				// If branch is null or branch equals base branch, create new version for specific branch
@@ -269,8 +270,10 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 				// TODO BRANCH custom exception
 				throw new EmfStoreException("invalid.");
 			}
+
+			// TODO BRANCH review
 			if (sourceVersion != null) {
-				// TODO BRANCH add sources
+				newVersion.getMergedFromVersion().add(getVersion(projectHistory, sourceVersion));
 			}
 
 			// TODO BRANCH fix in memory first, then persistence
@@ -384,7 +387,7 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 	}
 
 	/**
-	 * {@inheritDocf}
+	 * {@inheritDoc}
 	 */
 	public List<BranchInfo> getBranches(ProjectId projectId) throws EmfStoreException {
 		synchronized (getMonitor()) {
@@ -630,14 +633,22 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 		}
 	}
 
-	private Version findNextVersion(Version currentVersion) throws InvalidVersionSpecException {
+	/**
+	 * Helper method which retrieves the next version in the history tree. This method must be used in reversed order.
+	 * TODO better documentation
+	 * 
+	 * @param currentVersion
+	 * @return
+	 * @throws InvalidVersionSpecException
+	 */
+	public static Version findNextVersion(Version currentVersion) throws InvalidVersionSpecException {
 		// find next version
 		if (currentVersion.getPreviousVersion() != null) {
 			currentVersion = currentVersion.getPreviousVersion();
 		} else if (currentVersion.getAncestorVersion() != null) {
 			currentVersion = currentVersion.getAncestorVersion();
 		} else {
-			throw new InvalidVersionSpecException();
+			throw new InvalidVersionSpecException("Couldn't determine next version in history.");
 		}
 		return currentVersion;
 	}

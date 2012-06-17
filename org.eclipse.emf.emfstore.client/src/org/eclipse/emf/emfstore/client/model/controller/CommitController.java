@@ -93,7 +93,8 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 
 		getProgressMonitor().subTask("Checking changes");
 		// check if there are any changes
-		if (!getProjectSpace().isDirty()) {
+		// TODO BRANCH review
+		if (!getProjectSpace().isDirty() && branch == null) {
 			callback.noLocalChanges(getProjectSpace());
 			return getProjectSpace().getBaseVersion();
 		}
@@ -146,14 +147,16 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 		// TODO BRANCH
 		// Branching case: branch specifier added
 		newBaseVersion = getConnectionManager().createVersion(getUsersession().getSessionId(),
-			getProjectSpace().getProjectId(), getProjectSpace().getBaseVersion(), changePackage, branch, null,
-			changePackage.getLogMessage());
+			getProjectSpace().getProjectId(), getProjectSpace().getBaseVersion(), changePackage, branch,
+			getProjectSpace().getMergedVersion(), changePackage.getLogMessage());
 
 		getProgressMonitor().worked(35);
 
 		getProgressMonitor().subTask("Finalizing commit");
 		getProjectSpace().setBaseVersion(newBaseVersion);
 		getProjectSpace().getOperations().clear();
+
+		getProjectSpace().setMergedVersion(null);
 
 		getProjectSpace().saveProjectSpaceOnly();
 

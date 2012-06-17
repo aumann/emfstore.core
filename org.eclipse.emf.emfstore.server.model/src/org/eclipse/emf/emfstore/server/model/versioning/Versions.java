@@ -32,6 +32,10 @@ public class Versions {
 		return PRIMARY(versionSpec.getBranch(), index);
 	}
 
+	public static PrimaryVersionSpec PRIMARY(int i) {
+		return PRIMARY(VersionSpec.BRANCH_DEFAULT_NAME, i);
+	}
+
 	public static BranchVersionSpec BRANCH(String value) {
 		BranchVersionSpec branchSpec = VersioningFactory.eINSTANCE.createBranchVersionSpec();
 		branchSpec.setBranch(value);
@@ -48,5 +52,15 @@ public class Versions {
 		ancestor.setSource(EcoreUtil.copy(source));
 		ancestor.setTarget(EcoreUtil.copy(target));
 		return ancestor;
+	}
+
+	public static boolean isSameBranch(VersionSpec spec1, VersionSpec spec2) {
+		if (spec1 == null || spec2 == null) {
+			return false;
+		}
+		if (spec1.getBranch() != null && spec1.getBranch().equals(spec2.getBranch())) {
+			return true;
+		}
+		return false;
 	}
 }

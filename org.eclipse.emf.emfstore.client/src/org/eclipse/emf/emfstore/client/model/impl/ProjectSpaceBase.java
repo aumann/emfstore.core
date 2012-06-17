@@ -29,6 +29,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.ECrossReferenceAdapter;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.util.EcoreUtil.UsageCrossReferencer;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.emfstore.client.model.CompositeOperationHandle;
@@ -69,6 +70,7 @@ import org.eclipse.emf.emfstore.common.model.util.FileUtil;
 import org.eclipse.emf.emfstore.common.model.util.ModelUtil;
 import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
 import org.eclipse.emf.emfstore.server.exceptions.FileTransferException;
+import org.eclipse.emf.emfstore.server.exceptions.InvalidVersionSpecException;
 import org.eclipse.emf.emfstore.server.model.FileIdentifier;
 import org.eclipse.emf.emfstore.server.model.ProjectInfo;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.ACUser;
@@ -840,6 +842,11 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 		new ServerCall<Void>(this) {
 			@Override
 			protected Void run() throws EmfStoreException {
+
+				if (Versions.isSameBranch(getBaseVersion(), branchSpec)) {
+					throw new InvalidVersionSpecException("Can't merge branch with itself.");
+				}
+
 				PrimaryVersionSpec commonAncestor = resolveVersionSpec(Versions.ANCESTOR(getBaseVersion(), branchSpec));
 
 				List<ChangePackage> baseChanges = getChanges(commonAncestor, getBaseVersion());
@@ -847,6 +854,7 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 
 				if (conflictResolver.resolveConflicts(getProject(), branchChanges, baseChanges, getBaseVersion(), null)) {
 					applyChanges(getBaseVersion(), baseChanges, conflictResolver.getMergedResult());
+					setMergedVersion(EcoreUtil.copy(branchSpec));
 				}
 				return null;
 			}

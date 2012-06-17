@@ -62,6 +62,7 @@ import org.eclipse.emf.emfstore.server.model.ProjectId;
 import org.eclipse.emf.emfstore.server.model.ProjectInfo;
 import org.eclipse.emf.emfstore.server.model.url.ProjectUrlFragment;
 import org.eclipse.emf.emfstore.server.model.url.ServerUrl;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.DateVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryQuery;
@@ -220,6 +221,7 @@ public class WorkspaceImpl extends EObjectImpl implements Workspace {
 		projectSpace.initResources(this.workspaceResourceSet);
 
 		// retrieve recent changes
+		// TODO BRANCH why are we doing this
 		try {
 			DateVersionSpec dateVersionSpec = VersioningFactory.eINSTANCE.createDateVersionSpec();
 			Calendar calendar = Calendar.getInstance();
@@ -615,6 +617,16 @@ public class WorkspaceImpl extends EObjectImpl implements Workspace {
 				ConnectionManager connectionManager = WorkspaceManager.getInstance().getConnectionManager();
 				return connectionManager.getHistoryInfo(getUsersession().getSessionId(), projectId, query);
 			}
+		}.execute();
+	}
+
+	public List<BranchInfo> getBranches(ServerInfo serverInfo, final ProjectId projectId) throws EmfStoreException {
+		return new ServerCall<List<BranchInfo>>(serverInfo) {
+			@Override
+			protected List<BranchInfo> run() throws EmfStoreException {
+				final ConnectionManager cm = WorkspaceManager.getInstance().getConnectionManager();
+				return cm.getBranches(getSessionId(), projectId);
+			};
 		}.execute();
 	}
 

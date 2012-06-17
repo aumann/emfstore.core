@@ -96,11 +96,11 @@
                  <instanceof
                        value="org.eclipse.emf.emfstore.client.model.ProjectSpace">
                  </instanceof>
-                 <test
+                 <!-- <test
                        forcePluginActivation="true"
                        property="org.eclipse.emf.emfstore.client.ui.commands.projectHasLocalChanges"
                        value="true">
-                 </test>
+                 </test> -->
               </iterate>
            </and>
         </enabledWhen>
@@ -230,6 +230,11 @@
            id="org.eclipse.emf.emfstore.client.ui.projectProperties"
            name="Project Properties">
      </command>
+     <command
+           defaultHandler="org.eclipse.emf.emfstore.client.ui.handlers.BranchCheckoutHandler"
+           id="org.eclipse.emf.emfstore.client.ui.repositorybrowser.BranchCheckout"
+           name="Branch Checkout">
+     </command>
   </extension>
   <extension
         point="org.eclipse.ui.menus">
@@ -275,6 +280,22 @@
               commandId="org.eclipse.emf.emfstore.client.ui.repositorybrowser.ProjectCheckout"
               icon="icons/checkout.png"
               label="Checkout"
+              style="push">
+           <visibleWhen
+                 checkEnabled="false">
+              <iterate
+                    ifEmpty="false"
+                    operator="and">
+                 <instanceof
+                       value="org.eclipse.emf.emfstore.server.model.ProjectInfo">
+                 </instanceof>
+              </iterate>
+           </visibleWhen>
+        </command>
+        <command
+              commandId="org.eclipse.emf.emfstore.client.ui.repositorybrowser.BranchCheckout"
+              icon="icons/checkout.png"
+              label="Checkout Branch..."
               style="push">
            <visibleWhen
                  checkEnabled="false">
