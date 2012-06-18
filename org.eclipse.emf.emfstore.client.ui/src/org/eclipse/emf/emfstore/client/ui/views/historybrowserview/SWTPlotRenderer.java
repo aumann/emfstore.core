@@ -253,8 +253,22 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 	// return isHead;
 	// }
 	@Override
-	protected Color laneColor(final PlotLane myLane) {
-		return myLane != null ? myLane.color : sys_gray;
+	protected Color laneColor(final PlotLane myLane, boolean fullSaturation) {
+		Color color;
+		if (myLane == null) {
+			if (fullSaturation) {
+				color = sys_black;
+			} else {
+				color = sys_gray;
+			}
+		} else {
+			if (fullSaturation) {
+				color = myLane.getSaturatedColor();
+			} else {
+				color = myLane.getLightColor();
+			}
+		}
+		return color;
 	}
 
 	// /**

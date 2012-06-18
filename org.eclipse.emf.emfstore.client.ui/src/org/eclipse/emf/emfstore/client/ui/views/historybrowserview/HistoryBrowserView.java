@@ -351,6 +351,7 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 			currItem = currItem.getParentItem();
 			if (currItem == null) {
 				// no history info in parent hierarchy, do not draw
+				// happens e.g. if the user deactivates showing the commits
 				return;
 			}
 			data = currItem.getData();

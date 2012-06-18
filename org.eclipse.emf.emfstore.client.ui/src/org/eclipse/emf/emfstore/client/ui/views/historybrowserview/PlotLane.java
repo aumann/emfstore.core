@@ -52,7 +52,10 @@ public class PlotLane implements Serializable {
 
 	int position;
 
+	// if colors get created, remember to dispose them in the dispose function below!
 	Color color = PlatformUI.getWorkbench().getDisplay().getSystemColor(SWT.COLOR_BLACK);
+
+	Color lightColor = PlatformUI.getWorkbench().getDisplay().getSystemColor(SWT.COLOR_GRAY);
 
 	/**
 	 * Logical location of this lane within the graphing plane.
@@ -63,8 +66,16 @@ public class PlotLane implements Serializable {
 		return position;
 	}
 
-	public Color getColor() {
+	public void dispose() {
+
+	}
+
+	public Color getSaturatedColor() {
 		return color;
+	}
+
+	public Color getLightColor() {
+		return lightColor;
 	}
 
 	@Override

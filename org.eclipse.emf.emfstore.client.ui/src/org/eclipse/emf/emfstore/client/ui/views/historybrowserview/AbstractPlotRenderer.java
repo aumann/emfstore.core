@@ -82,12 +82,13 @@ public abstract class AbstractPlotRenderer {
 		final int dotSize = computeDotSize(h);
 		final PlotLane myLane = commit.getLane();
 		final int myLaneX = laneC(myLane);
-		final Color myColor = laneColor(myLane);
+		final Color myColor = laneColor(myLane, true);
 
 		int maxCenter = 0;
 		for (final PlotLane passingLane : commit.getPassingLanes()) {
 			final int cx = laneC(passingLane);
-			final Color c = laneColor(passingLane);
+			final Color c;
+			c = laneColor(passingLane, commit.isRealCommit());
 			drawLine(c, cx, 0, cx, h, LINE_WIDTH);
 			maxCenter = Math.max(maxCenter, cx);
 		}
@@ -105,7 +106,7 @@ public abstract class AbstractPlotRenderer {
 				continue;
 			}
 
-			pColor = laneColor(pLane);
+			pColor = laneColor(pLane, true);
 			cx = laneC(pLane);
 			if (commit.isRealCommit()) {
 				if (Math.abs(myLaneX - cx) > LANE_WIDTH) {
@@ -123,7 +124,7 @@ public abstract class AbstractPlotRenderer {
 				}
 			} else {
 				// for children only draw the parent lanes in gray
-				drawLine(laneColor(null), cx, 0, cx, h, LINE_WIDTH);
+				drawLine(laneColor(pLane, false), cx, 0, cx, h, LINE_WIDTH);
 			}
 			maxCenter = Math.max(maxCenter, cx);
 		}
@@ -186,9 +187,10 @@ public abstract class AbstractPlotRenderer {
 	 * 
 	 * @param myLane
 	 *            the current lane. May be null.
+	 * @param b
 	 * @return graphics specific color reference. Must be a valid color.
 	 */
-	protected abstract Color laneColor(PlotLane myLane);
+	protected abstract Color laneColor(PlotLane myLane, boolean fullSaturation);
 
 	/**
 	 * Draw a single line within this cell.
