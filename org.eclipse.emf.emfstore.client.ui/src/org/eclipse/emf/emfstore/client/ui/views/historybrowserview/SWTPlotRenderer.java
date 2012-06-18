@@ -25,7 +25,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.TableItem;
 
 class SWTPlotRenderer extends AbstractPlotRenderer {
 
@@ -95,7 +94,7 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 		resources.dispose();
 	}
 
-	void paint(final Event event, Ref actHeadRef) {
+	void paint(final Event event, IMockCommit representer, Ref actHeadRef) {
 		g = event.gc;
 
 		if (this.enableAntialias)
@@ -113,15 +112,15 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 		if (textHeight == 0)
 			textHeight = g.stringExtent("/").y; //$NON-NLS-1$
 
-		final TableItem ti = (TableItem) event.item;
-		IMockCommit commit = (IMockCommit) ti.getData();
+		// final TableItem ti = (TableItem) event.item;
+		// IMockCommit commit = (IMockCommit) ti.getData();
 		// try {
 		// commit.parseBody();
 		// } catch (IOException e) {
 		//			Activator.error("Error parsing body", e); //$NON-NLS-1$
 		// return;
 		// }
-		paintCommit(commit, event.height);
+		paintCommit(representer, event.height);
 	}
 
 	@Override

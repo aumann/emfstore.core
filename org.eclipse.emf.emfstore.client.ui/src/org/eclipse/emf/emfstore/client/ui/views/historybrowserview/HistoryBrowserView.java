@@ -345,6 +345,8 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		logColumn.getColumn().setText("Commit information");
 		logColumn.getColumn().setWidth(300);
 
+		renderer = new SWTPlotRenderer(parent.getDisplay());
+
 		Tree tree = viewer.getTree();
 		tree.setHeaderVisible(true);
 
@@ -375,9 +377,11 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		// else
 		event.gc.setFont(nFont);
 
-		if (event.index == 0) {
+		if (event.index == 1) {
 			// renderer.paint(event, input == null ? null : input.getHead());
-			renderer.paint(event, null);
+			renderer.paint(event, c, null);
+			return;
+		} else if (true) {
 			return;
 		}
 
@@ -556,7 +560,9 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 	public void refresh() {
 		load(currentEnd);
 		viewer.setContentProvider(contentProvider);
-		viewer.setInput(getHistoryInfos());
+		List<HistoryInfo> historyInfos = getHistoryInfos();
+		commitProvider = new CommitProvider(historyInfos);
+		viewer.setInput(historyInfos);
 	}
 
 	private void load(final int end) {
@@ -605,7 +611,6 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 			changePackageCache.values()), projectSpace.getProject());
 		labelProvider.setChangePackageVisualizationHelper(changePackageVisualizationHelper);
 		logLabelProvider.setChangePackageVisualizationHelper(changePackageVisualizationHelper);
-		commitProvider = new CommitProvider(historyInfo);
 
 		// contentProvider.setChangePackageVisualizationHelper(changePackageVisualizationHelper);
 	}

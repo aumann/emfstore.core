@@ -1,8 +1,10 @@
 package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
 
 import java.util.BitSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
@@ -15,10 +17,16 @@ public class CommitProvider implements IMockCommitProvider {
 
 	private final HashSet<PlotLane> activeLanes = new HashSet<PlotLane>(32);
 
+	private Map<HistoryInfo, IMockCommit> commitForHistory = new HashMap<HistoryInfo, IMockCommit>();
+
 	private int positionsAllocated = 0;
 
 	public CommitProvider(List<HistoryInfo> historyInfo) {
 		setup();
+		for (int i = 0; i < historyInfo.size(); i++) {
+			commitForHistory.put(historyInfo.get(i), commits[i]);
+		}
+
 	}
 
 	// create the 10 commits. index 0 represents newest element named 9
@@ -200,7 +208,6 @@ public class CommitProvider implements IMockCommitProvider {
 	}
 
 	public IMockCommit getCommitFor(HistoryInfo info) {
-		// TODO Auto-generated method stub
-		return null;
+		return commitForHistory.get(info);
 	}
 }

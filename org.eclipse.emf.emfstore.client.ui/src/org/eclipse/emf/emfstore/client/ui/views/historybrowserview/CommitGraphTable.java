@@ -366,7 +366,7 @@ class CommitGraphTable {
 
 		if (event.index == 0) {
 			// renderer.paint(event, input == null ? null : input.getHead());
-			renderer.paint(event, null);
+			renderer.paint(event, c, null);
 			return;
 		}
 
