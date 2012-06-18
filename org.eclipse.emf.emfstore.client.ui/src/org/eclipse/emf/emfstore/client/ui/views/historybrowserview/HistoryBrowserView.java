@@ -61,6 +61,7 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
@@ -68,13 +69,19 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.ElementListSelectionDialog;
 import org.eclipse.ui.part.ViewPart;
 
@@ -86,6 +93,10 @@ import org.eclipse.ui.part.ViewPart;
  * @author Shterev
  */
 public class HistoryBrowserView extends ViewPart implements ProjectSpaceContainer {
+
+	SWTPlotRenderer renderer;
+
+	IMockCommitProvider commitProvider;
 
 	/**
 	 * Treeviewer that provides a model element selection for selected
@@ -179,6 +190,8 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 
 	private EObject modelElement;
 
+	private final Font nFont;
+
 	private TreeViewer viewer;
 	private Map<Integer, ChangePackage> changePackageCache;
 
@@ -206,12 +219,17 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 
 	private AdapterFactoryLabelProvider adapterFactoryLabelProvider;
 
+	private Tree tree;
+
+	private TreeViewerColumn graphColumn;
+
 	/**
 	 * Constructor.
 	 */
 	public HistoryBrowserView() {
 		historyInfos = new ArrayList<HistoryInfo>();
 		changePackageCache = new HashMap<Integer, ChangePackage>();
+		nFont = PlatformUI.getWorkbench().getDisplay().getSystemFont();
 	}
 
 	/**
@@ -264,6 +282,15 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		// GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, true).applyTo(noProjectHint);
 		// noProjectHint.setText("Please call 'Show history' from the context menu of an element in the navigator.");
 
+		// tree = new Tree(parent, SWT.NONE);
+
+		// tree.addListener(SWT.PaintItem, new Listener() {
+		//
+		// public void handleEvent(Event event) {
+		// doPaint(event);
+		// }
+		// });
+
 		viewer = new TreeViewerWithModelElementSelectionProvider(parent, SWT.NONE);
 
 		MenuManager menuMgr = new MenuManager();
@@ -297,6 +324,23 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		changesColumn.getColumn().setText("Changes");
 		changesColumn.getColumn().setWidth(400);
 
+		graphColumn = new TreeViewerColumn(viewer, SWT.NONE);
+		graphColumn.getColumn().setText("Branches");
+		graphColumn.getColumn().setWidth(200);
+		// graphColumn.getColumn().addListener(SWT.PaintItem, new Listener() {
+		//
+		// public void handleEvent(Event event) {
+		// doPaint(event);
+		// }
+		// });
+		viewer.getTree().addListener(SWT.PaintItem, new Listener() {
+
+			public void handleEvent(Event event) {
+				doPaint(event);
+
+			}
+		});
+
 		logColumn = new TreeViewerColumn(viewer, SWT.NONE);
 		logColumn.getColumn().setText("Commit information");
 		logColumn.getColumn().setWidth(300);
@@ -305,6 +349,47 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		tree.setHeaderVisible(true);
 
 		hookToobar();
+	}
+
+	protected void doPaint(final Event event) {
+		Object data;
+		TreeItem currItem = (TreeItem) event.item;
+		data = currItem.getData();
+		while (!(data instanceof HistoryInfo)) {
+			currItem = currItem.getParentItem();
+			if (currItem == null) {
+				// no history info in parent hierarchy, do not draw
+				return;
+			}
+			data = currItem.getData();
+		}
+
+		assert data instanceof HistoryInfo : "Would have returned otherwise.";
+
+		final IMockCommit c = commitProvider.getCommitFor((HistoryInfo) data);
+		final PlotLane lane = c.getLane();
+		if (lane != null && lane.color.isDisposed())
+			return;
+		// if (highlight != null && c.has(highlight))
+		// event.gc.setFont(hFont);
+		// else
+		event.gc.setFont(nFont);
+
+		if (event.index == 0) {
+			// renderer.paint(event, input == null ? null : input.getHead());
+			renderer.paint(event, null);
+			return;
+		}
+
+		final ITableLabelProvider lbl;
+		final String txt;
+
+		lbl = (ITableLabelProvider) viewer.getLabelProvider();
+		txt = lbl.getColumnText(c, event.index);
+
+		final Point textsz = event.gc.textExtent(txt);
+		final int texty = (event.height - textsz.y) / 2;
+		event.gc.drawString(txt, event.x, event.y + texty, true);
 	}
 
 	private void hookToobar() {
@@ -520,6 +605,8 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 			changePackageCache.values()), projectSpace.getProject());
 		labelProvider.setChangePackageVisualizationHelper(changePackageVisualizationHelper);
 		logLabelProvider.setChangePackageVisualizationHelper(changePackageVisualizationHelper);
+		commitProvider = new CommitProvider(historyInfo);
+
 		// contentProvider.setChangePackageVisualizationHelper(changePackageVisualizationHelper);
 	}
 
@@ -562,6 +649,9 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		}
 
 		setContentDescription(label);
+
+		graphColumn.setLabelProvider(new BranchGraphLabelProvider());
+
 		labelProvider = new SCMLabelProvider(project);
 		changesColumn.setLabelProvider(labelProvider);
 

@@ -4,6 +4,8 @@ import java.util.BitSet;
 import java.util.HashSet;
 import java.util.TreeSet;
 
+import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
+
 public class MockCommitProvider implements IMockCommitProvider {
 
 	private MockCommit[] commits;
@@ -152,8 +154,7 @@ public class MockCommitProvider implements IMockCommitProvider {
 		return p;
 	}
 
-	private void handleBlockedLanes(final int index, final MockCommit commit,
-			final int nChildren) {
+	private void handleBlockedLanes(final int index, final MockCommit commit, final int nChildren) {
 		// take care:
 		int remaining = nChildren;
 		BitSet blockedPositions = new BitSet();
@@ -195,5 +196,10 @@ public class MockCommitProvider implements IMockCommitProvider {
 
 	public IMockCommit[] getCommits() {
 		return commits;
+	}
+
+	public IMockCommit getCommitFor(HistoryInfo info) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
