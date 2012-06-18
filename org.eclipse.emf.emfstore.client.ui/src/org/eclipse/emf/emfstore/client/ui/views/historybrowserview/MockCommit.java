@@ -19,6 +19,8 @@ public class MockCommit implements IMockCommit {
 
 	private Widget widget;
 
+	private boolean isRealCommit;
+
 	public MockCommit() {
 		this.lane = null;
 		this.passingLanes = new PlotLane[0];
@@ -102,5 +104,13 @@ public class MockCommit implements IMockCommit {
 			n[cnt] = c;
 			passingLanes = n;
 		}
+	}
+
+	public void setIsRealCommit(boolean isReal) {
+		isRealCommit = isReal;
+	}
+
+	public boolean isRealCommit() {
+		return isRealCommit;
 	}
 }

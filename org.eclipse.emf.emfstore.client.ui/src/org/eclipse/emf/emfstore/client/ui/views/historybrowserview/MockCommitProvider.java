@@ -198,8 +198,7 @@ public class MockCommitProvider implements IMockCommitProvider {
 		return commits;
 	}
 
-	public IMockCommit getCommitFor(HistoryInfo info) {
-		// TODO Auto-generated method stub
+	public IMockCommit getCommitFor(HistoryInfo info, boolean isOnlyAChild) {
 		return null;
 	}
 }

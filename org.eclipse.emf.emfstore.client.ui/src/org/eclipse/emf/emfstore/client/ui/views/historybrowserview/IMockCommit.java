@@ -20,6 +20,10 @@ public interface IMockCommit {
 
 	public String getShortMessage();
 
+	public void setIsRealCommit(boolean isReal);
+
+	public boolean isRealCommit();
+
 	public Widget getWidget();
 
 	public void setWidget(Widget widget);

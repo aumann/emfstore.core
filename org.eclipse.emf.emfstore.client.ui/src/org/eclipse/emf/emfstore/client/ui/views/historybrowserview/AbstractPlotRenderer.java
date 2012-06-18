@@ -101,24 +101,29 @@ public abstract class AbstractPlotRenderer {
 
 			p = commit.getParent(i);
 			pLane = p.getLane();
-			if (pLane == null)
+			if (pLane == null) {
 				continue;
+			}
 
 			pColor = laneColor(pLane);
 			cx = laneC(pLane);
-
-			if (Math.abs(myLaneX - cx) > LANE_WIDTH) {
-				if (myLaneX < cx) {
-					final int ix = cx - LANE_WIDTH / 2;
-					drawLine(pColor, myLaneX, h / 2, ix, h / 2, LINE_WIDTH);
-					drawLine(pColor, ix, h / 2, cx, h, LINE_WIDTH);
+			if (commit.isRealCommit()) {
+				if (Math.abs(myLaneX - cx) > LANE_WIDTH) {
+					if (myLaneX < cx) {
+						final int ix = cx - LANE_WIDTH / 2;
+						drawLine(pColor, myLaneX, h / 2, ix, h / 2, LINE_WIDTH);
+						drawLine(pColor, ix, h / 2, cx, h, LINE_WIDTH);
+					} else {
+						final int ix = cx + LANE_WIDTH / 2;
+						drawLine(pColor, myLaneX, h / 2, ix, h / 2, LINE_WIDTH);
+						drawLine(pColor, ix, h / 2, cx, h, LINE_WIDTH);
+					}
 				} else {
-					final int ix = cx + LANE_WIDTH / 2;
-					drawLine(pColor, myLaneX, h / 2, ix, h / 2, LINE_WIDTH);
-					drawLine(pColor, ix, h / 2, cx, h, LINE_WIDTH);
+					drawLine(pColor, myLaneX, h / 2, cx, h, LINE_WIDTH);
 				}
 			} else {
-				drawLine(pColor, myLaneX, h / 2, cx, h, LINE_WIDTH);
+				// for children only draw the parent lanes in gray
+				drawLine(laneColor(null), cx, 0, cx, h, LINE_WIDTH);
 			}
 			maxCenter = Math.max(maxCenter, cx);
 		}
@@ -126,13 +131,16 @@ public abstract class AbstractPlotRenderer {
 		final int dotX = myLaneX - dotSize / 2 - 1;
 		final int dotY = (h - dotSize) / 2;
 
-		if (commit.getChildCount() > 0)
+		if (commit.isRealCommit() && commit.getChildCount() > 0) {
 			drawLine(myColor, myLaneX, 0, myLaneX, dotY, LINE_WIDTH);
+		}
 
 		// if (commit.has(RevFlag.UNINTERESTING))
 		// drawBoundaryDot(dotX, dotY, dotSize, dotSize);
 		// else
-		drawCommitDot(dotX, dotY, dotSize, dotSize);
+		if (commit.isRealCommit()) {
+			drawCommitDot(dotX, dotY, dotSize, dotSize);
+		}
 
 		int textx = Math.max(maxCenter + LANE_WIDTH / 2, dotX + dotSize) + 8;
 		// int n = commit.refs.length;
@@ -143,7 +151,9 @@ public abstract class AbstractPlotRenderer {
 		int n = 0; // remove if refs get re-enabled
 
 		final String msg = commit.getShortMessage();
-		drawText(msg, textx + dotSize + n * 2, h / 2);
+		if (commit.isRealCommit()) {
+			drawText(msg, textx + dotSize + n * 2, h / 2);
+		}
 	}
 
 	// /**

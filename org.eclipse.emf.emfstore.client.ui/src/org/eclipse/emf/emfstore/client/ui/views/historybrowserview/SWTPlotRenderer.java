@@ -94,7 +94,7 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 		resources.dispose();
 	}
 
-	void paint(final Event event, IMockCommit representer, Ref actHeadRef) {
+	void paint(final Event event, IMockCommit representer) {
 		g = event.gc;
 
 		if (this.enableAntialias)
@@ -104,7 +104,7 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 				this.enableAntialias = false;
 			}
 
-		this.headRef = actHeadRef;
+		// this.headRef = actHeadRef;
 		cellX = event.x;
 		cellY = event.y;
 		cellFG = g.getForeground();
@@ -254,7 +254,7 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 	// }
 	@Override
 	protected Color laneColor(final PlotLane myLane) {
-		return myLane != null ? myLane.color : sys_black;
+		return myLane != null ? myLane.color : sys_gray;
 	}
 
 	// /**

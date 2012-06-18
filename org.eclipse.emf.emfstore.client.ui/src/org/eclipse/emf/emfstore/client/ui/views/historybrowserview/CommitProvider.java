@@ -29,6 +29,9 @@ public class CommitProvider implements IMockCommitProvider {
 
 	}
 
+	private void createCommitsForHistory(List<HistoryInfo> historyInfo) {
+	}
+
 	// create the 10 commits. index 0 represents newest element named 9
 	private void setup() {
 		// init commits array
@@ -207,7 +210,9 @@ public class CommitProvider implements IMockCommitProvider {
 		return commits;
 	}
 
-	public IMockCommit getCommitFor(HistoryInfo info) {
-		return commitForHistory.get(info);
+	public IMockCommit getCommitFor(HistoryInfo info, boolean isOnlyAChildRequest) {
+		IMockCommit commit = commitForHistory.get(info);
+		commit.setIsRealCommit(!isOnlyAChildRequest);
+		return commit;
 	}
 }

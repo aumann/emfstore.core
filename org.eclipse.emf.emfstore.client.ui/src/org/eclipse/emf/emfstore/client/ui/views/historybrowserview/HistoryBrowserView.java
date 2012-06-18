@@ -219,9 +219,9 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 
 	private AdapterFactoryLabelProvider adapterFactoryLabelProvider;
 
-	private Tree tree;
-
 	private TreeViewerColumn graphColumn;
+
+	private final int BRANCH_COLUMN = 1;
 
 	/**
 	 * Constructor.
@@ -327,12 +327,6 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		graphColumn = new TreeViewerColumn(viewer, SWT.NONE);
 		graphColumn.getColumn().setText("Branches");
 		graphColumn.getColumn().setWidth(200);
-		// graphColumn.getColumn().addListener(SWT.PaintItem, new Listener() {
-		//
-		// public void handleEvent(Event event) {
-		// doPaint(event);
-		// }
-		// });
 		viewer.getTree().addListener(SWT.PaintItem, new Listener() {
 
 			public void handleEvent(Event event) {
@@ -354,10 +348,17 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 	}
 
 	protected void doPaint(final Event event) {
+		if (event.index != BRANCH_COLUMN) {
+			return;
+		}
+
 		Object data;
 		TreeItem currItem = (TreeItem) event.item;
 		data = currItem.getData();
+		boolean isCommitItem = true;
+
 		while (!(data instanceof HistoryInfo)) {
+			isCommitItem = false;
 			currItem = currItem.getParentItem();
 			if (currItem == null) {
 				// no history info in parent hierarchy, do not draw
@@ -368,7 +369,7 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 
 		assert data instanceof HistoryInfo : "Would have returned otherwise.";
 
-		final IMockCommit c = commitProvider.getCommitFor((HistoryInfo) data);
+		final IMockCommit c = commitProvider.getCommitFor((HistoryInfo) data, !isCommitItem);
 		final PlotLane lane = c.getLane();
 		if (lane != null && lane.color.isDisposed())
 			return;
@@ -377,13 +378,9 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		// else
 		event.gc.setFont(nFont);
 
-		if (event.index == 1) {
-			// renderer.paint(event, input == null ? null : input.getHead());
-			renderer.paint(event, c, null);
+		renderer.paint(event, c);
+		if (true)
 			return;
-		} else if (true) {
-			return;
-		}
 
 		final ITableLabelProvider lbl;
 		final String txt;
