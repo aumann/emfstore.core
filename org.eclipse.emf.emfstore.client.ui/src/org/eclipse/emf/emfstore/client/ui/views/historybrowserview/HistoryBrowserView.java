@@ -61,7 +61,6 @@ import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
@@ -70,7 +69,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
@@ -282,15 +280,6 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		// GridDataFactory.fillDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, true).applyTo(noProjectHint);
 		// noProjectHint.setText("Please call 'Show history' from the context menu of an element in the navigator.");
 
-		// tree = new Tree(parent, SWT.NONE);
-
-		// tree.addListener(SWT.PaintItem, new Listener() {
-		//
-		// public void handleEvent(Event event) {
-		// doPaint(event);
-		// }
-		// });
-
 		viewer = new TreeViewerWithModelElementSelectionProvider(parent, SWT.NONE);
 
 		MenuManager menuMgr = new MenuManager();
@@ -379,18 +368,6 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		event.gc.setFont(nFont);
 
 		renderer.paint(event, c);
-		if (true)
-			return;
-
-		final ITableLabelProvider lbl;
-		final String txt;
-
-		lbl = (ITableLabelProvider) viewer.getLabelProvider();
-		txt = lbl.getColumnText(c, event.index);
-
-		final Point textsz = event.gc.textExtent(txt);
-		final int texty = (event.height - textsz.y) / 2;
-		event.gc.drawString(txt, event.x, event.y + texty, true);
 	}
 
 	private void hookToobar() {
