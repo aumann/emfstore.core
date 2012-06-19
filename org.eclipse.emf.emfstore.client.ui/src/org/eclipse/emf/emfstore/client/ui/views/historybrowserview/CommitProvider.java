@@ -22,7 +22,8 @@ public class CommitProvider implements IMockCommitProvider {
 	private int positionsAllocated = 0;
 
 	public CommitProvider(List<HistoryInfo> historyInfo) {
-		setup();
+		createCommitsForHistory(historyInfo);
+
 		for (int i = 0; i < historyInfo.size(); i++) {
 			commitForHistory.put(historyInfo.get(i), commits[i]);
 		}
@@ -30,15 +31,14 @@ public class CommitProvider implements IMockCommitProvider {
 	}
 
 	private void createCommitsForHistory(List<HistoryInfo> historyInfo) {
-	}
-
-	// create the 10 commits. index 0 represents newest element named 9
-	private void setup() {
+		// TODO: only mocks at the moment
 		// init commits array
-		commits = new MockCommit[10];
-		for (int i = 0; i < commits.length; i++) {
+		final int REAL_MOCK_COMMITS = 10; // the cool tree contains 10 rows
+		int arraySize = Math.max(REAL_MOCK_COMMITS, historyInfo.size());
+		commits = new MockCommit[arraySize];
+		for (int i = 0; i < arraySize; i++) {
 			MockCommit mock = new MockCommit();
-			mock.shortMsg = "Message for Commit Nr. " + (9 - i);
+			mock.shortMsg = "Message for Commit Nr. " + (arraySize - 1 - i);
 			commits[i] = mock;
 		}
 
@@ -63,8 +63,13 @@ public class CommitProvider implements IMockCommitProvider {
 
 		commits[9 - 1].parents.add(commits[9 - 0]);
 
+		// all following commits are just a linear expansion...
+		for (int i = REAL_MOCK_COMMITS; i < arraySize; i++) {
+			commits[i - 1].parents.add(commits[i]);
+		}
+
 		// "enter" commits
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < arraySize; i++) {
 			enter(i, commits[i]);
 		}
 	}
