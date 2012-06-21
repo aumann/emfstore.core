@@ -443,12 +443,52 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 	}
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EReference getHistoryInfo_NextSpec() {
+		return (EReference) historyInfoEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EReference getHistoryInfo_PreviousSpec() {
+		return (EReference) historyInfoEClass.getEStructuralFeatures().get(2);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EReference getHistoryInfo_MergedFrom() {
+		return (EReference) historyInfoEClass.getEStructuralFeatures().get(3);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EReference getHistoryInfo_MergedTo() {
+		return (EReference) historyInfoEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
 	 */
 	public EReference getHistoryInfo_LogMessage() {
-		return (EReference) historyInfoEClass.getEStructuralFeatures().get(1);
+		return (EReference) historyInfoEClass.getEStructuralFeatures().get(5);
 	}
 
 	/**
@@ -457,7 +497,7 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 	 * @generated
 	 */
 	public EReference getHistoryInfo_TagSpecs() {
-		return (EReference) historyInfoEClass.getEStructuralFeatures().get(2);
+		return (EReference) historyInfoEClass.getEStructuralFeatures().get(6);
 	}
 
 	/**
@@ -466,7 +506,7 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 	 * @generated
 	 */
 	public EReference getHistoryInfo_VersionProperties() {
-		return (EReference) historyInfoEClass.getEStructuralFeatures().get(3);
+		return (EReference) historyInfoEClass.getEStructuralFeatures().get(7);
 	}
 
 	/**
@@ -475,7 +515,7 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 	 * @generated
 	 */
 	public EReference getHistoryInfo_ChangePackage() {
-		return (EReference) historyInfoEClass.getEStructuralFeatures().get(4);
+		return (EReference) historyInfoEClass.getEStructuralFeatures().get(8);
 	}
 
 	/**
@@ -806,6 +846,10 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 
 		historyInfoEClass = createEClass(HISTORY_INFO);
 		createEReference(historyInfoEClass, HISTORY_INFO__PRIMERY_SPEC);
+		createEReference(historyInfoEClass, HISTORY_INFO__NEXT_SPEC);
+		createEReference(historyInfoEClass, HISTORY_INFO__PREVIOUS_SPEC);
+		createEReference(historyInfoEClass, HISTORY_INFO__MERGED_FROM);
+		createEReference(historyInfoEClass, HISTORY_INFO__MERGED_TO);
 		createEReference(historyInfoEClass, HISTORY_INFO__LOG_MESSAGE);
 		createEReference(historyInfoEClass, HISTORY_INFO__TAG_SPECS);
 		createEReference(historyInfoEClass, HISTORY_INFO__VERSION_PROPERTIES);
@@ -945,6 +989,18 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 		initEClass(historyInfoEClass, HistoryInfo.class, "HistoryInfo", !IS_ABSTRACT, !IS_INTERFACE,
 			IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getHistoryInfo_PrimerySpec(), this.getPrimaryVersionSpec(), null, "primerySpec", null, 1, 1,
+			HistoryInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, IS_RESOLVE_PROXIES,
+			!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getHistoryInfo_NextSpec(), this.getPrimaryVersionSpec(), null, "nextSpec", null, 1, -1,
+			HistoryInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, IS_RESOLVE_PROXIES,
+			!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getHistoryInfo_PreviousSpec(), this.getPrimaryVersionSpec(), null, "previousSpec", null, 1, 1,
+			HistoryInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, IS_RESOLVE_PROXIES,
+			!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getHistoryInfo_MergedFrom(), this.getPrimaryVersionSpec(), null, "mergedFrom", null, 1, -1,
+			HistoryInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, IS_RESOLVE_PROXIES,
+			!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getHistoryInfo_MergedTo(), this.getPrimaryVersionSpec(), null, "mergedTo", null, 1, -1,
 			HistoryInfo.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, IS_RESOLVE_PROXIES,
 			!IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 		initEReference(getHistoryInfo_LogMessage(), this.getLogMessage(), null, "logMessage", null, 1, 1,
