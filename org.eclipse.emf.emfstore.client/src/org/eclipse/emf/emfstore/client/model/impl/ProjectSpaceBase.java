@@ -574,6 +574,17 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 	 */
 	@SuppressWarnings("unchecked")
 	public void init() {
+		boolean useCrossReferenceAdapter = true;
+
+		for (ExtensionElement element : new ExtensionPoint("org.eclipse.emf.emfstore.client.inverseCrossReferenceCache")
+			.getExtensionElements()) {
+			useCrossReferenceAdapter &= element.getBoolean("activated");
+		}
+
+		if (useCrossReferenceAdapter) {
+			crossReferenceAdapter = new ECrossReferenceAdapter();
+			getProject().eAdapters().add(crossReferenceAdapter);
+		}
 
 		EObjectChangeNotifier changeNotifier = getProject().getChangeNotifier();
 
@@ -635,17 +646,6 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 	 * @generated NOT
 	 */
 	public void initResources(ResourceSet resourceSet) {
-		boolean useCrossReferenceAdapter = false;
-
-		for (ExtensionElement element : new ExtensionPoint("org.eclipse.emf.emfstore.client.inverseCrossReferenceCache")
-			.getExtensionElements()) {
-			useCrossReferenceAdapter |= element.getBoolean("activated");
-		}
-
-		if (useCrossReferenceAdapter) {
-			crossReferenceAdapter = new ECrossReferenceAdapter();
-			getProject().eAdapters().add(crossReferenceAdapter);
-		}
 
 		this.resourceSet = resourceSet;
 		initCompleted = true;
@@ -728,8 +728,6 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 		for (Resource resource : toDelete) {
 			resource.delete(null);
 		}
-
-		resourceSet.getResources().clear();
 
 		// delete folder of project space
 		FileUtil.deleteFolder(new File(pathToProject));

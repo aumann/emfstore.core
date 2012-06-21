@@ -11,11 +11,7 @@
 package org.eclipse.emf.emfstore.common.model.util;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -50,7 +46,6 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.XMLParserPoolImpl;
-import org.eclipse.emf.emfstore.common.CommonUtil;
 import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionElement;
 import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionPoint;
 import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionPointException;
@@ -61,7 +56,6 @@ import org.eclipse.emf.emfstore.common.model.ModelFactory;
 import org.eclipse.emf.emfstore.common.model.Project;
 import org.eclipse.emf.emfstore.common.model.SingletonIdResolver;
 import org.eclipse.emf.emfstore.common.model.impl.ProjectImpl;
-import org.xml.sax.InputSource;
 
 /**
  * Utility class for ModelElements.
@@ -91,9 +85,7 @@ public final class ModelUtil {
 	 * Contains all ID resolvers for singleton datatypes.
 	 */
 	private static Set<SingletonIdResolver> singletonIdResolvers;
-
 	private static HashMap<Object, Object> resourceLoadOptions;
-
 	private static HashMap<Object, Object> resourceSaveOptions;
 
 	/**
@@ -129,6 +121,7 @@ public final class ModelUtil {
 	public static boolean areEqual(EObject eobjectA, EObject eobjectB) {
 		String stringA;
 		String stringB;
+
 		try {
 			stringA = eObjectToString(eobjectA);
 			stringB = eObjectToString(eobjectB);
@@ -137,6 +130,64 @@ public final class ModelUtil {
 		}
 		return stringA.equals(stringB);
 
+	}
+
+	/**
+	 * Copies the given EObject and converts it to a string.
+	 * 
+	 * @param object
+	 *            the eObject
+	 * @return the string representation of the EObject
+	 * @throws SerializationException
+	 *             if a serialization problem occurs
+	 */
+	public static String eObjectToString(EObject object) throws SerializationException {
+
+		if (object == null) {
+			return null;
+		}
+
+		Resource res;
+		int step = 200;
+		int initialSize = step;
+
+		res = (new ResourceSetImpl()).createResource(VIRTUAL_URI);
+		((ResourceImpl) res).setIntrinsicIDToEObjectMap(new HashMap<String, EObject>());
+
+		EObject copy;
+		if (object instanceof IdEObjectCollection) {
+			copy = copyIdEObjectCollection((IdEObjectCollection) object, (XMIResource) res);
+		} else {
+			copy = ModelUtil.clone(object);
+		}
+
+		res.getContents().add(copy);
+
+		StringWriter stringWriter = new StringWriter(initialSize);
+		URIConverter.WriteableOutputStream uws = new URIConverter.WriteableOutputStream(stringWriter, "UTF-8");
+
+		try {
+			res.save(uws, getResourceSaveOptions());
+		} catch (IOException e) {
+			throw new SerializationException(e);
+		}
+		String result = stringWriter.toString();
+		return result;
+	}
+
+	private static EObject copyIdEObjectCollection(IdEObjectCollection collection, XMIResource res) {
+		IdEObjectCollection copiedCollection = clone(collection);
+
+		for (EObject modelElement : copiedCollection.getAllModelElements()) {
+			if (isIgnoredDatatype(modelElement)) {
+				continue;
+			}
+			ModelElementId modelElementId = copiedCollection.getModelElementId(modelElement);
+			res.setID(modelElement, modelElementId.getId());
+		}
+
+		res.getContents().add(copiedCollection);
+		return copiedCollection;
 	}
 
 	/**
@@ -169,188 +220,6 @@ public final class ModelUtil {
 	}
 
 	/**
-	 * Converts an EObject to a String.
-	 * 
-	 * @param object
-	 *            the eObject
-	 * @return String representation of the EObject
-	 * @throws SerializationException
-	 *             if a serialization problem occurs
-	 */
-	public static String eObjectToString(EObject object) throws SerializationException {
-
-		boolean containmentCheckEnabled = false;
-		boolean hrefCheckEnabled = false;
-		boolean proxyCheckEnabled = false;
-
-		ExtensionElement element = new ExtensionPoint("org.eclipse.emf.emfstore.common.model.serializationoptions")
-			.getFirst();
-		if (element != null) {
-			hrefCheckEnabled = element.getBoolean("HrefCheck");
-			proxyCheckEnabled = element.getBoolean("ProxyCheck");
-			containmentCheckEnabled = element.getBoolean("SelfContainmentCheck");
-		}
-
-		return eObjectToString(object, !containmentCheckEnabled, !hrefCheckEnabled, !proxyCheckEnabled);
-	}
-
-	/**
-	 * Converts an {@link EObject} to a {@link String}.
-	 * 
-	 * @param object
-	 *            the {@link EObject}
-	 * @param overrideContainmentCheck
-	 *            if true, no containment check is performed
-	 * @param overrideHrefCheck
-	 *            checks whether there is a <code>href</code> in the serialized
-	 *            text
-	 * @param overrideProxyCheck
-	 *            if true, proxy check is ignored
-	 * @return String representation of the {@link EObject}
-	 * @throws SerializationException
-	 *             if a serialization problem occurs
-	 */
-	public static String eObjectToString(EObject object, boolean overrideContainmentCheck, boolean overrideHrefCheck,
-		boolean overrideProxyCheck) throws SerializationException {
-
-		if (object == null) {
-			return null;
-		}
-
-		XMIResource res = (XMIResource) (new ResourceSetImpl()).createResource(VIRTUAL_URI);
-		((ResourceImpl) res).setIntrinsicIDToEObjectMap(new HashMap<String, EObject>());
-		EObject copy;
-		if (object instanceof IdEObjectCollection) {
-			copy = copyIdEObjectCollection((IdEObjectCollection) object, res);
-		} else {
-			copy = ModelUtil.clone(object);
-			res.getContents().add(copy);
-		}
-
-		if (!overrideContainmentCheck && !(copy instanceof EClass)) {
-			if (!CommonUtil.isSelfContained(copy) || !CommonUtil.isContainedInResource(copy, res)) {
-				throw new SerializationException(copy);
-			}
-		}
-
-		int step = 200;
-		int initialSize = step;
-		if (object instanceof Project) {
-			Project project = (Project) object;
-			initialSize = project.getAllModelElements().size() * step;
-		}
-		if (!overrideProxyCheck) {
-			proxyCheck(res);
-		}
-
-		StringWriter stringWriter = new StringWriter(initialSize);
-		URIConverter.WriteableOutputStream uws = new URIConverter.WriteableOutputStream(stringWriter, "UTF-8");
-		try {
-			res.save(uws, getResourceSaveOptions());
-		} catch (IOException e) {
-			throw new SerializationException(e);
-		}
-		String result = stringWriter.toString();
-
-		if (!overrideHrefCheck) {
-			hrefCheck(result);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Converts an {@link EObject} to a {@link String}.
-	 * 
-	 * @param writer
-	 *            a writer that will be used as the destination where to write the serialized EObject
-	 * @param object
-	 *            the {@link EObject} that needs to be serialized
-	 * @param overrideContainmentCheck
-	 *            if true, no containment check is performed
-	 * @param overrideHrefCheck
-	 *            checks whether there is a <code>href</code> in the serialized
-	 *            text
-	 * @param overrideProxyCheck
-	 *            if true, proxy check is ignored
-	 * @throws SerializationException
-	 *             if a serialization problem occurs
-	 */
-	public static void eobjectToString(OutputStreamWriter writer, EObject object, boolean overrideContainmentCheck,
-		boolean overrideHrefCheck, boolean overrideProxyCheck) throws SerializationException {
-
-		if (object == null) {
-			return;
-		}
-
-		XMIResource res = (XMIResource) object.eResource();
-
-		if (!overrideContainmentCheck && !(object instanceof EClass)) {
-			if (!CommonUtil.isSelfContained(object) || !CommonUtil.isContainedInResource(object, res)) {
-				throw new SerializationException(object);
-			}
-		}
-
-		if (!overrideProxyCheck) {
-			proxyCheck(res);
-		}
-
-		URIConverter.WriteableOutputStream uws = new URIConverter.WriteableOutputStream(writer, "UTF-8");
-		try {
-			res.save(uws, getResourceSaveOptions());
-		} catch (IOException e) {
-			throw new SerializationException(e);
-		}
-	}
-
-	private static EObject copyIdEObjectCollection(IdEObjectCollection collection, XMIResource res) {
-		IdEObjectCollection copiedCollection = clone(collection);
-
-		for (EObject modelElement : copiedCollection.getAllModelElements()) {
-			if (isIgnoredDatatype(modelElement)) {
-				continue;
-			}
-			ModelElementId modelElementId = copiedCollection.getModelElementId(modelElement);
-			res.setID(modelElement, modelElementId.getId());
-		}
-
-		res.getContents().add(copiedCollection);
-		return copiedCollection;
-	}
-
-	/**
-	 * @param result
-	 */
-	private static void proxyCheck(Resource resource) throws SerializationException {
-		EcoreUtil.resolveAll(resource);
-		TreeIterator<EObject> contents = resource.getAllContents();
-		while (contents.hasNext()) {
-			EObject eObject = contents.next();
-			if (eObject.eIsProxy()) {
-				throw new SerializationException("Serialization failed due to unresolved proxy detection.");
-			}
-		}
-	}
-
-	private static void hrefCheck(String result) throws SerializationException {
-		char[] needle = "href".toCharArray();
-		int pointer = 0;
-		boolean insideQuotes = false;
-		for (char character : result.toCharArray()) {
-			if (character == '"') {
-				insideQuotes = !insideQuotes;
-			}
-			if (!insideQuotes && character == needle[pointer]) {
-				if (++pointer == needle.length) {
-					throw new SerializationException("Serialization failed due to href detection.");
-				}
-			} else {
-				pointer = 0;
-			}
-		}
-	}
-
-	/**
 	 * Determines whether the type of an EObject is an ignored one.
 	 * 
 	 * @param eObject
@@ -371,98 +240,6 @@ public final class ModelUtil {
 		}
 
 		return ignoredDataTypes.contains(eObject.eClass().getInstanceClassName());
-	}
-
-	/**
-	 * Converts a {@link String} to an {@link EObject}. <b>Note</b>: {@link String} must be the result of
-	 * {@link ModelUtil#eObjectToString(EObject)}
-	 * 
-	 * @param object
-	 *            the {@link String} representation of the {@link EObject}
-	 * @return the deserialized {@link EObject}
-	 * @throws SerializationException
-	 *             if deserialization fails
-	 */
-	public static EObject stringToEObject(String object) throws SerializationException {
-
-		if (object == null) {
-			return null;
-		}
-
-		XMIResource res = (XMIResource) (new ResourceSetImpl()).createResource(VIRTUAL_URI);
-		((ResourceImpl) res).setIntrinsicIDToEObjectMap(new HashMap<String, EObject>());
-		try {
-			res.load(new InputSource(new StringReader(object)), getResourceLoadOptions());
-		} catch (UnsupportedEncodingException e) {
-			throw new SerializationException(e);
-		} catch (IOException e) {
-			throw new SerializationException(e);
-		}
-
-		return handleParsedEObject(res);
-	}
-
-	/**
-	 * Reads from a given {@link Reader} instance and converts the read stream
-	 * into an {@link EObject}.
-	 * 
-	 * @param reader
-	 *            the {@link Reader} capable of reading in a serialized EObject
-	 * @return the deserialized {@link EObject}
-	 * @throws SerializationException
-	 *             if deserialization fails
-	 */
-	public static EObject stringToEObject(Reader reader) throws SerializationException {
-
-		XMIResource res = (XMIResource) (new ResourceSetImpl()).createResource(VIRTUAL_URI);
-		((ResourceImpl) res).setIntrinsicIDToEObjectMap(new HashMap<String, EObject>());
-		URIConverter.ReadableInputStream ris = new URIConverter.ReadableInputStream(reader, "UTF-8");
-
-		try {
-			res.load(ris, getResourceLoadOptions());
-		} catch (UnsupportedEncodingException e) {
-			throw new SerializationException(e);
-		} catch (IOException e) {
-			throw new SerializationException(e);
-		}
-
-		return handleParsedEObject(res);
-	}
-
-	private static EObject handleParsedEObject(XMIResource res) throws SerializationException {
-		EObject result = res.getContents().get(0);
-
-		if (result instanceof IdEObjectCollection) {
-			IdEObjectCollection collection = (IdEObjectCollection) result;
-			Map<EObject, String> eObjectToIdMap = new HashMap<EObject, String>();
-			Map<String, EObject> idToEObjectMap = new HashMap<String, EObject>();
-
-			for (EObject modelElement : collection.getAllModelElements()) {
-				String modelElementId;
-				if (ModelUtil.isIgnoredDatatype(modelElement)) {
-					// create random ID for generic types, won't get serialized
-					// anyway
-					modelElementId = ModelFactory.eINSTANCE.createModelElementId().getId();
-				} else {
-					modelElementId = res.getID(modelElement);
-				}
-
-				if (modelElementId == null) {
-					throw new SerializationException("Failed to retrieve ID for EObject contained in project: "
-						+ modelElement);
-				}
-
-				eObjectToIdMap.put(modelElement, modelElementId);
-				idToEObjectMap.put(modelElementId, modelElement);
-			}
-
-			collection.initCaches(eObjectToIdMap, idToEObjectMap);
-		}
-
-		EcoreUtil.resolveAll(result);
-		res.getContents().remove(result);
-
-		return result;
 	}
 
 	/**
@@ -820,7 +597,7 @@ public final class ModelUtil {
 	 * 
 	 * @param resourceSet resource set
 	 * @param prefix string prefix of the resource path
-	 * @throws IOException
+	 * @throws IOException if deleting the resource fails
 	 */
 	public static void deleteResourcesWithPrefix(ResourceSet resourceSet, String prefix) throws IOException {
 		List<Resource> toDelete = new ArrayList<Resource>();

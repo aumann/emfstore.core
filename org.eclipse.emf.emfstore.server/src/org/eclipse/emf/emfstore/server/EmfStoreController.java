@@ -145,7 +145,7 @@ public class EmfStoreController implements IApplication, Runnable {
 		handlePostStartupListener();
 
 		ModelUtil.logInfo("Initialitation COMPLETE.");
-		ModelUtil.logInfo("Server is RUNNING...");
+		ModelUtil.logInfo("Server is RUNNING...Time to relax...");
 		if (waitForTermination) {
 			waitForTermination();
 		}
@@ -459,10 +459,6 @@ public class EmfStoreController implements IApplication, Runnable {
 			}
 		} catch (IOException e) {
 		}
-
-		System.out.println("*----------*");
-		System.out.println("| EmfStore |");
-		System.out.println("*----------*");
 	}
 
 	/**

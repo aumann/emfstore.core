@@ -54,7 +54,6 @@ public class ProjectImpl extends NotifiableIdEObjectCollectionImpl implements Pr
 	 */
 	protected EList<EObject> cutElements;
 
-	// begin of custom code
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
@@ -63,8 +62,6 @@ public class ProjectImpl extends NotifiableIdEObjectCollectionImpl implements Pr
 	protected ProjectImpl() {
 		super();
 	}
-
-	// end of custom code
 
 	/**
 	 * <!-- begin-user-doc --> .<!-- end-user-doc -->
