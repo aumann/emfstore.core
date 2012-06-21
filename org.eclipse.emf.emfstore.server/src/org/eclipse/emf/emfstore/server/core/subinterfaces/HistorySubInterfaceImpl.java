@@ -205,9 +205,9 @@ public class HistorySubInterfaceImpl extends AbstractSubEmfstoreInterface {
 		// Set Version References
 		history.setPrimerySpec(ModelUtil.clone(version.getPrimarySpec()));
 		if (version.getAncestorVersion() != null) {
-			history.setPreviousSpec(version.getAncestorVersion().getPrimarySpec());
+			history.setPreviousSpec(ModelUtil.clone(version.getAncestorVersion().getPrimarySpec()));
 		} else if (version.getPreviousVersion() != null) {
-			history.setPreviousSpec(version.getPreviousVersion().getPrimarySpec());
+			history.setPreviousSpec(ModelUtil.clone(version.getPreviousVersion().getPrimarySpec()));
 		}
 		if (version.getNextVersion() != null) {
 			history.getNextSpec().add(ModelUtil.clone(version.getNextVersion().getPrimarySpec()));
