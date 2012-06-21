@@ -228,7 +228,6 @@ public final class CommonUtil {
 		// }
 		return true;
 	}
-	
 
 	/**
 	 * Get all contained Eobjects not including transient containment features.

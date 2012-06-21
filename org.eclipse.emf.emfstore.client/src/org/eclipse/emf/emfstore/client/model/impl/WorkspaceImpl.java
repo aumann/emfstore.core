@@ -66,6 +66,7 @@ import org.eclipse.emf.emfstore.server.model.ProjectId;
 import org.eclipse.emf.emfstore.server.model.ProjectInfo;
 import org.eclipse.emf.emfstore.server.model.url.ProjectUrlFragment;
 import org.eclipse.emf.emfstore.server.model.url.ServerUrl;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.DateVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryQuery;
@@ -174,6 +175,7 @@ public class WorkspaceImpl extends EObjectImpl implements Workspace {
 	 * @see org.eclipse.emf.emfstore.client.model.Workspace#checkout(org.eclipse.emf.emfstore.client.model.Usersession,
 	 *      org.eclipse.emf.emfstore.server.model.ProjectInfo, org.eclipse.core.runtime.IProgressMonitor)
 	 */
+	// TODO BRANCH
 	public ProjectSpace checkout(final Usersession usersession, final ProjectInfo projectInfo,
 		IProgressMonitor progressMonitor) throws EmfStoreException {
 		PrimaryVersionSpec targetSpec = this.connectionManager.resolveVersionSpec(usersession.getSessionId(),
@@ -239,6 +241,7 @@ public class WorkspaceImpl extends EObjectImpl implements Workspace {
 		parent.worked(10);
 
 		// retrieve recent changes
+		// TODO BRANCH why are we doing this
 		parent.subTask("Retrieving recent changes...");
 		try {
 			DateVersionSpec dateVersionSpec = VersioningFactory.eINSTANCE.createDateVersionSpec();
@@ -655,6 +658,16 @@ public class WorkspaceImpl extends EObjectImpl implements Workspace {
 				ConnectionManager connectionManager = WorkspaceManager.getInstance().getConnectionManager();
 				return connectionManager.getHistoryInfo(getUsersession().getSessionId(), projectId, query);
 			}
+		}.execute();
+	}
+
+	public List<BranchInfo> getBranches(ServerInfo serverInfo, final ProjectId projectId) throws EmfStoreException {
+		return new ServerCall<List<BranchInfo>>(serverInfo) {
+			@Override
+			protected List<BranchInfo> run() throws EmfStoreException {
+				final ConnectionManager cm = WorkspaceManager.getInstance().getConnectionManager();
+				return cm.getBranches(getSessionId(), projectId);
+			};
 		}.execute();
 	}
 

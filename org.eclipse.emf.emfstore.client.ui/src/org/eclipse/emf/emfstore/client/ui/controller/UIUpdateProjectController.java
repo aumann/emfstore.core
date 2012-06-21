@@ -26,6 +26,7 @@ import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.VersionSpec;
+import org.eclipse.emf.emfstore.server.model.versioning.Versions;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
@@ -100,7 +101,9 @@ public class UIUpdateProjectController extends AbstractEMFStoreUIController<Prim
 		final ProjectSpace projectSpace = conflictException.getProjectSpace();
 		boolean mergeSuccessful = false;
 		try {
-			final PrimaryVersionSpec targetVersion = projectSpace.resolveVersionSpec(VersionSpec.HEAD_VERSION);
+			// TODO BRANCH
+			final PrimaryVersionSpec targetVersion = projectSpace.resolveVersionSpec(Versions.HEAD_VERSION(projectSpace
+				.getBaseVersion()));
 			// merge opens up a dialog
 			exception = null;
 			mergeSuccessful = new RunInUIThreadWithResult<Boolean>(getShell()) {
@@ -151,7 +154,6 @@ public class UIUpdateProjectController extends AbstractEMFStoreUIController<Prim
 				return false;
 			}
 		}.execute();
-
 	}
 
 	@Override

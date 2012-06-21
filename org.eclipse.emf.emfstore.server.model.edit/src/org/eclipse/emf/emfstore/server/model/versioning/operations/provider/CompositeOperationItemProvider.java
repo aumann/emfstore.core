@@ -207,6 +207,20 @@ public class CompositeOperationItemProvider extends AbstractOperationItemProvide
 		return overlayImage(object, getResourceLocator().getImage("full/obj16/CompositeOperation.png"));
 	}
 
+	/**
+	 * This returns the label text for the adapted class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	@Override
+	public String getText(Object object) {
+		String label = ((CompositeOperation) object).getCompositeName();
+		return label == null || label.length() == 0 ? getString("_UI_CompositeOperation_type")
+			: getString("_UI_CompositeOperation_type") + " " + label;
+	}
+
 	// end of custom code
 
 	/**

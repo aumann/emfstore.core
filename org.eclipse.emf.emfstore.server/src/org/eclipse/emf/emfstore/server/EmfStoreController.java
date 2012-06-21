@@ -124,7 +124,7 @@ public class EmfStoreController implements IApplication, Runnable {
 
 		handleStartupListener();
 
-		historyCache = initHistoryCache();
+		historyCache = initHistoryCache(serverSpace);
 
 		accessControl = initAccessControl(serverSpace);
 		emfStore = new EmfStoreImpl(serverSpace, accessControl);
@@ -199,13 +199,6 @@ public class EmfStoreController implements IApplication, Runnable {
 		}
 	}
 
-	private HistoryCache initHistoryCache() {
-		HistoryCache cache = new HistoryCache();
-		cache.initCache(serverSpace.getProjects());
-		ModelUtil.logInfo("History cache has been initialized.");
-		return cache;
-	}
-
 	private Set<ConnectionHandler<? extends EmfStoreInterface>> initConnectionHandlers() throws FatalEmfStoreException {
 		Set<ConnectionHandler<? extends EmfStoreInterface>> connectionHandlers = new HashSet<ConnectionHandler<? extends EmfStoreInterface>>();
 
@@ -221,6 +214,30 @@ public class EmfStoreController implements IApplication, Runnable {
 		return connectionHandlers;
 	}
 
+	private static HistoryCache initHistoryCache(ServerSpace serverSpace) {
+		HistoryCache cache = new HistoryCache();
+		cache.initCache(serverSpace.getProjects());
+		ModelUtil.logInfo("History cache has been initialized.");
+		return cache;
+	}
+
+	/**
+	 * Returns the history cache.
+	 * 
+	 * @param serverSpace target server space
+	 * 
+	 * @return the history cache.
+	 */
+	public static HistoryCache getHistoryCache(ServerSpace serverSpace) {
+		if (ServerConfiguration.isTesting()) {
+			if (testHistoryCache == null) {
+				testHistoryCache = initHistoryCache(serverSpace);
+			}
+			return testHistoryCache;
+		}
+		return getInstance().getHistoryCache();
+	}
+
 	/**
 	 * Returns the history cache.
 	 * 
@@ -229,6 +246,8 @@ public class EmfStoreController implements IApplication, Runnable {
 	public HistoryCache getHistoryCache() {
 		return historyCache;
 	}
+
+	private static HistoryCache testHistoryCache;
 
 	private ServerSpace initServerSpace() throws FatalEmfStoreException {
 		ResourceStorage storage = initStorage();
