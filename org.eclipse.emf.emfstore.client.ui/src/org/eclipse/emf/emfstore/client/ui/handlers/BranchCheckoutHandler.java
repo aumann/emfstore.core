@@ -18,7 +18,7 @@ public class BranchCheckoutHandler extends AbstractEMFStoreHandler implements IH
 		}
 
 		// FIXME: eContainer call
-		new UICheckoutController(getShell()).checkoutBranch((ServerInfo) projectInfo.eContainer(), projectInfo);
+		new UICheckoutController(getShell(), ((ServerInfo) projectInfo.eContainer()), projectInfo, true).execute();
 	}
 
 }

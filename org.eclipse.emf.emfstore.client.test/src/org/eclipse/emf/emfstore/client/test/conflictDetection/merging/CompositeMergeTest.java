@@ -26,7 +26,7 @@ public class CompositeMergeTest extends MergeTest {
 
 	@Test
 	public void attCompVsAtt() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 		final MergeCase mc = newMergeCase(element);
 
 		new EMFStoreCommand() {
@@ -56,7 +56,7 @@ public class CompositeMergeTest extends MergeTest {
 
 	@Test
 	public void attVsAttComp() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 		final MergeCase mc = newMergeCase(element);
 
 		new EMFStoreCommand() {
@@ -88,7 +88,7 @@ public class CompositeMergeTest extends MergeTest {
 
 	@Test
 	public void attCompVsDiffAttNC() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 
 		final MergeCase mc = newMergeCase(element);
 
@@ -116,9 +116,9 @@ public class CompositeMergeTest extends MergeTest {
 
 	@Test
 	public void singleCompVsSingle() {
-		final TestElement element = createTestElement();
-		final TestElement link = createTestElement();
-		final TestElement link2 = createTestElement();
+		final TestElement element = getTestElement();
+		final TestElement link = getTestElement();
+		final TestElement link2 = getTestElement();
 
 		final MergeCase mc = newMergeCase(element, link, link2);
 
@@ -150,9 +150,9 @@ public class CompositeMergeTest extends MergeTest {
 
 	@Test
 	public void compVsSingleAndAtt() {
-		final TestElement element = createTestElement();
-		final TestElement link = createTestElement();
-		final TestElement link2 = createTestElement();
+		final TestElement element = getTestElement();
+		final TestElement link = getTestElement();
+		final TestElement link2 = getTestElement();
 
 		final MergeCase mc = newMergeCase(element, link, link2);
 
@@ -186,9 +186,9 @@ public class CompositeMergeTest extends MergeTest {
 
 	@Test
 	public void compVsSingleContainment() {
-		final TestElement parent = createTestElement();
-		final TestElement parent2 = createTestElement();
-		final TestElement child = createTestElement();
+		final TestElement parent = getTestElement();
+		final TestElement parent2 = getTestElement();
+		final TestElement child = getTestElement();
 
 		final MergeCase mc = newMergeCase(parent, child, parent2);
 
@@ -220,7 +220,7 @@ public class CompositeMergeTest extends MergeTest {
 
 	@Test
 	public void compVsCompAtt() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 
 		final MergeCase mc = newMergeCase(element);
 
@@ -256,9 +256,9 @@ public class CompositeMergeTest extends MergeTest {
 
 	@Test
 	public void singleCompVsSingleComp() {
-		final TestElement element = createTestElement();
-		final TestElement link = createTestElement();
-		final TestElement link2 = createTestElement();
+		final TestElement element = getTestElement();
+		final TestElement link = getTestElement();
+		final TestElement link2 = getTestElement();
 
 		final MergeCase mc = newMergeCase(element, link, link2);
 
@@ -294,7 +294,7 @@ public class CompositeMergeTest extends MergeTest {
 
 	@Test
 	public void compVsCompAttNC() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 
 		final MergeCase mc = newMergeCase(element);
 

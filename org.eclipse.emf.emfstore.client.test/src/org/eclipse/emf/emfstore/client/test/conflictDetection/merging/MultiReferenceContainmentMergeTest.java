@@ -17,9 +17,9 @@ public class MultiReferenceContainmentMergeTest extends MergeTest {
 
 	@Test
 	public void addSameToDifferent() {
-		final TestElement parent = createTestElement();
-		final TestElement parent2 = createTestElement();
-		final TestElement child = createTestElement();
+		final TestElement parent = getTestElement();
+		final TestElement parent2 = getTestElement();
+		final TestElement child = getTestElement();
 
 		final MergeCase mc = newMergeCase(parent, parent2, child);
 
@@ -46,8 +46,8 @@ public class MultiReferenceContainmentMergeTest extends MergeTest {
 
 	@Test
 	public void addSameToSameNC() {
-		final TestElement parent = createTestElement();
-		final TestElement child = createTestElement();
+		final TestElement parent = getTestElement();
+		final TestElement child = getTestElement();
 
 		final MergeCase mc = newMergeCase(parent, child);
 
@@ -70,10 +70,10 @@ public class MultiReferenceContainmentMergeTest extends MergeTest {
 
 	@Test
 	public void addSameManyToDifferent() {
-		final TestElement parent = createTestElement();
-		final TestElement parent2 = createTestElement();
-		final TestElement child = createTestElement();
-		final TestElement child2 = createTestElement();
+		final TestElement parent = getTestElement();
+		final TestElement parent2 = getTestElement();
+		final TestElement child = getTestElement();
+		final TestElement child2 = getTestElement();
 
 		final MergeCase mc = newMergeCase(parent, parent2, child, child2);
 
@@ -101,9 +101,9 @@ public class MultiReferenceContainmentMergeTest extends MergeTest {
 
 	@Test
 	public void addSameManyToSameNC() {
-		final TestElement parent = createTestElement();
-		final TestElement child = createTestElement();
-		final TestElement child2 = createTestElement();
+		final TestElement parent = getTestElement();
+		final TestElement child = getTestElement();
+		final TestElement child2 = getTestElement();
 
 		final MergeCase mc = newMergeCase(parent, child, child2);
 
@@ -127,9 +127,9 @@ public class MultiReferenceContainmentMergeTest extends MergeTest {
 
 	@Test
 	public void addRemoveSame() {
-		final TestElement parent = createTestElement();
-		final TestElement parent2 = createTestElement();
-		final TestElement child = createTestElement();
+		final TestElement parent = getTestElement();
+		final TestElement parent2 = getTestElement();
+		final TestElement child = getTestElement();
 		// parent2.getContainedElements().add(child);
 
 		final MergeCase mc = newMergeCase(parent, parent2, child);
@@ -159,10 +159,10 @@ public class MultiReferenceContainmentMergeTest extends MergeTest {
 
 	@Test
 	public void addSetSameToDifferent() {
-		final TestElement parent = createTestElement();
-		final TestElement parent2 = createTestElement();
-		final TestElement child = createTestElement();
-		final TestElement decoy = createTestElement();
+		final TestElement parent = getTestElement();
+		final TestElement parent2 = getTestElement();
+		final TestElement child = getTestElement();
+		final TestElement decoy = getTestElement();
 		parent2.getContainedElements().add(decoy);
 
 		final MergeCase mc = newMergeCase(parent, parent2, child);
@@ -190,9 +190,9 @@ public class MultiReferenceContainmentMergeTest extends MergeTest {
 
 	@Test
 	public void addSetSameToSameNC() {
-		final TestElement parent = createTestElement();
-		final TestElement child = createTestElement();
-		final TestElement decoy = createTestElement();
+		final TestElement parent = getTestElement();
+		final TestElement child = getTestElement();
+		final TestElement decoy = getTestElement();
 		parent.getContainedElements().add(decoy);
 
 		final MergeCase mc = newMergeCase(parent, child);
@@ -225,11 +225,11 @@ public class MultiReferenceContainmentMergeTest extends MergeTest {
 
 	@Test
 	public void setSetSameToDifferent() {
-		final TestElement parent = createTestElement();
-		final TestElement parent2 = createTestElement();
-		final TestElement child = createTestElement();
-		final TestElement decoy = createTestElement();
-		final TestElement decoy2 = createTestElement();
+		final TestElement parent = getTestElement();
+		final TestElement parent2 = getTestElement();
+		final TestElement child = getTestElement();
+		final TestElement decoy = getTestElement();
+		final TestElement decoy2 = getTestElement();
 		parent.getContainedElements().add(decoy);
 		parent2.getContainedElements().add(decoy2);
 
@@ -258,9 +258,9 @@ public class MultiReferenceContainmentMergeTest extends MergeTest {
 
 	@Test
 	public void setSetSameToSameNC() {
-		final TestElement parent = createTestElement();
-		final TestElement child = createTestElement();
-		final TestElement decoy = createTestElement();
+		final TestElement parent = getTestElement();
+		final TestElement child = getTestElement();
+		final TestElement decoy = getTestElement();
 		parent.getContainedElements().add(decoy);
 
 		final MergeCase mc = newMergeCase(parent, child);

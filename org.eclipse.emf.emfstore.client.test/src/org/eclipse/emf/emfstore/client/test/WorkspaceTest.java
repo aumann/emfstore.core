@@ -140,12 +140,18 @@ public abstract class WorkspaceTest {
 	/**
 	 * Creates an test element.
 	 * 
+	 * @param name
+	 * 
 	 * @return test element
 	 */
-	protected TestElement getTestElement() {
+	protected TestElement createTestElementWithoutTransaction(String name) {
 		TestElement element = TestmodelFactory.eINSTANCE.createTestElement();
 		getProject().getModelElements().add(element);
 		return element;
+	}
+
+	protected TestElement createTestElementWithoutTransaction() {
+		return createTestElement("");
 	}
 
 	/**
@@ -161,6 +167,10 @@ public abstract class WorkspaceTest {
 		return element;
 	}
 
+	public TestElement getTestElement() {
+		return getTestElement("");
+	}
+
 	public TestElement createTestElement() {
 		return createTestElement(null);
 	}
@@ -169,7 +179,7 @@ public abstract class WorkspaceTest {
 		return new EMFStoreCommandWithResult<TestElement>() {
 			@Override
 			protected TestElement doRun() {
-				return getTestElement(name);
+				return createTestElementWithoutTransaction(name);
 			}
 		}.run(false);
 	}

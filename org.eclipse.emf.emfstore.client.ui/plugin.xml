@@ -122,6 +122,12 @@
      </handler>
   </extension>
   <extension
+        point="org.eclipse.emf.emfstore.client.notify.postinit">
+     <initiator
+           class="org.eclipse.emf.emfstore.client.ui.util.ProjectListUpdater">
+     </initiator>
+  </extension>
+  <extension
         point="org.eclipse.ui.commands">
      <category
            id="org.eclipse.emf.emfstore.client.ui.project"
@@ -234,6 +240,36 @@
            defaultHandler="org.eclipse.emf.emfstore.client.ui.handlers.BranchCheckoutHandler"
            id="org.eclipse.emf.emfstore.client.ui.repositorybrowser.BranchCheckout"
            name="Branch Checkout">
+     </command>
+     <command
+           defaultHandler="org.eclipse.emf.emfstore.client.ui.handlers.ProjectInfoPropertiesHandler"
+           id="org.eclipse.emf.emfstore.client.ui.repositorybrowser.ProjectProperties"
+           name="ProjectInfo Properties">
+     </command>
+     <command
+           defaultHandler="org.eclipse.emf.emfstore.client.ui.handlers.CheckoutRevisionHandler"
+           id="org.eclipse.emf.emfstore.client.ui.historybrowserview.checkout"
+           name="CheckoutRevision">
+     </command>
+     <command
+           defaultHandler="org.eclipse.emf.emfstore.client.ui.handlers.AddTagHandler"
+           id="org.eclipse.emf.emfstore.client.ui.historybrowserview.addtag"
+           name="AddTag">
+     </command>
+     <command
+           defaultHandler="org.eclipse.emf.emfstore.client.ui.handlers.RemoveTagHandler"
+           id="org.eclipse.emf.emfstore.client.ui.historybrowserview.removetag"
+           name="RemoveTag">
+     </command>
+     <command
+           defaultHandler="org.eclipse.emf.emfstore.client.ui.handlers.RevertHandler"
+           id="org.eclipse.emf.emfstore.client.ui.historybrowserview.revert"
+           name="RevertRevision">
+     </command>
+     <command
+           defaultHandler="org.eclipse.emf.emfstore.client.ui.handlers.ForceRevertHandler"
+           id="org.eclipse.emf.emfstore.client.ui.historybrowserview.forcerevert"
+           name="ForceRevertRevision">
      </command>
   </extension>
   <extension
@@ -480,6 +516,7 @@
                 locationURI="popup:org.eclipse.emf.emfstore.client.ui.views.historybrowserview.HistoryBrowserView">
              <command
                    commandId="org.eclipse.emf.emfstore.client.ui.historybrowserview.addtag"
+                   icon="icons/tag_blue_add.png"
                    label="Add tag"
                    style="push"
                    tooltip="Add a new tag to this revision">
@@ -496,6 +533,7 @@
              </command>
              <command
                    commandId="org.eclipse.emf.emfstore.client.ui.historybrowserview.removetag"
+                   icon="icons/tag_blue_delete.png"
                    label="Remove tag"
                    style="push"
                    tooltip="Remove an existing tag">
@@ -760,6 +798,12 @@
            id="org.eclipse.emf.emfstore.client.ui.mergeBranch"
            name="mergeBranch">
      </command>
+   </extension>
+   <extension
+         point="org.eclipse.emf.emfstore.client.sessionprovider">
+      <sessionProvider
+            class="org.eclipse.emf.emfstore.client.ui.dialogs.login.BasicUISessionProvider">
+      </sessionProvider>
    </extension>
    <extension
          point="org.eclipse.emf.emfstore.client.loginObserver">

@@ -8,7 +8,7 @@ public class MergeBranchHandler extends AbstractEMFStoreHandler {
 
 	@Override
 	public void handle() throws EmfStoreException {
-		new UIMergeController(getShell()).merge(requireSelection(ProjectSpace.class));
+		new UIMergeController(getShell(),requireSelection(ProjectSpace.class)).execute();
 	}
 
 }

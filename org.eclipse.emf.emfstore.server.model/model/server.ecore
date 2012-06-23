@@ -87,6 +87,14 @@
     <eClassifiers xsi:type="ecore:EClass" name="HistoryInfo">
       <eStructuralFeatures xsi:type="ecore:EReference" name="primerySpec" lowerBound="1"
           eType="#//versioning/PrimaryVersionSpec" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="nextSpec" lowerBound="1"
+          upperBound="-1" eType="#//versioning/PrimaryVersionSpec" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="previousSpec" lowerBound="1"
+          eType="#//versioning/PrimaryVersionSpec" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="mergedFrom" lowerBound="1"
+          upperBound="-1" eType="#//versioning/PrimaryVersionSpec" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="mergedTo" lowerBound="1"
+          upperBound="-1" eType="#//versioning/PrimaryVersionSpec" containment="true"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="logMessage" lowerBound="1"
           eType="#//versioning/LogMessage" containment="true"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="tagSpecs" upperBound="-1"

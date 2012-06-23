@@ -13,6 +13,7 @@ package org.eclipse.emf.emfstore.client.model.controller;
 import java.util.Date;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.emf.emfstore.client.common.UnknownEMFStoreWorkloadCommand;
 import org.eclipse.emf.emfstore.client.model.WorkspaceManager;
 import org.eclipse.emf.emfstore.client.model.connectionmanager.ServerCall;
 import org.eclipse.emf.emfstore.client.model.controller.callbacks.CommitCallback;
@@ -87,7 +88,7 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 		return commit(this.logMessage, this.branch);
 	}
 
-	private PrimaryVersionSpec commit(LogMessage logMessage, BranchVersionSpec branch) throws EmfStoreException {
+	private PrimaryVersionSpec commit(LogMessage logMessage, final BranchVersionSpec branch) throws EmfStoreException {
 		getProgressMonitor().beginTask("Commiting Changes", 100);
 		getProgressMonitor().worked(1);
 
@@ -126,7 +127,7 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 
 		getProgressMonitor().worked(10);
 		getProgressMonitor().subTask("Gathering changes");
-		ChangePackage changePackage = getProjectSpace().getLocalChangePackage();
+		final ChangePackage changePackage = getProjectSpace().getLocalChangePackage();
 		changePackage.setLogMessage(logMessage);
 		WorkspaceManager.getObserverBus().notify(CommitObserver.class).inspectChanges(getProjectSpace(), changePackage);
 
@@ -142,15 +143,25 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 
 		getProgressMonitor().subTask("Sending changes to server");
 
-		PrimaryVersionSpec newBaseVersion = null;
-
 		// TODO BRANCH
 		// Branching case: branch specifier added
-		newBaseVersion = getConnectionManager().createVersion(getUsersession().getSessionId(),
-			getProjectSpace().getProjectId(), getProjectSpace().getBaseVersion(), changePackage, branch,
-			getProjectSpace().getMergedVersion(), changePackage.getLogMessage());
-
+		PrimaryVersionSpec newBaseVersion;
+		newBaseVersion = new UnknownEMFStoreWorkloadCommand<PrimaryVersionSpec>(getProgressMonitor()) {
+			@Override
+			public PrimaryVersionSpec run(IProgressMonitor monitor) throws EmfStoreException {
+				return getConnectionManager().createVersion(getUsersession().getSessionId(),
+					getProjectSpace().getProjectId(), getProjectSpace().getBaseVersion(), changePackage, branch,
+					getProjectSpace().getMergedVersion(), changePackage.getLogMessage());
+			}
+		}.execute();
 		getProgressMonitor().worked(35);
+
+		// TODO reimplement with ObserverBus and think about subtasks for commit
+		getProgressMonitor().subTask("Sending files to server");
+		getProjectSpace().getFileTransferManager().uploadQueuedFiles(getProgressMonitor());
+		WorkspaceManager.getObserverBus().notify(CommitObserver.class)
+			.commitCompleted(getProjectSpace(), newBaseVersion);
+		getProgressMonitor().worked(30);
 
 		getProgressMonitor().subTask("Finalizing commit");
 		getProjectSpace().setBaseVersion(newBaseVersion);
@@ -159,9 +170,6 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 		getProjectSpace().setMergedVersion(null);
 
 		getProjectSpace().saveProjectSpaceOnly();
-
-		WorkspaceManager.getObserverBus().notify(CommitObserver.class)
-			.commitCompleted(getProjectSpace(), newBaseVersion);
 
 		getProjectSpace().updateDirtyState();
 		return newBaseVersion;

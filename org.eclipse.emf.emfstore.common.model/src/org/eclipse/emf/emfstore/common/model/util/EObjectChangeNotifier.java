@@ -10,17 +10,13 @@
  ******************************************************************************/
 package org.eclipse.emf.emfstore.common.model.util;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Stack;
 
-import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.util.EContentAdapter;
-import org.eclipse.emf.emfstore.common.model.NotifiableIdEObjectCollection;
 import org.eclipse.emf.emfstore.common.model.impl.NotifiableIdEObjectCollectionImpl;
 
 /**
@@ -33,17 +29,17 @@ public class EObjectChangeNotifier extends EContentAdapter {
 
 	private final NotifiableIdEObjectCollectionImpl collection;
 	private boolean isInitializing;
-	private Set<EObject> removedModelElements;
 	private Stack<Notification> currentNotifications;
+	private Stack<EObject> removedModelElements;
 	private int reentrantCallToAddAdapterCounter;
 	private boolean notificationDisabled;
 
 	/**
-	 * Constructor. Attaches an {@link Adapter} to the given {@link Notifier} and forwards notifications to the given
-	 * {@link NotifiableIdEObjectCollection}, that reacts appropriately.
+	 * Constructor. Attaches an Adapter to the given {@link Notifier} and forwards notifications to the given
+	 * NotifiableIdEObjectCollection, that reacts appropriately.
 	 * 
 	 * @param notifiableCollection
-	 *            a {@link NotifiableIdEObjectCollection}
+	 *            a NotifiableIdEObjectCollection
 	 * @param notifier
 	 *            the {@link Notifier} to listen to
 	 */
@@ -51,11 +47,11 @@ public class EObjectChangeNotifier extends EContentAdapter {
 		this.collection = notifiableCollection;
 		isInitializing = true;
 		currentNotifications = new Stack<Notification>();
+		removedModelElements = new Stack<EObject>();
 		notifier.eAdapters().add(this);
 		isInitializing = false;
 		reentrantCallToAddAdapterCounter = 0;
 		notificationDisabled = false;
-		removedModelElements = new HashSet<EObject>();
 	}
 
 	/**
@@ -119,11 +115,13 @@ public class EObjectChangeNotifier extends EContentAdapter {
 		if (notifier instanceof EObject) {
 			EObject modelElement = (EObject) notifier;
 			if (!isInCollection(modelElement)
-				&& (collection.containsInstance(modelElement) || collection.getDeletedModelElementId(modelElement) != null)) {
-				removedModelElements.add(modelElement);
+				&& (collection.containsInstance(modelElement) || collection.getDeletedModelElementId(modelElement) != null)
+				&& removedModelElements.size() > 0) {
+				removedModelElements.pop();
+				removedModelElements.push(modelElement);
 			}
-		}
 
+		}
 	}
 
 	/**
@@ -164,6 +162,9 @@ public class EObjectChangeNotifier extends EContentAdapter {
 		}
 
 		currentNotifications.push(notification);
+		// push null to ensure that stack has same size as call stack
+		// will be replaced with an actual removed element by removeAdapter method if there is any
+		removedModelElements.push(null);
 		Object feature = notification.getFeature();
 		Object notifier = notification.getNotifier();
 
@@ -183,14 +184,14 @@ public class EObjectChangeNotifier extends EContentAdapter {
 		super.notifyChanged(notification);
 		currentNotifications.pop();
 
-		// collection itself is not a valid model element
 		if (!notification.isTouch() && notifier instanceof EObject) {
 			collection.notify(notification, collection, (EObject) notifier);
+
 		}
-		for (EObject removedModelElement : removedModelElements) {
-			collection.modelElementRemoved(collection, removedModelElement);
+		EObject removedElement = removedModelElements.pop();
+		if (removedElement != null) {
+			collection.modelElementRemoved(collection, removedElement);
 		}
-		removedModelElements.clear();
 	}
 
 	/**

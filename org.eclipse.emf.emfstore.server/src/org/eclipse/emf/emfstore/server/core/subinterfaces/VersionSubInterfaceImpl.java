@@ -307,8 +307,8 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 				save(projectHistory);
 
 				// update history cache
-				// TODO BRANCH fix historyCache
-				// historyCache.addVersionToCache(projectId, newVersion);
+				// TODO BRANCH history Cache should work without any further changes
+				historyCache.addVersionToCache(projectId, newVersion);
 			} catch (FatalEmfStoreException e) {
 				// roll back failed
 				EmfStoreController.getInstance().shutdown(e);

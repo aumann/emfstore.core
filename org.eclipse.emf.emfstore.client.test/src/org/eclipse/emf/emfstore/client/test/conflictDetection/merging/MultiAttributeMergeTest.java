@@ -22,7 +22,7 @@ public class MultiAttributeMergeTest extends MergeTest {
 
 	@Test
 	public void addFirstVsRemove() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 		element.getStrings().add("a");
 		element.getStrings().add("b");
 		element.getStrings().add("c");
@@ -52,7 +52,7 @@ public class MultiAttributeMergeTest extends MergeTest {
 
 	@Test
 	public void addVsRemove() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 		element.getStrings().add("a");
 		element.getStrings().add("b");
 		element.getStrings().add("c");
@@ -82,7 +82,7 @@ public class MultiAttributeMergeTest extends MergeTest {
 
 	@Test
 	public void addManyVsRemove() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 		element.getStrings().add("a");
 		element.getStrings().add("b");
 		element.getStrings().add("c");
@@ -112,7 +112,7 @@ public class MultiAttributeMergeTest extends MergeTest {
 
 	@Test
 	public void addManyVsRemoveMany() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 		element.getStrings().add("a");
 		element.getStrings().add("b");
 		element.getStrings().add("c");
@@ -142,7 +142,7 @@ public class MultiAttributeMergeTest extends MergeTest {
 
 	@Test
 	public void removeVsRemove() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 		element.getStrings().add("a");
 		element.getStrings().add("b");
 		element.getStrings().add("c");
@@ -172,7 +172,7 @@ public class MultiAttributeMergeTest extends MergeTest {
 
 	@Test
 	public void removeVsRemoveSameNc() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 		element.getStrings().add("a");
 		element.getStrings().add("b");
 		element.getStrings().add("c");
@@ -199,7 +199,7 @@ public class MultiAttributeMergeTest extends MergeTest {
 
 	@Test
 	public void removeManyVsRemoveMany() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 		element.getStrings().add("a");
 		element.getStrings().add("b");
 		element.getStrings().add("c");
@@ -232,7 +232,7 @@ public class MultiAttributeMergeTest extends MergeTest {
 	 */
 	@Test
 	public void removeVsSet() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 		element.getStrings().add("a");
 		element.getStrings().add("b");
 		element.getStrings().add("c");
@@ -265,7 +265,7 @@ public class MultiAttributeMergeTest extends MergeTest {
 	 */
 	@Test
 	public void removeVsSetLowerIndex() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 		element.getStrings().add("a");
 		element.getStrings().add("b");
 		element.getStrings().add("c");
@@ -298,7 +298,7 @@ public class MultiAttributeMergeTest extends MergeTest {
 	 */
 	@Test
 	public void removeVsSetHigherIndexNC() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 		element.getStrings().add("a");
 		element.getStrings().add("b");
 		element.getStrings().add("c");
@@ -327,7 +327,7 @@ public class MultiAttributeMergeTest extends MergeTest {
 	 */
 	@Test
 	public void multipleRemoveVsSet() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 		element.getStrings().add("a");
 		element.getStrings().add("b");
 		element.getStrings().add("c");
@@ -364,7 +364,7 @@ public class MultiAttributeMergeTest extends MergeTest {
 	 */
 	@Test
 	public void multiRemoveVsSet() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 		element.getStrings().add("a");
 		element.getStrings().add("b");
 		element.getStrings().add("c");
@@ -400,7 +400,7 @@ public class MultiAttributeMergeTest extends MergeTest {
 	 */
 	@Test
 	public void multiRemoveVsSetLowerIndex() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 		element.getStrings().add("a");
 		element.getStrings().add("b");
 		element.getStrings().add("c");
@@ -436,7 +436,7 @@ public class MultiAttributeMergeTest extends MergeTest {
 	 */
 	@Test
 	public void multiRemoveVsSetHigherIndexNC() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 		element.getStrings().add("a");
 		element.getStrings().add("b");
 		element.getStrings().add("c");
@@ -462,7 +462,7 @@ public class MultiAttributeMergeTest extends MergeTest {
 
 	@Test
 	public void setVsSet() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 		element.getStrings().add("a");
 		element.getStrings().add("b");
 		element.getStrings().add("c");
@@ -492,7 +492,7 @@ public class MultiAttributeMergeTest extends MergeTest {
 
 	@Test
 	public void setVsSetNC() {
-		final TestElement element = createTestElement();
+		final TestElement element = getTestElement();
 		element.getStrings().add("a");
 		element.getStrings().add("b");
 		element.getStrings().add("c");
