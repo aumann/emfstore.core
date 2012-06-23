@@ -2,6 +2,7 @@ package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Widget;
 
@@ -92,7 +93,7 @@ public class MockCommit implements IMockCommit {
 			widget.dispose();
 	}
 
-	void addPassingLane(final PlotLane c) {
+	public void addPassingLane(final PlotLane c) {
 		final int cnt = passingLanes.length;
 		if (cnt == 0)
 			passingLanes = new PlotLane[] { c };
@@ -112,5 +113,25 @@ public class MockCommit implements IMockCommit {
 
 	public boolean isRealCommit() {
 		return isRealCommit;
+	}
+
+	public void setLane(PlotLane lane) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void setParents(List<IMockCommit> parents) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void addChild(IMockCommit child) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public IMockCommit getChild(int childId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
