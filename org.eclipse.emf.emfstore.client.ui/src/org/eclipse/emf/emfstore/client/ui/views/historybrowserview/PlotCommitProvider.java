@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
 
@@ -17,41 +18,72 @@ public class PlotCommitProvider implements IMockCommitProvider {
 	private final TreeSet<Integer> freePositions;
 	private final HashSet<PlotLane> activeLanes;
 	private int positionsAllocated;
-	private Map<PrimaryVersionSpec, IMockCommit> commitForHistory = new HashMap<PrimaryVersionSpec, IMockCommit>();
+	private Map<HistoryInfo, IMockCommit> commitForHistory = new HashMap<HistoryInfo, IMockCommit>();
 
 	public PlotCommitProvider(List<HistoryInfo> historyInfo) {
 		this.commits = new PlotCommit[historyInfo.size()];
 		this.freePositions = new TreeSet<Integer>();
 		this.activeLanes = new HashSet<PlotLane>(32);
 		this.positionsAllocated = 0;
-		this.commitForHistory = new HashMap<PrimaryVersionSpec, IMockCommit>();
+		this.commitForHistory = new HashMap<HistoryInfo, IMockCommit>();
 
 		for (int i = 0; i < historyInfo.size(); i++) {
-			commitForHistory.put(historyInfo.get(i).getPrimerySpec(), commits[i]);
+			commits[i] = new PlotCommit(historyInfo.get(i));
+			commitForHistory.put(historyInfo.get(i), commits[i]);
 		}
 
-		createCommits(historyInfo);
+		setupParents(historyInfo);
 
 		for (int i = 0; i < commits.length; i++) {
 			initCommit(i, commits[i]);
 		}
 	}
 
-	private void createCommits(List<HistoryInfo> historyInfos) {
+	private void setupParents(List<HistoryInfo> historyInfos) {
+		int identifierOffset = historyInfos.size() - 1;
 		for (int i = 0; i < historyInfos.size(); i++) {
-			HistoryInfo info = historyInfos.get(i);
-			PlotCommit commit = new PlotCommit(info);
-			// set up parents
-			// TODO is this really the parent relation?
-			List<PrimaryVersionSpec> versionSpecs = info.getMergedFrom();
-			ArrayList<IMockCommit> parents = new ArrayList<IMockCommit>(versionSpecs.size());
-			for (int j = 0; j < versionSpecs.size(); j++) {
-				parents.set(j, commitForHistory.get(versionSpecs.get(j)));
+			HistoryInfo currInfo = historyInfos.get(i);
+
+			// check if this historyinfo element is a merge
+			EList<PrimaryVersionSpec> mergedFrom = currInfo.getMergedFrom();
+			if (mergedFrom != null && mergedFrom.size() > 1) {
+
+			} else {
+				// we only have one parent or none
+				PrimaryVersionSpec parentSpec = currInfo.getPreviousSpec();
+				if (parentSpec != null) {
+					ArrayList<IMockCommit> parents = new ArrayList<IMockCommit>();
+					parents.add(commits[identifierOffset - parentSpec.getIdentifier()]);
+					commits[i].setParents(parents);
+					System.out.println(identifierOffset - parentSpec.getIdentifier() + " is parent of " + i);
+				}
 			}
-			commit.setParents(parents);
-			commits[i] = commit;
 		}
 	}
+
+	// private void setupParents(List<HistoryInfo> historyInfos) {
+	// for (int i = 0; i < historyInfos.size(); i++) {
+	// HistoryInfo info = historyInfos.get(i);
+	// PlotCommit commit = (PlotCommit) commits[i];
+	// // TODO is this really the parent relation?
+	// List<PrimaryVersionSpec> versionSpecs = info.getMergedFrom();
+	// if (versionSpecs != null && versionSpecs.size() > 1) {
+	// // this is a merge
+	// ArrayList<IMockCommit> parents = new ArrayList<IMockCommit>(versionSpecs.size());
+	// for (int j = 0; j < versionSpecs.size(); j++) {
+	// parents.set(j, commitForHistory.get(versionSpecs.get(j).eContainer()));
+	// }
+	// commit.setParents(parents);
+	// } else {
+	// ArrayList<IMockCommit> parents = new ArrayList<IMockCommit>();
+	// IMockCommit c = commitForHistory.get(info);
+	// if (c != null) {
+	// parents.add(c);
+	// commit.setParents(parents);
+	// }
+	// }
+	// }
+	// }
 
 	private void initCommit(int index, IMockCommit currCommit) {
 		setupChildren(currCommit);
@@ -196,7 +228,7 @@ public class PlotCommitProvider implements IMockCommitProvider {
 	}
 
 	public IMockCommit getCommitFor(HistoryInfo info, boolean onlyAChildRequest) {
-		return commitForHistory.get(info.getPrimerySpec());
+		return commitForHistory.get(info);
 	}
 
 }

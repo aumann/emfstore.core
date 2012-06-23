@@ -1,9 +1,11 @@
 package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
+import org.eclipse.emf.emfstore.server.model.versioning.LogMessage;
 import org.eclipse.swt.widgets.Widget;
 
 public class PlotCommit implements IMockCommit {
@@ -15,11 +17,17 @@ public class PlotCommit implements IMockCommit {
 	private List<IMockCommit> children;
 	private Widget widget;
 	private boolean isRealCommit;
+	private LogMessage logMessage;
 
 	public PlotCommit(HistoryInfo historyInfo) {
 		this.historyInfo = historyInfo;
 		this.lane = null;
-		this.passingLanes = null;
+		this.passingLanes = new PlotLane[0];
+		this.parents = new ArrayList<IMockCommit>();
+		this.children = new ArrayList<IMockCommit>();
+		this.widget = null;
+		this.isRealCommit = true;
+		this.logMessage = historyInfo.getLogMessage();
 	}
 
 	public void setLane(PlotLane lane) {
@@ -86,7 +94,10 @@ public class PlotCommit implements IMockCommit {
 	}
 
 	public String getShortMessage() {
-		return historyInfo.getLogMessage().getMessage();
+		if (logMessage != null) {
+			return logMessage.getMessage();
+		}
+		return "message";
 	}
 
 	public void setIsRealCommit(boolean isReal) {
@@ -106,7 +117,10 @@ public class PlotCommit implements IMockCommit {
 	}
 
 	public String getCommitterName() {
-		return historyInfo.getLogMessage().getAuthor();
+		if (logMessage != null) {
+			return logMessage.getAuthor();
+		}
+		return "author";
 	}
 
 	public String getId() {
@@ -115,7 +129,10 @@ public class PlotCommit implements IMockCommit {
 	}
 
 	public Date getCommitDate() {
-		return historyInfo.getLogMessage().getDate();
+		if (logMessage != null) {
+			return logMessage.getDate();
+		}
+		return new Date(2008, 11, 12);
 	}
 
 	public void dispose() {
