@@ -46,17 +46,23 @@ public class PlotCommitProvider implements IMockCommitProvider {
 
 			// check if this historyinfo element is a merge
 			EList<PrimaryVersionSpec> mergedFrom = currInfo.getMergedFrom();
-			if (mergedFrom != null && mergedFrom.size() > 1) {
-
-			} else {
-				// we only have one parent or none
-				PrimaryVersionSpec parentSpec = currInfo.getPreviousSpec();
-				if (parentSpec != null) {
-					ArrayList<IMockCommit> parents = new ArrayList<IMockCommit>();
-					parents.add(commits[identifierOffset - parentSpec.getIdentifier()]);
-					commits[i].setParents(parents);
-					System.out.println(identifierOffset - parentSpec.getIdentifier() + " is parent of " + i);
+			ArrayList<IMockCommit> parents = new ArrayList<IMockCommit>();
+			if (mergedFrom != null && mergedFrom.size() >= 1) {
+				for (PrimaryVersionSpec mergeParent : mergedFrom) {
+					parents.add(commits[identifierOffset - mergeParent.getIdentifier()]);
+					System.out.println(identifierOffset - mergeParent.getIdentifier() + " is parent of " + i);
 				}
+				commits[i].setParents(parents);
+
+			}
+			// we only have one parent or none
+			PrimaryVersionSpec parentSpec = currInfo.getPreviousSpec();
+			if (parentSpec != null) {
+				parents.add(commits[identifierOffset - parentSpec.getIdentifier()]);
+				System.out.println(identifierOffset - parentSpec.getIdentifier() + " is parent of " + i);
+			}
+			if (!parents.isEmpty()) {
+				commits[i].setParents(parents);
 			}
 		}
 	}
@@ -228,7 +234,9 @@ public class PlotCommitProvider implements IMockCommitProvider {
 	}
 
 	public IMockCommit getCommitFor(HistoryInfo info, boolean onlyAChildRequest) {
-		return commitForHistory.get(info);
+		IMockCommit comForInfo = commitForHistory.get(info);
+		comForInfo.setIsRealCommit(!onlyAChildRequest);
+		return comForInfo;
 	}
 
 }
