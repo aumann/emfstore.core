@@ -81,7 +81,8 @@ public class HistorySubInterfaceImpl extends AbstractSubEmfstoreInterface {
 					historyQuery.isIncludeChangePackage());
 			} else {
 				List<HistoryInfo> result = getHistoryInfo(projectId, historyQuery.getSource(),
-					historyQuery.getTarget(), historyQuery.isIncludeChangePackage());
+					historyQuery.getTarget(), historyQuery.isIncludeChangePackage(),
+					historyQuery.isIncludeAllVersions());
 				if (historyQuery.getSource().compareTo(historyQuery.getTarget()) < 0) {
 					Collections.reverse(result);
 				}
@@ -164,13 +165,13 @@ public class HistorySubInterfaceImpl extends AbstractSubEmfstoreInterface {
 	}
 
 	private List<HistoryInfo> getHistoryInfo(ProjectId projectId, PrimaryVersionSpec source, PrimaryVersionSpec target,
-		boolean includeChangePackage) throws EmfStoreException {
+		boolean includeChangePackage, boolean includeAllVersions) throws EmfStoreException {
 		if (source == null || target == null) {
 			throw new InvalidInputException();
 		}
 		return getHistoryInfosFromVersions(
-			getSubInterface(VersionSubInterfaceImpl.class).getVersions(projectId, source, target), projectId,
-			includeChangePackage);
+			getSubInterface(VersionSubInterfaceImpl.class).getVersions(projectId, source, target, includeAllVersions),
+			projectId, includeChangePackage);
 	}
 
 	private List<HistoryInfo> getHistoryInfosFromVersions(List<Version> versions, ProjectId projectId,

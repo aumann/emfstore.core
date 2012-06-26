@@ -489,6 +489,16 @@ public interface VersioningPackage extends EPackage {
 	int HISTORY_QUERY__INCLUDE_CHANGE_PACKAGE = 3;
 
 	/**
+	 * The feature id for the '<em><b>Include All Versions</b></em>' attribute.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 * @ordered
+	 */
+	int HISTORY_QUERY__INCLUDE_ALL_VERSIONS = 4;
+
+	/**
 	 * The number of structural features of the '<em>History Query</em>' class.
 	 * <!-- begin-user-doc --> <!--
 	 * end-user-doc -->
@@ -496,7 +506,7 @@ public interface VersioningPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int HISTORY_QUERY_FEATURE_COUNT = 4;
+	int HISTORY_QUERY_FEATURE_COUNT = 5;
 
 	/**
 	 * The meta object id for the '{@link org.eclipse.emf.emfstore.server.model.versioning.impl.VersionImpl
@@ -1236,6 +1246,20 @@ public interface VersioningPackage extends EPackage {
 	EAttribute getHistoryQuery_IncludeChangePackage();
 
 	/**
+	 * Returns the meta object for the attribute '
+	 * {@link org.eclipse.emf.emfstore.server.model.versioning.HistoryQuery#isIncludeAllVersions
+	 * <em>Include All Versions</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @return the meta object for the attribute '<em>Include All Versions</em>'.
+	 * @see org.eclipse.emf.emfstore.server.model.versioning.HistoryQuery#isIncludeAllVersions()
+	 * @see #getHistoryQuery()
+	 * @generated
+	 */
+	EAttribute getHistoryQuery_IncludeAllVersions();
+
+	/**
 	 * Returns the meta object for class '{@link org.eclipse.emf.emfstore.server.model.versioning.Version
 	 * <em>Version</em>}'.
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -1863,6 +1887,15 @@ public interface VersioningPackage extends EPackage {
 		 * @generated
 		 */
 		EAttribute HISTORY_QUERY__INCLUDE_CHANGE_PACKAGE = eINSTANCE.getHistoryQuery_IncludeChangePackage();
+
+		/**
+		 * The meta object literal for the '<em><b>Include All Versions</b></em>' attribute feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * 
+		 * @generated
+		 */
+		EAttribute HISTORY_QUERY__INCLUDE_ALL_VERSIONS = eINSTANCE.getHistoryQuery_IncludeAllVersions();
 
 		/**
 		 * The meta object literal for the '{@link org.eclipse.emf.emfstore.server.model.versioning.impl.VersionImpl

@@ -13,6 +13,7 @@ package org.eclipse.emf.emfstore.server.core.subinterfaces;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
@@ -595,13 +596,14 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 	 *            source
 	 * @param target
 	 *            target
+	 * @param includeAllVersions returns all versions, including versions from other branches
 	 * @return list of versions
 	 * @throws EmfStoreException
 	 *             if source or target are out of range or any other problem
 	 *             occurs
 	 */
-	protected List<Version> getVersions(ProjectId projectId, PrimaryVersionSpec source, PrimaryVersionSpec target)
-		throws EmfStoreException {
+	protected List<Version> getVersions(ProjectId projectId, PrimaryVersionSpec source, PrimaryVersionSpec target,
+		boolean includeAllVersions) throws EmfStoreException {
 		if (source.compareTo(target) < 1) {
 			ProjectHistory projectHistory = getSubInterface(ProjectSubInterfaceImpl.class).getProject(projectId);
 
@@ -613,25 +615,56 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 			}
 			List<Version> result = new ArrayList<Version>();
 
-			// TODO BRANCH
-			// since the introduction of branches the versions are collected in different order.
-			Version currentVersion = targetVersion;
-			while (currentVersion != null) {
-				result.add(currentVersion);
-
-				if (currentVersion.equals(sourceVersion)) {
-					break;
+			if (includeAllVersions) {
+				Iterator<Version> iter = projectHistory.getVersions().listIterator(source.getIdentifier());
+				int steps = target.getIdentifier() - source.getIdentifier();
+				while (iter.hasNext() && steps-- >= 0) {
+					result.add(iter.next());
 				}
-
-				currentVersion = findNextVersion(currentVersion);
+			} else {
+				// TODO BRANCH
+				// since the introduction of branches the versions are collected in different order.
+				Version currentVersion = targetVersion;
+				while (currentVersion != null) {
+					result.add(currentVersion);
+					if (currentVersion.equals(sourceVersion)) {
+						break;
+					}
+					currentVersion = findNextVersion(currentVersion);
+				}
+				Collections.reverse(result);
 			}
-
-			Collections.reverse(result);
 			return result;
 		} else {
-			return getVersions(projectId, target, source);
+			return getVersions(projectId, target, source, includeAllVersions);
 		}
 	}
+
+	protected List<Version> getVersions(ProjectId projectId, PrimaryVersionSpec source, PrimaryVersionSpec target)
+		throws EmfStoreException {
+		return getVersions(projectId, source, target, false);
+	}
+
+	// protected List<Version> getAllVersions(ProjectId projectId, PrimaryVersionSpec source, PrimaryVersionSpec target)
+	// throws EmfStoreException {
+	// if (source.compareTo(target) < 1) {
+	// ProjectHistory projectHistory = getSubInterface(ProjectSubInterfaceImpl.class).getProject(projectId);
+	//
+	// Version sourceVersion = getVersion(projectHistory, source);
+	// Version targetVersion = getVersion(projectHistory, target);
+	//
+	// if (sourceVersion == null || targetVersion == null) {
+	// throw new InvalidVersionSpecException();
+	// }
+	// List<Version> result = new ArrayList<Version>();
+	//
+	// for(Version current : projectHistory.getVersions())
+	//
+	// return result;
+	// } else {
+	// return getVersions(projectId, target, source);
+	// }
+	// }
 
 	/**
 	 * Helper method which retrieves the next version in the history tree. This method must be used in reversed order.

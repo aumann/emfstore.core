@@ -157,7 +157,7 @@ public final class DecisionUtil {
 	 * @return obj.toString or unset
 	 */
 	public static String getLabel(Object obj, String unset) {
-		return (obj != null && obj.toString().length() > 1) ? obj.toString() : unset;
+		return (obj != null && obj.toString().length() > 0) ? obj.toString() : unset;
 	}
 
 	/**
