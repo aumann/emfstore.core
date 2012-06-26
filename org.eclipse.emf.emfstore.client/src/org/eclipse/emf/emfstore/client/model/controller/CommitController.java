@@ -105,6 +105,9 @@ public class CommitController extends ServerCall<PrimaryVersionSpec> {
 
 		if (branch != null) {
 			// TODO BRANCH
+			if (branch.getBranch().equals("")) {
+				throw new EmfStoreException("Empty branch name is not permitted.");
+			}
 			try {
 				PrimaryVersionSpec resolvedVersion = getProjectSpace().resolveVersionSpec(branch);
 				// TODO BRANCH merge should have own controller

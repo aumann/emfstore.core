@@ -261,7 +261,9 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 				baseBranch.setHead(EcoreUtil.copy(newVersion.getPrimarySpec()));
 
 			} else if (getBranchInfo(projectHistory, targetBranch) == null) {
-
+				if (targetBranch.getBranch().equals("")) {
+					throw new EmfStoreException("Empty branch name is not permitted.");
+				}
 				// when branch does NOT exist, create new branch
 				newVersion = createVersion(projectHistory, changePackage, logMessage, user, baseVersion);
 				createNewBranch(projectHistory, baseVersion.getPrimarySpec(), newVersion.getPrimarySpec(), targetBranch);

@@ -150,7 +150,11 @@ public class UICreateBranchController extends AbstractEMFStoreUIController<Prima
 	public PrimaryVersionSpec doRun(final IProgressMonitor progressMonitor) throws EmfStoreException {
 
 		if (branch == null) {
+			// the current exception handling sucks bad!
 			branch = branchSelection(projectSpace);
+			if (branch == null) {
+				return null;
+			}
 		}
 		return projectSpace.commitToBranch(branch, logMessage, UICreateBranchController.this, progressMonitor);
 	}
@@ -165,7 +169,7 @@ public class UICreateBranchController extends AbstractEMFStoreUIController<Prima
 					projectSpace.getBaseVersion(), branches);
 				dialog.setBlockOnOpen(true);
 
-				if (dialog.open() != Dialog.OK || dialog.getNewBranch() == null) {
+				if (dialog.open() != Dialog.OK || dialog.getNewBranch() == null || dialog.getNewBranch().equals("")) {
 					// TODO BRANCH ask eddy
 					// throw new EmfStoreException("No Branch specified");
 					return null;
@@ -175,8 +179,7 @@ public class UICreateBranchController extends AbstractEMFStoreUIController<Prima
 		}.execute();
 
 		if (branch == null) {
-			throw new EmfStoreException("No Branch specified");
-
+			return null;
 		}
 
 		return Versions.BRANCH(branch);
