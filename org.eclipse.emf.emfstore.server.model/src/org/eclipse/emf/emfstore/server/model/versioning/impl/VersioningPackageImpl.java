@@ -564,6 +564,16 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 	}
 
 	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * 
+	 * @generated
+	 */
+	public EAttribute getHistoryQuery_IncludeAllVersions() {
+		return (EAttribute) historyQueryEClass.getEStructuralFeatures().get(4);
+	}
+
+	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * 
 	 * @generated
@@ -860,6 +870,7 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 		createEReference(historyQueryEClass, HISTORY_QUERY__TARGET);
 		createEReference(historyQueryEClass, HISTORY_QUERY__MODEL_ELEMENTS);
 		createEAttribute(historyQueryEClass, HISTORY_QUERY__INCLUDE_CHANGE_PACKAGE);
+		createEAttribute(historyQueryEClass, HISTORY_QUERY__INCLUDE_ALL_VERSIONS);
 
 		versionEClass = createEClass(VERSION);
 		createEReference(versionEClass, VERSION__PROJECT_STATE);
@@ -1030,6 +1041,9 @@ public class VersioningPackageImpl extends EPackageImpl implements VersioningPac
 		initEAttribute(getHistoryQuery_IncludeChangePackage(), ecorePackage.getEBoolean(), "includeChangePackage",
 			null, 0, 1, HistoryQuery.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID,
 			IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEAttribute(getHistoryQuery_IncludeAllVersions(), ecorePackage.getEBoolean(), "includeAllVersions", null, 0,
+			1, HistoryQuery.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE,
+			!IS_DERIVED, IS_ORDERED);
 
 		initEClass(versionEClass, Version.class, "Version", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getVersion_ProjectState(), theModelPackage.getProject(), null, "projectState", null, 0, 1,
