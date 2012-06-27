@@ -48,6 +48,7 @@ import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.con
 import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.ReferenceConflict;
 import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.SingleReferenceConflict;
 import org.eclipse.emf.emfstore.client.model.changeTracking.merging.util.DecisionUtil;
+import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionElement;
 import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionPoint;
 import org.eclipse.emf.emfstore.common.model.ModelElementId;
 import org.eclipse.emf.emfstore.common.model.Project;
@@ -83,6 +84,7 @@ public class DecisionManager {
 	private ArrayList<AbstractOperation> rejectedTheirs;
 	private final PrimaryVersionSpec baseVersion;
 	private final PrimaryVersionSpec targetVersion;
+	private List<ConflictHandler> conflictHandler;
 
 	/**
 	 * Default constructor.
@@ -105,7 +107,8 @@ public class DecisionManager {
 		this.theirChangePackages = theirChangePackages;
 		this.baseVersion = baseVersion;
 		this.targetVersion = targetVersion;
-		conflictDetector = initConflictDetector();
+		this.conflictDetector = initConflictDetector();
+		this.conflictHandler = initConflictHandlers();
 		init();
 	}
 
@@ -117,6 +120,18 @@ public class DecisionManager {
 			return new ConflictDetector(strategy);
 		}
 		return new ConflictDetector();
+	}
+
+	private List<ConflictHandler> initConflictHandlers() {
+		ArrayList<ConflictHandler> result = new ArrayList<ConflictHandler>();
+		for (ExtensionElement element : new ExtensionPoint("org.eclipse.emf.emfstore.client.merge.conflictHandler")
+			.getExtensionElements()) {
+			ConflictHandler handler = element.getClass("class", ConflictHandler.class);
+			if (handler != null) {
+				result.add(handler);
+			}
+		}
+		return result;
 	}
 
 	private void init() {
@@ -192,7 +207,11 @@ public class DecisionManager {
 			AbstractOperation my = conf.getMyOperation();
 			AbstractOperation their = conf.getTheirOperation();
 
-			if (isDiagramLayout(my) && isDiagramLayout(their)) {
+			// #checkRegistedHandlers adds Conflicts on its own
+			if (checkRegisteredHandlers(conf)) {
+				continue;
+
+			} else if (isDiagramLayout(my) && isDiagramLayout(their)) {
 
 				addConflict(createDiagramLayoutDecision(conf));
 				continue;
@@ -279,6 +298,16 @@ public class DecisionManager {
 
 			}
 		}
+	}
+
+	private boolean checkRegisteredHandlers(Conflicting conf) {
+		for (ConflictHandler handler : this.conflictHandler) {
+			if (handler.canHandle(conf)) {
+				addConflict(handler.handle(this, conf));
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void addConflict(Conflict conflict) {
@@ -722,7 +751,7 @@ public class DecisionManager {
 	 * 
 	 * @author wesendon
 	 */
-	private class Conflicting {
+	public class Conflicting {
 
 		private ArrayList<AbstractOperation> myOps;
 		private ArrayList<AbstractOperation> theirOps;
