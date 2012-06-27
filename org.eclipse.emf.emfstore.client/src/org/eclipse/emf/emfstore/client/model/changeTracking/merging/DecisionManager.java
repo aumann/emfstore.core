@@ -48,9 +48,11 @@ import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.con
 import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.ReferenceConflict;
 import org.eclipse.emf.emfstore.client.model.changeTracking.merging.conflict.conflicts.SingleReferenceConflict;
 import org.eclipse.emf.emfstore.client.model.changeTracking.merging.util.DecisionUtil;
+import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionPoint;
 import org.eclipse.emf.emfstore.common.model.ModelElementId;
 import org.eclipse.emf.emfstore.common.model.Project;
 import org.eclipse.emf.emfstore.common.model.util.ModelUtil;
+import org.eclipse.emf.emfstore.server.conflictDetection.ConflictDetectionStrategy;
 import org.eclipse.emf.emfstore.server.conflictDetection.ConflictDetector;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.LogMessage;
@@ -103,8 +105,18 @@ public class DecisionManager {
 		this.theirChangePackages = theirChangePackages;
 		this.baseVersion = baseVersion;
 		this.targetVersion = targetVersion;
-		conflictDetector = new ConflictDetector();
+		conflictDetector = initConflictDetector();
 		init();
+	}
+
+	private ConflictDetector initConflictDetector() {
+		ConflictDetectionStrategy strategy = new ExtensionPoint(
+			"org.eclipse.emf.emfstore.client.merge.conflictDetectorStrategy").getClass("class",
+			ConflictDetectionStrategy.class);
+		if (strategy != null) {
+			return new ConflictDetector(strategy);
+		}
+		return new ConflictDetector();
 	}
 
 	private void init() {
