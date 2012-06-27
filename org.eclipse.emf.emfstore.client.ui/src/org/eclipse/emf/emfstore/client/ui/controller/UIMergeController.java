@@ -35,7 +35,7 @@ public class UIMergeController extends AbstractEMFStoreUIController<Void> {
 		}
 		PrimaryVersionSpec selectedSource = branchSelection(projectSpace);
 		if (selectedSource != null) {
-			((ProjectSpaceBase) projectSpace).mergeBranch(selectedSource, new MergeProjectHandler());
+			((ProjectSpaceBase) projectSpace).mergeBranch(selectedSource, new MergeProjectHandler(true));
 		}
 		return null;
 	}

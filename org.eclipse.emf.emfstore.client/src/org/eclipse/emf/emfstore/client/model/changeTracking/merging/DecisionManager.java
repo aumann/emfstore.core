@@ -85,6 +85,7 @@ public class DecisionManager {
 	private final PrimaryVersionSpec baseVersion;
 	private final PrimaryVersionSpec targetVersion;
 	private List<ConflictHandler> conflictHandler;
+	private final boolean isBranchMerge;
 
 	/**
 	 * Default constructor.
@@ -101,15 +102,22 @@ public class DecisionManager {
 	 *            new target version
 	 */
 	public DecisionManager(Project project, List<ChangePackage> myChangePackages,
-		List<ChangePackage> theirChangePackages, PrimaryVersionSpec baseVersion, PrimaryVersionSpec targetVersion) {
+		List<ChangePackage> theirChangePackages, PrimaryVersionSpec baseVersion, PrimaryVersionSpec targetVersion,
+		boolean isBranchMerge) {
 		this.project = project;
 		this.myChangePackages = myChangePackages;
 		this.theirChangePackages = theirChangePackages;
 		this.baseVersion = baseVersion;
 		this.targetVersion = targetVersion;
+		this.isBranchMerge = isBranchMerge;
 		this.conflictDetector = initConflictDetector();
 		this.conflictHandler = initConflictHandlers();
 		init();
+	}
+
+	public DecisionManager(Project project, List<ChangePackage> myChangePackages,
+		List<ChangePackage> theirChangePackages, PrimaryVersionSpec baseVersion, PrimaryVersionSpec targetVersion) {
+		this(project, myChangePackages, theirChangePackages, baseVersion, targetVersion, false);
 	}
 
 	private ConflictDetector initConflictDetector() {
@@ -567,6 +575,10 @@ public class DecisionManager {
 	 */
 	public ConflictDetector getConflictDetector() {
 		return conflictDetector;
+	}
+
+	public boolean isBranchMerge() {
+		return isBranchMerge;
 	}
 
 	/**
