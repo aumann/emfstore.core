@@ -36,14 +36,20 @@ public class MergeProjectHandler implements ConflictResolver {
 
 	private List<AbstractOperation> acceptedMine;
 	private List<AbstractOperation> rejectedTheirs;
+	private final boolean isBranchMerge;
 
 	/**
 	 * Default constructor.
 	 * 
 	 */
-	public MergeProjectHandler() {
+	public MergeProjectHandler(boolean isBranchMerge) {
+		this.isBranchMerge = isBranchMerge;
 		acceptedMine = new ArrayList<AbstractOperation>();
 		rejectedTheirs = new ArrayList<AbstractOperation>();
+	}
+
+	public MergeProjectHandler() {
+		this(false);
 	}
 
 	/**
@@ -77,7 +83,7 @@ public class MergeProjectHandler implements ConflictResolver {
 		WorkspaceManager.getObserverBus().register(labelProvider, MergeLabelProvider.class);
 
 		DecisionManager decisionManager = new DecisionManager(project, myChangePackages, theirChangePackages, base,
-			target);
+			target, isBranchMerge);
 
 		if (decisionManager.isResolved()) {
 			decisionManager.calcResult();

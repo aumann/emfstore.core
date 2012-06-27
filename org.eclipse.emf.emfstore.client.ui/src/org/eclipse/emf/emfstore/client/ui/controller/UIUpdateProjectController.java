@@ -168,7 +168,6 @@ public class UIUpdateProjectController extends AbstractEMFStoreUIController<Prim
 				} catch (EmfStoreException e) {
 					exception = e;
 				}
-
 				return null;
 			}
 		}.execute();

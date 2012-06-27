@@ -224,9 +224,9 @@ public class WorkspaceImpl extends EObjectImpl implements Workspace {
 
 		// initialize project space
 		parent.subTask("Initializing Projectspace...");
-		projectSpace.setProjectId(projectInfo.getProjectId());
-		projectSpace.setProjectName(projectInfo.getName());
-		projectSpace.setProjectDescription(projectInfo.getDescription());
+		projectSpace.setProjectId(projectInfoCopy.getProjectId());
+		projectSpace.setProjectName(projectInfoCopy.getName());
+		projectSpace.setProjectDescription(projectInfoCopy.getDescription());
 		projectSpace.setBaseVersion(primaryVersionSpec);
 		projectSpace.setLastUpdated(new Date());
 		projectSpace.setUsersession(usersession);

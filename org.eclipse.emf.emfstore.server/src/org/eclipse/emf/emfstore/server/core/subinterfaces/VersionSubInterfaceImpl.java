@@ -149,6 +149,12 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 				return currentSource.getPrimarySpec();
 			}
 
+			// Shortcut for most common merge usecase: If you have 2 parallel branches and merge several times
+			// from the one branch into the another. This case is also supported by #getVersions
+			if (currentSource.getMergedFromVersion().contains(currentTarget)) {
+				return currentTarget.getPrimarySpec();
+			}
+
 			if (currentSource.getPrimarySpec().getIdentifier() >= currentTarget.getPrimarySpec().getIdentifier()) {
 				currentSource = findNextVersion(currentSource);
 			} else {
@@ -261,7 +267,9 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 				baseBranch.setHead(EcoreUtil.copy(newVersion.getPrimarySpec()));
 
 			} else if (getBranchInfo(projectHistory, targetBranch) == null) {
-
+				if (targetBranch.getBranch().equals("")) {
+					throw new EmfStoreException("Empty branch name is not permitted.");
+				}
 				// when branch does NOT exist, create new branch
 				newVersion = createVersion(projectHistory, changePackage, logMessage, user, baseVersion);
 				createNewBranch(projectHistory, baseVersion.getPrimarySpec(), newVersion.getPrimarySpec(), targetBranch);
@@ -630,6 +638,14 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 					if (currentVersion.equals(sourceVersion)) {
 						break;
 					}
+					// Shortcut for most common merge usecase: If you have 2 parallel branches and merge several times
+					// from the one branch into the another.
+					if (currentVersion.getMergedFromVersion().contains(sourceVersion)) {
+						// add sourceVersion because #getChanges always removes the first version
+						result.add(sourceVersion);
+						break;
+					}
+
 					currentVersion = findNextVersion(currentVersion);
 				}
 				Collections.reverse(result);
@@ -640,6 +656,22 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 		}
 	}
 
+	/**
+	 * Returns a list of versions starting from source and ending with target.
+	 * This method returns the version always in an ascanding order. So if you
+	 * need it ordered differently you have to reverse the list.
+	 * 
+	 * @param projectId
+	 *            project id
+	 * @param source
+	 *            source
+	 * @param target
+	 *            target
+	 * @return list of versions
+	 * @throws EmfStoreException
+	 *             if source or target are out of range or any other problem
+	 *             occurs
+	 */
 	protected List<Version> getVersions(ProjectId projectId, PrimaryVersionSpec source, PrimaryVersionSpec target)
 		throws EmfStoreException {
 		return getVersions(projectId, source, target, false);

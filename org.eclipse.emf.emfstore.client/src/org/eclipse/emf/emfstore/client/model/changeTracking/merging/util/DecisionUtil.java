@@ -147,6 +147,16 @@ public final class DecisionUtil {
 		return false;
 	}
 
+	private static DescriptionProvider descriptionProvider;
+
+	public static String getDescription(String key, boolean isBranchMerge) {
+		if (descriptionProvider == null) {
+			descriptionProvider = new DescriptionProvider();
+		}
+		descriptionProvider.setPrefix(isBranchMerge ? "branchmerge" : null);
+		return descriptionProvider.getDescription(key);
+	}
+
 	/**
 	 * Uses the object's toString method or returns unset string.
 	 * 
