@@ -41,6 +41,8 @@ public interface IMockCommit {
 
 	public void setWidget(Widget widget);
 
+	public String getBranch();
+
 	public String getCommitterName();
 
 	public String getId();

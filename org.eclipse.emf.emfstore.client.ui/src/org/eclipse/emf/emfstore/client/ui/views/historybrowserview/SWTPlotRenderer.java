@@ -50,6 +50,10 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 
 	private static final int MAX_LABEL_LENGTH = 15;
 
+	private final Color LOCAL_HISTORY_BORDER_COLOR;
+
+	private final Color LOCAL_HISTORY_INNER_COLOR;
+
 	private final Color sys_black;
 
 	private final Color sys_gray;
@@ -86,6 +90,8 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 		sys_white = d.getSystemColor(SWT.COLOR_WHITE);
 		commitDotFill = new Color(d, new RGB(220, 220, 220));
 		commitDotOutline = new Color(d, new RGB(110, 110, 110));
+		LOCAL_HISTORY_BORDER_COLOR = sys_black;
+		LOCAL_HISTORY_INNER_COLOR = sys_white;
 	}
 
 	void dispose() {
@@ -161,88 +167,103 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 		g.drawString(msg, cellX + x, cellY + texty, true);
 	}
 
-	// @Override
-	// protected int drawLabel(int x, int y, Ref ref) {
-	// String txt;
-	// String name = ref.getName();
-	// boolean tag = false;
-	// boolean branch = false;
-	// RGB labelOuter;
-	// RGB labelInner;
-	// if (name.startsWith(Constants.R_HEADS)) {
-	// branch = true;
-	// labelOuter = OUTER_HEAD;
-	// labelInner = INNER_HEAD;
-	// txt = name.substring(Constants.R_HEADS.length());
-	// } else if (name.startsWith(Constants.R_REMOTES)) {
-	// branch = true;
-	// labelOuter = OUTER_REMOTE;
-	// labelInner = INNER_REMOTE;
-	// txt = name.substring(Constants.R_REMOTES.length());
-	// } else if (name.startsWith(Constants.R_TAGS)) {
-	// tag = true;
-	// if (ref.getPeeledObjectId() != null) {
-	// labelOuter = OUTER_ANNOTATED;
-	// labelInner = INNER_ANNOTATED;
-	// } else {
-	// labelOuter = OUTER_TAG;
-	// labelInner = INNER_TAG;
-	// }
-	//
-	// txt = name.substring(Constants.R_TAGS.length());
-	// } else {
-	// labelOuter = OUTER_OTHER;
-	// labelInner = INNER_OTHER;
-	//
-	// if (name.startsWith(Constants.R_REFS))
-	// txt = name.substring(Constants.R_REFS.length());
-	// else
-	// txt = name; // HEAD and such
-	// }
-	//
-	// int maxLength;
-	// if (tag)
-	// maxLength = Activator.getDefault().getPreferenceStore().getInt(UIPreferences.HISTORY_MAX_TAG_LENGTH);
-	// else if (branch)
-	// maxLength = Activator.getDefault().getPreferenceStore().getInt(UIPreferences.HISTORY_MAX_BRANCH_LENGTH);
-	// else
-	// maxLength = MAX_LABEL_LENGTH;
-	// if (txt.length() > maxLength)
-	//			txt = txt.substring(0, maxLength) + "\u2026"; // ellipsis "..." (in UTF-8) //$NON-NLS-1$
-	//
-	// // highlight checked out branch
-	// Font oldFont = g.getFont();
-	// boolean isHead = isHead(name);
-	// if (isHead)
-	// g.setFont(CommitGraphTable.highlightFont());
-	//
-	// Point textsz = g.stringExtent(txt);
-	// int arc = textsz.y / 2;
-	// final int texty = (y * 2 - textsz.y) / 2;
-	//
-	// // Draw backgrounds
-	// g.setLineWidth(1);
-	//
-	// g.setBackground(sys_white);
-	// g.fillRoundRectangle(cellX + x + 1, cellY + texty, textsz.x + 6, textsz.y + 1, arc, arc);
-	//
-	// g.setBackground(resources.createColor(labelInner));
-	// g.fillRoundRectangle(cellX + x + 2, cellY + texty + 1, textsz.x + 4, textsz.y - 2, arc - 1, arc - 1);
-	//
-	// g.setForeground(resources.createColor(labelOuter));
-	// g.drawRoundRectangle(cellX + x, cellY + texty - 1, textsz.x + 7, textsz.y + 1, arc, arc);
-	//
-	// g.setForeground(sys_black);
-	//
-	// // Draw text
-	// g.drawString(txt, cellX + x + 4, cellY + texty, true);
-	//
-	// if (isHead)
-	// g.setFont(oldFont);
-	//
-	// labelCoordinates.put(name, new Point(x, x + textsz.x));
-	// return 10 + textsz.x;
-	// }
+	@Override
+	protected int drawLabel(int x, int y, IMockCommit commit) {
+		String txt = commit.getBranch();
+		// String name = commit.getName();
+		// boolean tag = false;
+		// boolean branch = false;
+		// RGB labelOuter;
+		// RGB labelInner;
+		// if (name.startsWith(Constants.R_HEADS)) {
+		// branch = true;
+		// labelOuter = OUTER_HEAD;
+		// labelInner = INNER_HEAD;
+		// txt = name.substring(Constants.R_HEADS.length());
+		// } else if (name.startsWith(Constants.R_REMOTES)) {
+		// branch = true;
+		// labelOuter = OUTER_REMOTE;
+		// labelInner = INNER_REMOTE;
+		// txt = name.substring(Constants.R_REMOTES.length());
+		// } else if (name.startsWith(Constants.R_TAGS)) {
+		// tag = true;
+		// if (commit.getPeeledObjectId() != null) {
+		// labelOuter = OUTER_ANNOTATED;
+		// labelInner = INNER_ANNOTATED;
+		// } else {
+		// labelOuter = OUTER_TAG;
+		// labelInner = INNER_TAG;
+		// }
+		//
+		// txt = name.substring(Constants.R_TAGS.length());
+		// } else {
+		// labelOuter = OUTER_OTHER;
+		// labelInner = INNER_OTHER;
+		//
+		// if (name.startsWith(Constants.R_REFS))
+		// txt = name.substring(Constants.R_REFS.length());
+		// else
+		// txt = name; // HEAD and such
+		// }
+
+		int maxLength;
+		// if (tag)
+		// maxLength = Activator.getDefault().getPreferenceStore().getInt(UIPreferences.HISTORY_MAX_TAG_LENGTH);
+		// else if (branch)
+		// maxLength = Activator.getDefault().getPreferenceStore().getInt(UIPreferences.HISTORY_MAX_BRANCH_LENGTH);
+		// else
+		maxLength = MAX_LABEL_LENGTH;
+		if (txt.length() > maxLength) {
+			txt = txt.substring(0, maxLength) + "\u2026"; // ellipsis "..." (in UTF-8) //$NON-NLS-1$
+		}
+		// highlight checked out branch
+		// Font oldFont = g.getFont();
+		// boolean isHead = isHead(name);
+		// if (isHead)
+		// g.setFont(CommitGraphTable.highlightFont());
+
+		Point textsz = g.stringExtent(txt);
+		int arc = textsz.y / 2;
+		final int texty = (y * 2 - textsz.y) / 2;
+
+		// Draw backgrounds
+		g.setLineWidth(1);
+
+		g.setBackground(sys_white);
+		g.fillRoundRectangle(cellX + x + 1, cellY + texty, textsz.x + 6, textsz.y + 1, arc, arc);
+
+		g.setBackground(getLabelColor(commit));
+		g.fillRoundRectangle(cellX + x + 2, cellY + texty + 1, textsz.x + 4, textsz.y - 2, arc - 1, arc - 1);
+
+		g.setForeground(getLabelBorderColor(commit));
+		g.drawRoundRectangle(cellX + x, cellY + texty - 1, textsz.x + 7, textsz.y + 1, arc, arc);
+
+		g.setForeground(sys_black);
+
+		// Draw text
+		g.drawString(txt, cellX + x + 4, cellY + texty, true);
+
+		// if (isHead)
+		// g.setFont(oldFont);
+
+		labelCoordinates.put(commit.getId(), new Point(x, x + textsz.x));
+		return 10 + textsz.x;
+	}
+
+	private Color getLabelBorderColor(IMockCommit commit) {
+		if (commit.getLane() != null) {
+			return commit.getLane().getSaturatedColor();
+		}
+		return LOCAL_HISTORY_BORDER_COLOR;
+	}
+
+	private Color getLabelColor(IMockCommit commit) {
+		if (commit.getLane() != null)
+			return commit.getLane().getLightColor();
+
+		return LOCAL_HISTORY_INNER_COLOR;
+	}
+
 	// private boolean isHead(String name) {
 	// boolean isHead = false;
 	// if (headRef != null) {

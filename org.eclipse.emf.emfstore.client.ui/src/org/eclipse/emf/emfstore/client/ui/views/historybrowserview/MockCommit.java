@@ -134,4 +134,9 @@ public class MockCommit implements IMockCommit {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public String getBranch() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

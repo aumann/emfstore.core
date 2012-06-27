@@ -149,26 +149,28 @@ public abstract class AbstractPlotRenderer {
 		// textx += drawLabel(textx + dotSize, h / 2, commit.refs[i]);
 		// }
 
-		int n = 0; // remove if refs get re-enabled
-
-		final String msg = commit.getShortMessage();
 		if (commit.isRealCommit()) {
+			textx += drawLabel(textx + dotSize, h / 2, commit);
+
+			int n = 0; // remove if refs get re-enabled
+
+			final String msg = commit.getShortMessage();
 			drawText(msg, textx + dotSize + n * 2, h / 2);
 		}
 	}
 
-	// /**
-	// * Draw a decoration for the Ref ref at x,y
-	// *
-	// * @param x
-	// * left
-	// * @param y
-	// * top
-	// * @param ref
-	// * A peeled ref
-	// * @return width of label in pixels
-	// */
-	// protected abstract int drawLabel(int x, int y, IMockCommit ref);
+	/**
+	 * Draw a decoration for the Ref ref at x,y
+	 * 
+	 * @param x
+	 *            left
+	 * @param y
+	 *            top
+	 * @param ref
+	 *            A peeled ref
+	 * @return width of label in pixels
+	 */
+	protected abstract int drawLabel(int x, int y, IMockCommit ref);
 
 	private int computeDotSize(final int h) {
 		int d = (int) (Math.min(h, LANE_WIDTH) * 0.50f);

@@ -18,6 +18,8 @@ public class PlotCommit implements IMockCommit {
 	private Widget widget;
 	private boolean isRealCommit;
 	private LogMessage logMessage;
+	private String branchName;
+	private String idString;
 
 	public PlotCommit(HistoryInfo historyInfo) {
 		this.historyInfo = historyInfo;
@@ -28,6 +30,13 @@ public class PlotCommit implements IMockCommit {
 		this.widget = null;
 		this.isRealCommit = true;
 		this.logMessage = historyInfo.getLogMessage();
+		if (historyInfo.getPrimerySpec() != null) {
+			this.branchName = historyInfo.getPrimerySpec().getBranch();
+			this.idString = String.valueOf(historyInfo.getPrimerySpec().getIdentifier());
+		} else {
+			this.branchName = "Local History";
+			this.idString = "Local ID";
+		}
 	}
 
 	public void setLane(PlotLane lane) {
@@ -123,9 +132,12 @@ public class PlotCommit implements IMockCommit {
 		return "author";
 	}
 
+	public String getBranch() {
+		return branchName;
+	}
+
 	public String getId() {
-		// TODO what to do here
-		return "was soll hier stehen? ^^";
+		return idString;
 	}
 
 	public Date getCommitDate() {
