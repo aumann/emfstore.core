@@ -168,7 +168,7 @@ public abstract class AbstractPlotRenderer {
 	// * A peeled ref
 	// * @return width of label in pixels
 	// */
-	// protected abstract int drawLabel(int x, int y, Ref ref);
+	// protected abstract int drawLabel(int x, int y, IMockCommit ref);
 
 	private int computeDotSize(final int h) {
 		int d = (int) (Math.min(h, LANE_WIDTH) * 0.50f);

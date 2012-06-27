@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008-2011 Chair for Applied Software Engineering,
+ * o * Copyright (c) 2008-2011 Chair for Applied Software Engineering,
  * Technische Universitaet Muenchen.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -536,7 +536,7 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		load(currentEnd);
 		viewer.setContentProvider(contentProvider);
 		List<HistoryInfo> historyInfos = getHistoryInfos();
-		commitProvider = new CommitProvider(historyInfos);
+		commitProvider = new PlotCommitProvider(historyInfos);
 		viewer.setInput(historyInfos);
 	}
 
@@ -672,6 +672,7 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		query.setSource(source);
 		query.setTarget(target);
 		query.setIncludeChangePackage(true);
+		query.setIncludeAllVersions(true);
 		if (modelElement != null && !(modelElement instanceof ProjectSpace)) {
 			query.getModelElements().add(ModelUtil.getProject(modelElement).getModelElementId(modelElement));
 		}

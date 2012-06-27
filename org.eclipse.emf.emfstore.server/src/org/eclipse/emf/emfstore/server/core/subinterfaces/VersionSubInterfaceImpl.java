@@ -364,7 +364,7 @@ public class VersionSubInterfaceImpl extends AbstractSubEmfstoreInterface {
 			return null;
 		}
 		Version version = projectHistory.getVersions().get(baseVersionSpec.getIdentifier());
-		if (version == null || !version.getPrimarySpec().equals(baseVersionSpec)) {
+		if (version == null /* || !version.getPrimarySpec().equals(baseVersionSpec) */) {
 			return null;
 		}
 		return version;
