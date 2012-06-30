@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -11,6 +12,9 @@ import java.util.TreeSet;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Display;
 
 public class PlotCommitProvider implements IMockCommitProvider {
 
@@ -19,8 +23,17 @@ public class PlotCommitProvider implements IMockCommitProvider {
 	private final HashSet<PlotLane> activeLanes;
 	private int positionsAllocated;
 	private Map<HistoryInfo, IMockCommit> commitForHistory = new HashMap<HistoryInfo, IMockCommit>();
+	private int nextBranchColorIndex;
+	private Map<String, Integer> colorForBranch = new HashMap<String, Integer>();
+	private static List<Color> createdColors = new LinkedList<Color>();
+	private static final Color[] COLORS = new Color[] { Display.getDefault().getSystemColor(SWT.COLOR_BLUE),
+		Display.getDefault().getSystemColor(SWT.COLOR_GREEN),
+		Display.getDefault().getSystemColor(SWT.COLOR_RED)};
+	private static final Color[] COLORS_LIGHT = new Color[COLORS.length];
 
 	public PlotCommitProvider(List<HistoryInfo> historyInfo) {
+		setUpLightColors();
+		this.nextBranchColorIndex = 0;
 		this.commits = new PlotCommit[historyInfo.size()];
 		this.freePositions = new TreeSet<Integer>();
 		this.activeLanes = new HashSet<PlotLane>(32);
@@ -30,6 +43,9 @@ public class PlotCommitProvider implements IMockCommitProvider {
 		for (int i = 0; i < historyInfo.size(); i++) {
 			commits[i] = new PlotCommit(historyInfo.get(i));
 			commitForHistory.put(historyInfo.get(i), commits[i]);
+			Color[] branchColors = getColorsForBranch(commits[i].getBranch());
+			commits[i].setColor(branchColors[0]);
+			commits[i].setLightColor(branchColors[1]);
 		}
 
 		setupParents(historyInfo);
@@ -37,6 +53,47 @@ public class PlotCommitProvider implements IMockCommitProvider {
 		for (int i = 0; i < commits.length; i++) {
 			initCommit(i, commits[i]);
 		}
+	}
+
+	private static void setUpLightColors() {
+		for (int i = 0; i < COLORS.length; i++) {
+			COLORS_LIGHT[i] = createLightColor(COLORS[i]);
+		}
+
+	}
+
+	private static Color createLightColor(Color color) {
+		float[] hsbColor = java.awt.Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+		hsbColor[1] = hsbColor[1] * 0.4f;
+		hsbColor[2] = hsbColor[2] * 0.9f;
+
+		int lightColorRGB = java.awt.Color.HSBtoRGB(hsbColor[0], hsbColor[1], hsbColor[2]);
+
+		java.awt.Color lightColor = new java.awt.Color(lightColorRGB);
+
+		Color lightColorSWT = new Color(Display.getDefault(), lightColor.getRed(), lightColor.getGreen(),
+			lightColor.getBlue());
+		createdColors.add(lightColorSWT);
+		return lightColorSWT;
+	}
+
+	private Color[] getColorsForBranch(String branch) {
+		if ("trunk".equals(branch)) {
+			Color[] colors = new Color[] { Display.getDefault().getSystemColor(SWT.COLOR_BLACK),
+				Display.getDefault().getSystemColor(SWT.COLOR_GRAY) };
+			return colors;
+		}
+
+		Integer colorIndex = colorForBranch.get(branch);
+		if (colorIndex == null) {
+			colorIndex = nextBranchColorIndex;
+			colorForBranch.put(branch, colorIndex);
+			nextBranchColorIndex = (nextBranchColorIndex + 1) % COLORS.length;
+		}
+		Color[] colors = new Color[2];
+		colors[0] = COLORS[colorIndex];
+		colors[1] = COLORS_LIGHT[colorIndex];
+		return colors;
 	}
 
 	private void setupParents(List<HistoryInfo> historyInfos) {
@@ -95,8 +152,9 @@ public class PlotCommitProvider implements IMockCommitProvider {
 		setupChildren(currCommit);
 
 		final int nChildren = currCommit.getChildCount();
-		if (nChildren == 0)
+		if (nChildren == 0) {
 			return;
+		}
 
 		if (nChildren == 1 && currCommit.getChild(0).getParentCount() < 2) {
 			// Only one child, child has only us as their parent.
@@ -111,8 +169,9 @@ public class PlotCommitProvider implements IMockCommitProvider {
 			}
 			for (int r = index - 1; r >= 0; r--) {
 				final IMockCommit rObj = commits[r];
-				if (rObj == c)
+				if (rObj == c) {
 					break;
+				}
 				rObj.addPassingLane(c.getLane());
 			}
 

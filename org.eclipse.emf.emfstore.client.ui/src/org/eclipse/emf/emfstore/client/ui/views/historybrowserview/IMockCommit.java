@@ -3,6 +3,7 @@ package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
 import java.util.Date;
 import java.util.List;
 
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Widget;
 
 public interface IMockCommit {
@@ -29,6 +30,8 @@ public interface IMockCommit {
 
 	public boolean isChild(IMockCommit commit);
 
+	public boolean isLocalHistoryOnly();
+
 	public int getRefsLength();
 
 	public String getShortMessage();
@@ -50,4 +53,12 @@ public interface IMockCommit {
 	public Date getCommitDate();
 
 	public void dispose();
+
+	public void setColor(Color color);
+
+	public Color getColor();
+
+	public void setLightColor(Color color);
+
+	public Color getLightColor();
 }

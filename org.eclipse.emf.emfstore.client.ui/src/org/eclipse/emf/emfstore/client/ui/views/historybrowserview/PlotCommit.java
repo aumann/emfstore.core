@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.LogMessage;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Widget;
 
 public class PlotCommit implements IMockCommit {
@@ -20,6 +21,9 @@ public class PlotCommit implements IMockCommit {
 	private LogMessage logMessage;
 	private String branchName;
 	private String idString;
+	private boolean localHistoryOnly;
+	private Color color;
+	private Color lightColor;
 
 	public PlotCommit(HistoryInfo historyInfo) {
 		this.historyInfo = historyInfo;
@@ -30,12 +34,17 @@ public class PlotCommit implements IMockCommit {
 		this.widget = null;
 		this.isRealCommit = true;
 		this.logMessage = historyInfo.getLogMessage();
-		if (historyInfo.getPrimerySpec() != null) {
+
+		if (historyInfo.getPrimerySpec().getIdentifier() < 0) {
+			localHistoryOnly = true;
+			this.branchName = "local";
+		} else if (historyInfo.getPrimerySpec() != null) {
 			this.branchName = historyInfo.getPrimerySpec().getBranch();
 			this.idString = String.valueOf(historyInfo.getPrimerySpec().getIdentifier());
 		} else {
-			this.branchName = "Local History";
-			this.idString = "Local ID";
+			this.branchName = "Strange";
+			this.idString = "Strange ID";
+			localHistoryOnly = true;
 		}
 	}
 
@@ -151,6 +160,27 @@ public class PlotCommit implements IMockCommit {
 		if (widget != null) {
 			widget.dispose();
 		}
+	}
+
+	public boolean isLocalHistoryOnly() {
+		return localHistoryOnly;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+
+	}
+
+	public Color getColor() {
+		return color;
+	}
+
+	public void setLightColor(Color color) {
+		this.lightColor = color;
+	}
+
+	public Color getLightColor() {
+		return lightColor;
 	}
 
 }

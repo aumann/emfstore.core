@@ -233,7 +233,8 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 		g.fillRoundRectangle(cellX + x + 1, cellY + texty, textsz.x + 6, textsz.y + 1, arc, arc);
 
 		g.setBackground(getLabelColor(commit));
-		g.fillRoundRectangle(cellX + x + 2, cellY + texty + 1, textsz.x + 4, textsz.y - 2, arc - 1, arc - 1);
+		g.fillRoundRectangle(cellX + x + 1, cellY + texty, textsz.x + 6, textsz.y + 1, arc, arc);
+		// g.fillRoundRectangle(cellX + x + 2, cellY + texty + 1, textsz.x + 4, textsz.y - 2, arc - 1, arc - 1);
 
 		g.setForeground(getLabelBorderColor(commit));
 		g.drawRoundRectangle(cellX + x, cellY + texty - 1, textsz.x + 7, textsz.y + 1, arc, arc);
@@ -251,17 +252,25 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 	}
 
 	private Color getLabelBorderColor(IMockCommit commit) {
-		if (commit.getLane() != null) {
-			return commit.getLane().getSaturatedColor();
-		}
-		return LOCAL_HISTORY_BORDER_COLOR;
+		// if (commit.isLocalHistoryOnly()) {
+		// assert commit.getLane() == null : "Local history commits do not have a lane.";
+		// return LOCAL_HISTORY_BORDER_COLOR;
+		// }
+		// assert commit.getLane() != null : "Only local history commits do not have a lane.";
+		// return commit.getLane().getSaturatedColor();
+		return commit.getColor();
 	}
 
 	private Color getLabelColor(IMockCommit commit) {
-		if (commit.getLane() != null)
-			return commit.getLane().getLightColor();
+		// if (commit.isLocalHistoryOnly()) {
+		// assert commit.getLane() == null : "Local history commits do not have a lane.";
+		// return LOCAL_HISTORY_INNER_COLOR;
+		// }
+		//
+		// assert commit.getLane() != null : "Only local history commits do not have a lane.";
+		// return commit.getLane().getLightColor();
+		return commit.getLightColor();
 
-		return LOCAL_HISTORY_INNER_COLOR;
 	}
 
 	// private boolean isHead(String name) {

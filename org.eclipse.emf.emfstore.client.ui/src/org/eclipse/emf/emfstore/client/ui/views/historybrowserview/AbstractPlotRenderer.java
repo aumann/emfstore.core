@@ -139,11 +139,14 @@ public abstract class AbstractPlotRenderer {
 		// if (commit.has(RevFlag.UNINTERESTING))
 		// drawBoundaryDot(dotX, dotY, dotSize, dotSize);
 		// else
-		if (commit.isRealCommit()) {
+		int textx;
+		if (commit.isRealCommit() && !commit.isLocalHistoryOnly()) {
 			drawCommitDot(dotX, dotY, dotSize, dotSize);
+			textx = Math.max(maxCenter + LANE_WIDTH / 2, dotX + dotSize) + 8;
+		} else {
+			textx = -dotSize / 2;
 		}
 
-		int textx = Math.max(maxCenter + LANE_WIDTH / 2, dotX + dotSize) + 8;
 		// int n = commit.refs.length;
 		// for (int i = 0; i < n; ++i) {
 		// textx += drawLabel(textx + dotSize, h / 2, commit.refs[i]);
@@ -154,8 +157,8 @@ public abstract class AbstractPlotRenderer {
 
 			int n = 0; // remove if refs get re-enabled
 
-			final String msg = commit.getShortMessage();
-			drawText(msg, textx + dotSize + n * 2, h / 2);
+			// final String msg = commit.getShortMessage();
+			// drawText(msg, textx + dotSize + n * 2, h / 2);
 		}
 	}
 

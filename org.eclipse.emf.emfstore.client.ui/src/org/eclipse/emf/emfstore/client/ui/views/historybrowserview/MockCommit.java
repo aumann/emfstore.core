@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Widget;
 
 public class MockCommit implements IMockCommit {
@@ -136,6 +137,31 @@ public class MockCommit implements IMockCommit {
 	}
 
 	public String getBranch() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean isLocalHistoryOnly() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public void setColor(Color color) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public Color getColor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setLightColor(Color color) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public Color getLightColor() {
 		// TODO Auto-generated method stub
 		return null;
 	}
