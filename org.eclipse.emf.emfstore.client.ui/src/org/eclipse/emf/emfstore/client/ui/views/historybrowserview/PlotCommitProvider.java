@@ -27,8 +27,7 @@ public class PlotCommitProvider implements IMockCommitProvider {
 	private Map<String, Integer> colorForBranch = new HashMap<String, Integer>();
 	private static List<Color> createdColors = new LinkedList<Color>();
 	private static final Color[] COLORS = new Color[] { Display.getDefault().getSystemColor(SWT.COLOR_BLUE),
-		Display.getDefault().getSystemColor(SWT.COLOR_GREEN),
-		Display.getDefault().getSystemColor(SWT.COLOR_RED)};
+		Display.getDefault().getSystemColor(SWT.COLOR_GREEN), Display.getDefault().getSystemColor(SWT.COLOR_RED) };
 	private static final Color[] COLORS_LIGHT = new Color[COLORS.length];
 
 	public PlotCommitProvider(List<HistoryInfo> historyInfo) {
@@ -164,7 +163,10 @@ public class PlotCommitProvider implements IMockCommitProvider {
 			if (c.getLane() == null) {
 				// Hmmph. This child must be the first along this lane.
 				//
-				c.setLane(nextFreeLane());
+				PlotLane lane = nextFreeLane();
+				lane.color = c.getColor();
+				lane.lightColor = c.getLightColor();
+				c.setLane(lane);
 				activeLanes.add(c.getLane());
 			}
 			for (int r = index - 1; r >= 0; r--) {
@@ -205,7 +207,10 @@ public class PlotCommitProvider implements IMockCommitProvider {
 				// don't forget to position all of your children if they are
 				// not already positioned.
 				if (c.getLane() == null) {
-					c.setLane(nextFreeLane());
+					PlotLane lane = nextFreeLane();
+					lane.color = c.getColor();
+					lane.lightColor = c.getLightColor();
+					c.setLane(lane);
 					activeLanes.add(c.getLane());
 					if (reservedLane != null)
 						closeLane(c.getLane());
@@ -222,7 +227,10 @@ public class PlotCommitProvider implements IMockCommitProvider {
 			if (reservedLane != null)
 				closeLane(reservedLane);
 
-			currCommit.setLane(nextFreeLane());
+			PlotLane lane = nextFreeLane();
+			lane.color = currCommit.getColor();
+			lane.lightColor = currCommit.getLightColor();
+			currCommit.setLane(lane);
 			activeLanes.add(currCommit.getLane());
 
 			handleBlockedLanes(index, currCommit, nChildren);
