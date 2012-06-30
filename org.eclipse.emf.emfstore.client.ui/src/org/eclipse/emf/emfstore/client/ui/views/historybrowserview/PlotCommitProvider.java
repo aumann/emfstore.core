@@ -63,8 +63,8 @@ public class PlotCommitProvider implements IMockCommitProvider {
 
 	private static Color createLightColor(Color color) {
 		float[] hsbColor = java.awt.Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
-		hsbColor[1] = hsbColor[1] * 0.4f;
-		hsbColor[2] = hsbColor[2] * 0.9f;
+		hsbColor[1] = hsbColor[1] * 0.2f;
+		hsbColor[2] = hsbColor[2];
 
 		int lightColorRGB = java.awt.Color.HSBtoRGB(hsbColor[0], hsbColor[1], hsbColor[2]);
 

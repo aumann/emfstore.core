@@ -230,15 +230,16 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 		g.setLineWidth(1);
 
 		g.setBackground(sys_white);
-		g.fillRoundRectangle(cellX + x + 1, cellY + texty, textsz.x + 6, textsz.y + 1, arc, arc);
-
-		g.setBackground(getLabelColor(commit));
-		g.fillRoundRectangle(cellX + x + 1, cellY + texty, textsz.x + 6, textsz.y + 1, arc, arc);
-		// g.fillRoundRectangle(cellX + x + 2, cellY + texty + 1, textsz.x + 4, textsz.y - 2, arc - 1, arc - 1);
+		// g.fillRoundRectangle(cellX + x + 1, cellY + texty, textsz.x + 6, textsz.y + 1, arc, arc);
 
 		g.setForeground(getLabelBorderColor(commit));
-		g.drawRoundRectangle(cellX + x, cellY + texty - 1, textsz.x + 7, textsz.y + 1, arc, arc);
+		// g.fillRoundRectangle(cellX + x, cellY + texty - 1, textsz.x + 8, textsz.y, arc - 1, arc - 1);
 
+		g.setBackground(getLabelColor(commit));
+		g.fillRoundRectangle(cellX + x + 1, cellY + texty, textsz.x + 6, textsz.y - 1, arc, arc);
+		// g.fillRoundRectangle(cellX + x + 2, cellY + texty + 1, textsz.x + 4, textsz.y - 4, arc - 1, arc - 1);
+
+		g.drawRoundRectangle(cellX + x, cellY + texty - 1, textsz.x + 7, textsz.y - 1, arc, arc);
 		g.setForeground(sys_black);
 
 		// Draw text
