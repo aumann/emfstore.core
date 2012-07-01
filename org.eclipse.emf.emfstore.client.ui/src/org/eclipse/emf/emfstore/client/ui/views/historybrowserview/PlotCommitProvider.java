@@ -30,8 +30,11 @@ public class PlotCommitProvider implements IMockCommitProvider {
 		Display.getDefault().getSystemColor(SWT.COLOR_GREEN), Display.getDefault().getSystemColor(SWT.COLOR_RED) };
 	private static final Color[] COLORS_LIGHT = new Color[COLORS.length];
 
-	public PlotCommitProvider(List<HistoryInfo> historyInfo) {
+	static {
 		setUpLightColors();
+	}
+
+	public PlotCommitProvider(List<HistoryInfo> historyInfo) {
 		this.nextBranchColorIndex = 0;
 		this.commits = new PlotCommit[historyInfo.size()];
 		this.freePositions = new TreeSet<Integer>();
