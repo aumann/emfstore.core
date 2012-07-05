@@ -32,7 +32,7 @@ import org.junit.Before;
 public abstract class WorkspaceTest {
 	protected Project project;
 	protected ProjectSpace projectSpace;
-	protected static Workspace workspace;
+	private Workspace workspace;
 
 	/**
 	 * Setup a dummy project for testing.
@@ -46,7 +46,7 @@ public abstract class WorkspaceTest {
 		if (connectionManager != null) {
 			workspaceManager.setConnectionManager(connectionManager);
 		}
-		final Workspace workspace = workspaceManager.getCurrentWorkspace();
+		workspace = workspaceManager.getCurrentWorkspace();
 		new EMFStoreCommand() {
 
 			@Override
@@ -57,6 +57,10 @@ public abstract class WorkspaceTest {
 			}
 		}.run(false);
 
+	}
+
+	public Workspace getWorkspace() {
+		return workspace;
 	}
 
 	public void beforeHook() {
@@ -146,6 +150,7 @@ public abstract class WorkspaceTest {
 	 */
 	protected TestElement createTestElementWithoutTransaction(String name) {
 		TestElement element = TestmodelFactory.eINSTANCE.createTestElement();
+		element.setName(name);
 		getProject().getModelElements().add(element);
 		return element;
 	}

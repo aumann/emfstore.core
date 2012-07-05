@@ -98,6 +98,10 @@ public class HistorySubInterfaceImpl extends AbstractSubEmfstoreInterface {
 		throws EmfStoreException {
 		synchronized (getMonitor()) {
 			Version version = getSubInterface(VersionSubInterfaceImpl.class).getVersion(projectId, versionSpec);
+			// TODO BRANCH
+			// stamp branch instead of throwing an exception
+			tag.setBranch(versionSpec.getBranch());
+
 			version.getTagSpecs().add(tag);
 			try {
 				save(version);

@@ -9,6 +9,7 @@ import org.eclipse.emf.emfstore.server.model.ProjectId;
 import org.eclipse.emf.emfstore.server.model.SessionId;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.ACOrgUnitId;
 import org.eclipse.emf.emfstore.server.model.accesscontrol.ACUser;
+import org.eclipse.emf.emfstore.server.model.accesscontrol.AccesscontrolFactory;
 
 public class AuthControlMock implements AuthorizationControl {
 
@@ -40,13 +41,14 @@ public class AuthControlMock implements AuthorizationControl {
 	}
 
 	public ACUser resolveUser(SessionId sessionId) throws AccessControlException {
-		// TODO Auto-generated method stub
-		return null;
+		ACUser dummy = AccesscontrolFactory.eINSTANCE.createACUser();
+		dummy.setName("asdf");
+		return dummy;
 	}
 
 	public ACUser resolveUser(ACOrgUnitId orgUnitId) throws AccessControlException {
-		// TODO Auto-generated method stub
-		return null;
+		ACUser dummy = AccesscontrolFactory.eINSTANCE.createACUser();
+		dummy.setName("asdf");
+		return dummy;
 	}
-
 }
