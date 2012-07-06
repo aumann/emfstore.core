@@ -11,16 +11,18 @@
 package org.eclipse.emf.emfstore.client.ui.controller;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.emfstore.client.model.ProjectSpace;
 import org.eclipse.emf.emfstore.client.model.controller.callbacks.CommitCallback;
 import org.eclipse.emf.emfstore.client.model.impl.ProjectSpaceBase;
-import org.eclipse.emf.emfstore.client.ui.common.RunInUIThread;
-import org.eclipse.emf.emfstore.client.ui.common.RunInUIThreadWithResult;
+import org.eclipse.emf.emfstore.client.model.util.WorkspaceUtil;
+import org.eclipse.emf.emfstore.client.ui.common.RunInUI;
 import org.eclipse.emf.emfstore.client.ui.dialogs.BranchSelectionDialog;
 import org.eclipse.emf.emfstore.client.ui.dialogs.CommitDialog;
 import org.eclipse.emf.emfstore.client.ui.handlers.AbstractEMFStoreUIController;
+import org.eclipse.emf.emfstore.server.exceptions.BaseVersionOutdatedException;
 import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
 import org.eclipse.emf.emfstore.server.model.versioning.BranchInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
@@ -33,13 +35,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 
 /**
- * UI-dependent commit controller for committing pending changes on a {@link ProjectSpace}.<br/>
- * The controller presents the user a dialog will all changes made before he is able to confirm the commit.
- * If no changes have been made by the user a information dialog is presented that states that there are no
- * pending changes to be committed.
  * 
- * @author ovonwesen
- * @author emueller
+ * @author wesendon
  * 
  */
 public class UICreateBranchController extends AbstractEMFStoreUIController<PrimaryVersionSpec> implements
@@ -50,18 +47,8 @@ public class UICreateBranchController extends AbstractEMFStoreUIController<Prima
 	private int dialogReturnValue;
 	private BranchVersionSpec branch;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param shell
-	 *            the parent shell that will be used during commit
-	 * @param projectSpace
-	 *            the {@link ProjectSpace} that contains the pending changes that should get committed
-	 */
 	public UICreateBranchController(Shell shell, ProjectSpace projectSpace) {
-		super(shell, true, true);
-		this.projectSpace = projectSpace;
-		this.branch = null;
+		this(shell, projectSpace, null);
 	}
 
 	public UICreateBranchController(Shell shell, ProjectSpace projectSpace, BranchVersionSpec branch) {
@@ -77,13 +64,12 @@ public class UICreateBranchController extends AbstractEMFStoreUIController<Prima
 	 * @see org.eclipse.emf.emfstore.client.model.controller.callbacks.CommitCallback#noLocalChanges(org.eclipse.emf.emfstore.client.model.ProjectSpace)
 	 */
 	public void noLocalChanges(ProjectSpace projectSpace) {
-		new RunInUIThread(getShell()) {
-			@Override
-			public Void doRun(Shell shell) {
-				MessageDialog.openInformation(shell, null, "No local changes in your project. No need to commit.");
+		RunInUI.run(new Callable<Void>() {
+			public Void call() throws Exception {
+				MessageDialog.openInformation(getShell(), null, "No local changes in your project. No need to commit.");
 				return null;
 			}
-		}.execute();
+		});
 	}
 
 	/**
@@ -94,24 +80,22 @@ public class UICreateBranchController extends AbstractEMFStoreUIController<Prima
 	 */
 	public boolean baseVersionOutOfDate(final ProjectSpace projectSpace) {
 
-		final String message = "Your project is outdated, you need to update before commit. Do you want to update now?";
+		final String message = "Your project is outdated, you need to update before branching. Do you want to update now?";
+		return RunInUI.runWithResult(new Callable<Boolean>() {
 
-		return new RunInUIThreadWithResult<Boolean>(getShell()) {
-			@Override
-			public Boolean doRun(Shell shell) {
-				boolean shouldUpdate = MessageDialog.openConfirm(shell, "Confirmation", message);
-
+			public Boolean call() throws Exception {
+				boolean shouldUpdate = MessageDialog.openConfirm(getShell(), "Confirmation", message);
 				if (shouldUpdate) {
-					try {
-						new UIUpdateProjectController(getShell(), projectSpace).execute();
-					} catch (EmfStoreException e) {
-						handleException(e);
+					PrimaryVersionSpec baseVersion = UICreateBranchController.this.projectSpace.getBaseVersion();
+					PrimaryVersionSpec version = new UIUpdateProjectController(getShell(), projectSpace).execute();
+					if (version.equals(baseVersion)) {
+						return false;
 					}
-				}
 
+				}
 				return shouldUpdate;
 			}
-		}.execute();
+		});
 	}
 
 	/**
@@ -125,12 +109,11 @@ public class UICreateBranchController extends AbstractEMFStoreUIController<Prima
 
 		final CommitDialog commitDialog = new CommitDialog(getShell(), changePackage, projectSpace);
 
-		dialogReturnValue = new RunInUIThreadWithResult<Integer>(getShell()) {
-			@Override
-			public Integer doRun(Shell shell) {
+		dialogReturnValue = RunInUI.runWithResult(new Callable<Integer>() {
+			public Integer call() throws Exception {
 				return commitDialog.open();
 			}
-		}.execute();
+		});
 
 		if (dialogReturnValue == Dialog.OK) {
 			changePackage.getLogMessage().setMessage(commitDialog.getLogText());
@@ -148,39 +131,45 @@ public class UICreateBranchController extends AbstractEMFStoreUIController<Prima
 	 */
 	@Override
 	public PrimaryVersionSpec doRun(final IProgressMonitor progressMonitor) throws EmfStoreException {
-
-		if (branch == null) {
-			// the current exception handling sucks bad!
-			branch = branchSelection(projectSpace);
+		try {
 			if (branch == null) {
-				return null;
+				branch = branchSelection(projectSpace);
 			}
+			return projectSpace.commitToBranch(branch, logMessage, UICreateBranchController.this, progressMonitor);
+		} catch (BaseVersionOutdatedException e) {
+			// project is out of date and user canceled update
+			// ignore
+		} catch (final EmfStoreException e) {
+			WorkspaceUtil.logException(e.getMessage(), e);
+			RunInUI.run(new Callable<Void>() {
+				public Void call() throws Exception {
+					MessageDialog.openError(getShell(), "Create Branch failed",
+						"Create Branch failed: " + e.getMessage());
+					return null;
+				}
+			});
 		}
-		return projectSpace.commitToBranch(branch, logMessage, UICreateBranchController.this, progressMonitor);
+
+		return null;
 	}
 
 	private BranchVersionSpec branchSelection(final ProjectSpace projectSpace) throws EmfStoreException {
 		final List<BranchInfo> branches = ((ProjectSpaceBase) projectSpace).getBranches();
 
-		String branch = new RunInUIThreadWithResult<String>(getShell()) {
-			@Override
-			public String doRun(Shell shell) {
-				BranchSelectionDialog.Creation dialog = new BranchSelectionDialog.Creation(getShell(),
-					projectSpace.getBaseVersion(), branches);
+		@SuppressWarnings("static-access")
+		String branch = new RunInUI.WithException().runWithResult(new Callable<String>() {
+
+			public String call() throws Exception {
+				BranchSelectionDialog.Creation dialog = new BranchSelectionDialog.Creation(getShell(), projectSpace
+					.getBaseVersion(), branches);
 				dialog.setBlockOnOpen(true);
 
 				if (dialog.open() != Dialog.OK || dialog.getNewBranch() == null || dialog.getNewBranch().equals("")) {
-					// TODO BRANCH ask eddy
-					// throw new EmfStoreException("No Branch specified");
-					return null;
+					throw new EmfStoreException("No Branch specified");
 				}
 				return dialog.getNewBranch();
 			}
-		}.execute();
-
-		if (branch == null) {
-			return null;
-		}
+		});
 
 		return Versions.BRANCH(branch);
 	}

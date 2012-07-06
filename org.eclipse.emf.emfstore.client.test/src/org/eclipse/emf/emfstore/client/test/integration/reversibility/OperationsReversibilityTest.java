@@ -1,10 +1,16 @@
-/**
- * <copyright> Copyright (c) 2008-2009 Jonas Helming, Maximilian Koegel. All rights reserved. This program and the
- * accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this
- * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html </copyright>
- */
+/*******************************************************************************
+ * Copyright (c) 2008-2011 Chair for Applied Software Engineering,
+ * Technische Universitaet Muenchen.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ ******************************************************************************/
 package org.eclipse.emf.emfstore.client.test.integration.reversibility;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.eclipse.emf.emfstore.client.model.ProjectSpace;
@@ -13,6 +19,7 @@ import org.eclipse.emf.emfstore.client.test.TestProjectEnum;
 import org.eclipse.emf.emfstore.common.model.Project;
 import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 
@@ -40,6 +47,12 @@ public abstract class OperationsReversibilityTest {
 
 	}
 
+	@AfterClass
+	public static void tearDownAfterClass() {
+		SetupHelper.stopServer();
+		serverRunning = false;
+	}
+
 	/**
 	 * Before every test import test project and share it on the server.
 	 */
@@ -58,9 +71,11 @@ public abstract class OperationsReversibilityTest {
 
 	/**
 	 * cleans server and workspace after tests are run.
+	 * 
+	 * @throws IOException if deletion fails
 	 */
 	@After
-	public void cleanUp() {
+	public void cleanUp() throws IOException {
 		SetupHelper.cleanupWorkspace();
 
 		SetupHelper.cleanupServer();

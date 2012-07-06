@@ -36,14 +36,8 @@ public class UIAddServerController extends AbstractEMFStoreUIController<Void> {
 		super(shell);
 	}
 
-	/**
-	 * 
-	 * {@inheritDoc}
-	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.common.MonitoredEMFStoreAction#doRun(org.eclipse.core.runtime.IProgressMonitor)
-	 */
 	@Override
-	public Void doRun(IProgressMonitor progressMonitor) throws EmfStoreException {
+	public Void doRun(IProgressMonitor monitor) throws EmfStoreException {
 		NewRepositoryWizard wizard = new NewRepositoryWizard();
 		IWorkbenchWindow activeWorkbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 		wizard.init(activeWorkbenchWindow.getWorkbench(), (IStructuredSelection) activeWorkbenchWindow
@@ -53,4 +47,5 @@ public class UIAddServerController extends AbstractEMFStoreUIController<Void> {
 		dialog.open();
 		return null;
 	}
+
 }

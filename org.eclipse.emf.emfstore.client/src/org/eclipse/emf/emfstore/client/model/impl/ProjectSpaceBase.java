@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.EList;
@@ -59,6 +60,7 @@ import org.eclipse.emf.emfstore.client.model.importexport.impl.ExportProjectCont
 import org.eclipse.emf.emfstore.client.model.observers.LoginObserver;
 import org.eclipse.emf.emfstore.client.model.util.WorkspaceUtil;
 import org.eclipse.emf.emfstore.client.properties.PropertyManager;
+import org.eclipse.emf.emfstore.common.IDisposable;
 import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionElement;
 import org.eclipse.emf.emfstore.common.extensionpoint.ExtensionPoint;
 import org.eclipse.emf.emfstore.common.model.ModelElementId;
@@ -66,7 +68,6 @@ import org.eclipse.emf.emfstore.common.model.impl.IdEObjectCollectionImpl;
 import org.eclipse.emf.emfstore.common.model.impl.IdentifiableElementImpl;
 import org.eclipse.emf.emfstore.common.model.impl.ProjectImpl;
 import org.eclipse.emf.emfstore.common.model.util.EObjectChangeNotifier;
-import org.eclipse.emf.emfstore.common.model.util.FileUtil;
 import org.eclipse.emf.emfstore.common.model.util.ModelUtil;
 import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
 import org.eclipse.emf.emfstore.server.exceptions.FileTransferException;
@@ -99,7 +100,8 @@ import org.eclipse.emf.emfstore.server.model.versioning.operations.semantic.Sema
  * @author emueller
  * 
  */
-public abstract class ProjectSpaceBase extends IdentifiableElementImpl implements ProjectSpace, LoginObserver {
+public abstract class ProjectSpaceBase extends IdentifiableElementImpl implements ProjectSpace, LoginObserver,
+	IDisposable {
 
 	private FileTransferManager fileTransferManager;
 
@@ -587,20 +589,22 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 		}
 
 		EObjectChangeNotifier changeNotifier = getProject().getChangeNotifier();
+		EMFStoreCommandStack commandStack = (EMFStoreCommandStack) Configuration.getEditingDomain().getCommandStack();
 
 		initCompleted = true;
 		fileTransferManager = new FileTransferManager(this);
+
 		operationRecorder = new OperationRecorder(this, changeNotifier);
 		operationManager = new OperationManager(operationRecorder, this);
 		operationManager.addOperationListener(modifiedModelElementsCache);
+		operationRecorder.addOperationRecorderListener(operationManager);
 
 		statePersister = new StatePersister(
 			((EMFStoreCommandStack) Configuration.getEditingDomain().getCommandStack()),
 			(IdEObjectCollectionImpl) this.getProject());
 		operationPersister = new OperationPersister(this);
 
-		EMFStoreCommandStack commandStack = (EMFStoreCommandStack) Configuration.getEditingDomain().getCommandStack();
-
+		commandStack.addCommandStackObserver(operationRecorder);
 		commandStack.addCommandStackObserver(statePersister);
 		commandStack.addCommandStackObserver(operationPersister);
 
@@ -729,7 +733,7 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 		}
 
 		// delete folder of project space
-		FileUtil.deleteFolder(new File(pathToProject));
+		FileUtils.deleteDirectory(new File(pathToProject));
 	}
 
 	/**
@@ -1156,5 +1160,43 @@ public abstract class ProjectSpaceBase extends IdentifiableElementImpl implement
 	 */
 	public void updateDirtyState() {
 		setDirty(!getOperations().isEmpty());
+	}
+
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.common.IDisposable#dispose()
+	 */
+	// TODO: is not public ATM because it only detaches observers
+	@SuppressWarnings("unchecked")
+	public void dispose() {
+		stopChangeRecording();
+		WorkspaceManager.getObserverBus().unregister(modifiedModelElementsCache);
+
+		if (crossReferenceAdapter != null) {
+			getProject().eAdapters().remove(crossReferenceAdapter);
+		}
+
+		operationRecorder.removeOperationRecorderListener(operationManager);
+		operationManager.removeOperationListener(modifiedModelElementsCache);
+
+		EMFStoreCommandStack commandStack = (EMFStoreCommandStack) Configuration.getEditingDomain().getCommandStack();
+
+		commandStack.removeCommandStackObserver(operationRecorder);
+		commandStack.removeCommandStackObserver(statePersister);
+		commandStack.removeCommandStackObserver(operationPersister);
+
+		getProject().removeIdEObjectCollectionChangeObserver(this.operationRecorder);
+		getProject().removeIdEObjectCollectionChangeObserver(statePersister);
+
+		if (getProject() instanceof ProjectImpl) {
+			((ProjectImpl) this.getProject()).removeIdEObjectCollectionChangeObserver(operationRecorder);
+			((ProjectImpl) this.getProject()).removeIdEObjectCollectionChangeObserver(statePersister);
+		}
+
+		if (getUsersession() != null) {
+			WorkspaceManager.getObserverBus().unregister(this, LoginObserver.class);
+		}
 	}
 }

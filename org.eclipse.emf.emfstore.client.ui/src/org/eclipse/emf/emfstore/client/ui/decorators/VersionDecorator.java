@@ -101,12 +101,6 @@ public class VersionDecorator extends AdapterImpl implements ILightweightLabelDe
 		listeners.remove(listener);
 	}
 
-	public void decorationChanged() {
-		for (ILabelProviderListener listener : listeners) {
-			listener.labelProviderChanged(new LabelProviderChangedEvent(this));
-		}
-	}
-
 	/**
 	 * 
 	 * {@inheritDoc}
@@ -115,7 +109,9 @@ public class VersionDecorator extends AdapterImpl implements ILightweightLabelDe
 	 */
 	@Override
 	public void notifyChanged(Notification msg) {
-		decorationChanged();
+		for (ILabelProviderListener listener : listeners) {
+			listener.labelProviderChanged(new LabelProviderChangedEvent(this));
+		}
 	}
 
 	/**

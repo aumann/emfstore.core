@@ -1,8 +1,13 @@
-/**
- * <copyright> Copyright (c) 2008-2009 Jonas Helming, Maximilian Koegel. All rights reserved. This program and the
- * accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this
- * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html </copyright>
- */
+/*******************************************************************************
+ * Copyright (c) 2008-2011 Chair for Applied Software Engineering,
+ * Technische Universitaet Muenchen.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ ******************************************************************************/
 package org.eclipse.emf.emfstore.client.test.server;
 
 import java.io.IOException;
@@ -19,12 +24,14 @@ import org.eclipse.emf.emfstore.client.model.connectionmanager.KeyStoreManager;
 import org.eclipse.emf.emfstore.client.model.util.EMFStoreCommand;
 import org.eclipse.emf.emfstore.client.test.SetupHelper;
 import org.eclipse.emf.emfstore.client.test.WorkspaceTest;
+import org.eclipse.emf.emfstore.common.CommonUtil;
 import org.eclipse.emf.emfstore.common.model.ModelFactory;
 import org.eclipse.emf.emfstore.common.model.Project;
 import org.eclipse.emf.emfstore.common.model.util.ModelUtil;
 import org.eclipse.emf.emfstore.server.ServerConfiguration;
 import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
 import org.eclipse.emf.emfstore.server.exceptions.InvalidInputException;
+import org.eclipse.emf.emfstore.server.model.AuthenticationInformation;
 import org.eclipse.emf.emfstore.server.model.ProjectId;
 import org.eclipse.emf.emfstore.server.model.ProjectInfo;
 import org.eclipse.emf.emfstore.server.model.SessionId;
@@ -57,8 +64,8 @@ public abstract class ServerTests extends WorkspaceTest {
 	private static HashMap<Class<?>, Object> arguments;
 	private static ServerInfo serverInfo;
 
-	public static void setServerInfo(ServerInfo server_Info) {
-		serverInfo = server_Info;
+	public static void setServerInfo(ServerInfo newServerInfo) {
+		serverInfo = newServerInfo;
 	}
 
 	public static ServerInfo getServerInfo() {
@@ -72,8 +79,8 @@ public abstract class ServerTests extends WorkspaceTest {
 		return sessionId;
 	}
 
-	public static void setSessionId(SessionId session_id) {
-		sessionId = session_id;
+	public static void setSessionId(SessionId newSessionId) {
+		sessionId = newSessionId;
 	}
 
 	/**
@@ -83,8 +90,8 @@ public abstract class ServerTests extends WorkspaceTest {
 		return connectionManager;
 	}
 
-	public static void setConnectionManager(ConnectionManager connection_Manager) {
-		connectionManager = connection_Manager;
+	public static void setConnectionManager(ConnectionManager newConnectionManager) {
+		connectionManager = newConnectionManager;
 	}
 
 	public ProjectInfo getProjectInfo() {
@@ -115,10 +122,7 @@ public abstract class ServerTests extends WorkspaceTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws EmfStoreException, IOException {
 		ServerConfiguration.setTesting(true);
-		Configuration.setTesting(true);
-
-		// delete all data before test start
-		SetupHelper.removeServerTestProfile();
+		CommonUtil.setTesting(true);
 
 		SetupHelper.addUserFileToServer(false);
 		SetupHelper.startSever();
@@ -133,7 +137,7 @@ public abstract class ServerTests extends WorkspaceTest {
 	 * @throws EmfStoreException in case of failure
 	 */
 	protected static void login() throws EmfStoreException {
-		SessionId sessionId = login(getServerInfo(), "super", "super");
+		SessionId sessionId = login(getServerInfo(), "super", "super").getSessionId();
 		WorkspaceManager.getInstance().getAdminConnectionManager().initConnection(getServerInfo(), sessionId);
 		setSessionId(sessionId);
 	}
@@ -145,7 +149,8 @@ public abstract class ServerTests extends WorkspaceTest {
 	 * @return sessionId
 	 * @throws EmfStoreException in case of failure
 	 */
-	protected static SessionId login(ServerInfo serverInfo, String username, String password) throws EmfStoreException {
+	protected static AuthenticationInformation login(ServerInfo serverInfo, String username, String password)
+		throws EmfStoreException {
 		return getConnectionManager().logIn(username, KeyStoreManager.getInstance().encrypt(password, serverInfo),
 			serverInfo, Configuration.getClientVersion());
 	}
@@ -169,11 +174,16 @@ public abstract class ServerTests extends WorkspaceTest {
 
 	/**
 	 * Shuts down server after testing.
+	 * 
+	 * @throws IOException
+	 *             in case cleanup/teardown fails
 	 */
 	@AfterClass
-	public static void tearDownAfterClass() {
+	public static void tearDownAfterClass() throws IOException {
 		SetupHelper.stopServer();
-
+		SetupHelper.cleanupWorkspace();
+		SetupHelper.cleanupServer();
+		SetupHelper.removeServerTestProfile();
 	}
 
 	/**
@@ -187,6 +197,7 @@ public abstract class ServerTests extends WorkspaceTest {
 			@Override
 			protected void doRun() {
 				try {
+					Workspace currentWorkspace = WorkspaceManager.getInstance().getCurrentWorkspace();
 					ServerInfo serverInfo = SetupHelper.getServerInfo();
 					Usersession session = org.eclipse.emf.emfstore.client.model.ModelFactory.eINSTANCE
 						.createUsersession();
@@ -195,7 +206,6 @@ public abstract class ServerTests extends WorkspaceTest {
 					session.setPassword("super");
 					session.setSavePassword(true);
 
-					Workspace currentWorkspace = WorkspaceManager.getInstance().getCurrentWorkspace();
 					currentWorkspace.getServerInfos().add(serverInfo);
 					currentWorkspace.getUsersessions().add(session);
 					currentWorkspace.save();

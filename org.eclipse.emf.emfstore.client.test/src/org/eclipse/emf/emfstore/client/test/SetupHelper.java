@@ -1,23 +1,34 @@
-/**
- * <copyright> Copyright (c) 2008-2009 Jonas Helming, Maximilian Koegel. All rights reserved. This program and the
- * accompanying materials are made available under the terms of the Eclipse Public License v1.0 which accompanies this
- * distribution, and is available at http://www.eclipse.org/legal/epl-v10.html </copyright>
- */
-
+/*******************************************************************************
+ * Copyright (c) 2008-2011 Chair for Applied Software Engineering,
+ * Technische Universitaet Muenchen.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ ******************************************************************************/
 package org.eclipse.emf.emfstore.client.test;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.security.AccessControlException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import junit.framework.Assert;
+
 import org.apache.commons.io.FileUtils;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.emfstore.client.model.Configuration;
 import org.eclipse.emf.emfstore.client.model.ModelFactory;
 import org.eclipse.emf.emfstore.client.model.ProjectSpace;
@@ -26,14 +37,17 @@ import org.eclipse.emf.emfstore.client.model.Usersession;
 import org.eclipse.emf.emfstore.client.model.Workspace;
 import org.eclipse.emf.emfstore.client.model.WorkspaceManager;
 import org.eclipse.emf.emfstore.client.model.connectionmanager.AdminConnectionManager;
-import org.eclipse.emf.emfstore.client.model.connectionmanager.ConnectionManager;
 import org.eclipse.emf.emfstore.client.model.connectionmanager.KeyStoreManager;
 import org.eclipse.emf.emfstore.client.model.impl.WorkspaceImpl;
 import org.eclipse.emf.emfstore.client.model.util.EMFStoreCommand;
 import org.eclipse.emf.emfstore.client.test.integration.forward.IntegrationTestHelper;
 import org.eclipse.emf.emfstore.client.test.server.TestSessionProvider;
+import org.eclipse.emf.emfstore.common.CommonUtil;
 import org.eclipse.emf.emfstore.common.model.Project;
 import org.eclipse.emf.emfstore.common.model.util.FileUtil;
+import org.eclipse.emf.emfstore.modelmutator.api.ModelMutator;
+import org.eclipse.emf.emfstore.modelmutator.api.ModelMutatorConfiguration;
+import org.eclipse.emf.emfstore.modelmutator.api.ModelMutatorUtil;
 import org.eclipse.emf.emfstore.server.EmfStoreController;
 import org.eclipse.emf.emfstore.server.ServerConfiguration;
 import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
@@ -70,7 +84,6 @@ public class SetupHelper {
 	 * @param projectTemplate test project to initialize SetupHelper
 	 */
 	public SetupHelper(TestProjectEnum projectTemplate) {
-
 		this.projectTemplate = projectTemplate;
 		LOGGER.log(Level.INFO, "SetupHelper instantiated with " + projectTemplate);
 	}
@@ -80,9 +93,47 @@ public class SetupHelper {
 	 *            used as test project.
 	 */
 	public SetupHelper(String absolutePath) {
-
 		projectPath = absolutePath;
 		LOGGER.log(Level.INFO, "SetupHelper instantiated with " + absolutePath);
+	}
+
+	/**
+	 * Generates a project randomly.
+	 * 
+	 * @param modelKey
+	 *            the key of the model to be used
+	 * @param width
+	 *            the max width of a tree node
+	 * @param depth
+	 *            the max depth of a tree node
+	 * @param seed
+	 *            an initial seed value
+	 * @return the project space containing the generated project
+	 */
+	public static ProjectSpace generateProject(String modelKey, int width, int depth, long seed) {
+		ProjectSpace createLocalProject = WorkspaceManager.getInstance().getCurrentWorkspace()
+			.createLocalProject("", "");
+		Project project = org.eclipse.emf.emfstore.common.model.ModelFactory.eINSTANCE.createProject();
+		ModelMutatorConfiguration config = createModelMutatorConfigurationRandom(modelKey, project, width, depth, seed);
+		Configuration.setAutoSave(false);
+		ModelMutator.generateModel(config);
+		createLocalProject.setProject(project);
+		return createLocalProject;
+	}
+
+	private static ModelMutatorConfiguration createModelMutatorConfigurationRandom(String modelKey, EObject rootObject,
+		int width, int depth, long seed) {
+		ModelMutatorConfiguration config = new ModelMutatorConfiguration(ModelMutatorUtil.getEPackage(modelKey),
+			rootObject, seed);
+		config.setIgnoreAndLog(false);
+		config.setDepth(depth);
+		config.setWidth(width);
+		List<EStructuralFeature> eStructuralFeaturesToIgnore = new ArrayList<EStructuralFeature>();
+		eStructuralFeaturesToIgnore.remove(org.eclipse.emf.emfstore.common.model.ModelPackage.eINSTANCE
+			.getProject_CutElements());
+		config.setEditingDomain(WorkspaceManager.getInstance().getCurrentWorkspace().getEditingDomain());
+		config.seteStructuralFeaturesToIgnore(eStructuralFeaturesToIgnore);
+		return config;
 	}
 
 	/**
@@ -135,9 +186,10 @@ public class SetupHelper {
 	}
 
 	/**
-	 * @param sessionId sessionId
-	 * @param username username
-	 * @return acorgunitid
+	 * Create a user on the server.
+	 * 
+	 * @param username the username
+	 * @return the user`s org unit id
 	 * @throws EmfStoreException in case of failure
 	 */
 	public static ACOrgUnitId createUserOnServer(String username) throws EmfStoreException {
@@ -147,6 +199,12 @@ public class SetupHelper {
 		return adminConnectionManager.createUser(sessionId, username);
 	}
 
+	/**
+	 * Delete a user from the server.
+	 * 
+	 * @param userId the users id
+	 * @throws EmfStoreException if deletion fails
+	 */
 	public static void deleteUserOnServer(ACOrgUnitId userId) throws EmfStoreException {
 		AdminConnectionManager adminConnectionManager = WorkspaceManager.getInstance().getAdminConnectionManager();
 		SessionId sessionId = TestSessionProvider.getInstance().getDefaultUsersession().getSessionId();
@@ -155,7 +213,8 @@ public class SetupHelper {
 	}
 
 	/**
-	 * @param sessionId sessionid
+	 * Set a role for a user.
+	 * 
 	 * @param orgUnitId orgunitid
 	 * @param role role
 	 * @param projectId projectid, can be null, if role is serveradmin
@@ -259,7 +318,7 @@ public class SetupHelper {
 	 */
 	public void setupWorkSpace() {
 		LOGGER.log(Level.INFO, "setting up workspace...");
-		Configuration.setTesting(true);
+		CommonUtil.setTesting(true);
 		workSpace = WorkspaceManager.getInstance().getCurrentWorkspace();
 		LOGGER.log(Level.INFO, "workspace initialized");
 
@@ -313,15 +372,18 @@ public class SetupHelper {
 
 			@Override
 			protected void doRun() {
-				String uriString = Activator.getDefault().getBundle().getLocation() + path;
-				if (File.separator.equals("/")) {
-					uriString = uriString.replace("reference:file:", "");
-
-				} else {
-					uriString = uriString.replace("reference:file:/", "");
-					uriString = uriString.replace("/", File.separator);
-				}
 				try {
+					String uriString = FileLocator.toFileURL(Activator.getDefault().getBundle().getEntry("."))
+						.getPath() + path;
+
+					// String uriString = Activator.getDefault().getBundle().getLocation() + path;
+					if (File.separator.equals("/")) {
+						uriString = uriString.replace("reference:file:", "");
+
+					} else {
+						uriString = uriString.replace("reference:file:", "");
+						uriString = uriString.replace("/", File.separator);
+					}
 					uriString = uriString.replace("initial@", ".." + File.separator + ".." + File.separator);
 					uriString = new File(uriString).getCanonicalPath();
 					LOGGER.log(Level.INFO, "importing " + uriString);
@@ -361,36 +423,6 @@ public class SetupHelper {
 	}
 
 	/**
-	 * @throws EmfStoreException if any error occurs
-	 */
-	public void setupTestProjectOnServer() throws EmfStoreException {
-		System.out.println("**********************************************************");
-		System.out.println("*                                                        *");
-		System.out.println("*     Creating a random project with given parameters    *");
-		System.out.println("*                                                        *");
-		System.out.println("**********************************************************");
-
-		// running the server
-		startSever();
-		// logging in on server
-		loginServer();
-		// create a new project id
-		projectId = org.eclipse.emf.emfstore.server.model.ModelFactory.eINSTANCE.createProjectId();
-		// visual check if null
-		System.out.println("-> Session id is: " + usersession.getSessionId().getId());
-		System.out.println("-> Project id is: " + projectId.getId());
-		// create a log message
-
-		ConnectionManager connectionManager = WorkspaceManager.getInstance().getConnectionManager();
-		ProjectInfo projectInfo = connectionManager.createEmptyProject(usersession.getSessionId(),
-			projectId.toString(), "test_project", createLogMessage("test", "log this!"));
-
-		WorkspaceManager.getInstance().getCurrentWorkspace()
-			.checkout(usersession, projectInfo, new NullProgressMonitor());
-
-	}
-
-	/**
 	 * Cleans server up.
 	 */
 	public static void cleanupServer() {
@@ -406,7 +438,7 @@ public class SetupHelper {
 		File[] filesToDeleteOnServer = serverDirectory.listFiles(serverFileFilter);
 		for (int i = 0; i < filesToDeleteOnServer.length; i++) {
 			try {
-				FileUtil.deleteFolder(filesToDeleteOnServer[i]);
+				FileUtils.deleteDirectory(filesToDeleteOnServer[i]);
 			} catch (IOException e) {
 
 				e.printStackTrace();
@@ -420,9 +452,15 @@ public class SetupHelper {
 
 	/**
 	 * Cleans workspace up.
+	 * 
+	 * @throws IOException if deletion fails
 	 */
-	public static void cleanupWorkspace() {
+	public static void cleanupWorkspace() throws IOException {
 
+		Workspace currentWorkspace = WorkspaceManager.getInstance().getCurrentWorkspace();
+		for (ProjectSpace projectSpace : new ArrayList<ProjectSpace>(currentWorkspace.getProjectSpaces())) {
+			currentWorkspace.deleteProjectSpace(projectSpace);
+		}
 		String workspacePath = Configuration.getWorkspaceDirectory();
 		File workspaceDirectory = new File(workspacePath);
 		FileFilter workspaceFileFilter = new FileFilter() {
@@ -434,12 +472,7 @@ public class SetupHelper {
 		};
 		File[] filesToDelete = workspaceDirectory.listFiles(workspaceFileFilter);
 		for (int i = 0; i < filesToDelete.length; i++) {
-			try {
-				FileUtil.deleteFolder(filesToDelete[i]);
-			} catch (IOException e) {
-
-				e.printStackTrace();
-			}
+			FileUtils.deleteDirectory(filesToDelete[i]);
 		}
 
 		new File(workspacePath + "workspace.ucw").delete();
@@ -461,8 +494,9 @@ public class SetupHelper {
 	 * Imports a project space from an exported project file.
 	 * 
 	 * @param projectTemplate project template
+	 * @throws IOException if import fails
 	 */
-	public void importProject(TestProjectEnum projectTemplate) {
+	public void importProject(TestProjectEnum projectTemplate) throws IOException {
 		final String path;
 		path = projectTemplate.getPath();
 
@@ -471,18 +505,12 @@ public class SetupHelper {
 			@Override
 			protected void doRun() {
 				String uriString = Activator.getDefault().getBundle().getLocation() + path;
-				if (File.separator.equals("/")) {
-					uriString = uriString.replace("reference:file:", "");
-
-				} else {
-					uriString = uriString.replace("reference:file:/", "");
-				}
 				try {
 					testProjectSpace = workSpace.importProject(uriString);
 					testProject = testProjectSpace.getProject();
 					projectId = testProjectSpace.getProjectId();
 				} catch (IOException e) {
-					e.printStackTrace();
+					Assert.fail();
 				}
 			}
 		}.run(false);
@@ -668,12 +696,17 @@ public class SetupHelper {
 	 */
 	public static void removeServerTestProfile() throws IOException {
 		String serverPath = ServerConfiguration.getServerHome();
-		File serverDirectory = new File(serverPath);
-		FileUtil.deleteFolder(serverDirectory);
 		String clientPath = Configuration.getWorkspaceDirectory();
+		File serverDirectory = new File(serverPath);
 		File clientDirectory = new File(clientPath);
-		FileUtil.deleteFolder(clientDirectory);
 
+		if (serverDirectory.exists()) {
+			FileUtils.deleteDirectory(serverDirectory);
+		}
+
+		if (clientDirectory.exists()) {
+			FileUtils.deleteDirectory(clientDirectory);
+		}
 	}
 
 }

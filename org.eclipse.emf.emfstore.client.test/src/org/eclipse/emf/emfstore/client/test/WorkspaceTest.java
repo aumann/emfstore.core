@@ -10,15 +10,16 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
-import org.eclipse.emf.emfstore.client.model.Configuration;
 import org.eclipse.emf.emfstore.client.model.ProjectSpace;
 import org.eclipse.emf.emfstore.client.model.Workspace;
 import org.eclipse.emf.emfstore.client.model.WorkspaceManager;
 import org.eclipse.emf.emfstore.client.model.connectionmanager.ConnectionManager;
 import org.eclipse.emf.emfstore.client.model.util.EMFStoreCommand;
 import org.eclipse.emf.emfstore.client.model.util.EMFStoreCommandWithResult;
+import org.eclipse.emf.emfstore.client.model.util.WorkspaceUtil;
 import org.eclipse.emf.emfstore.client.test.testmodel.TestElement;
 import org.eclipse.emf.emfstore.client.test.testmodel.TestmodelFactory;
+import org.eclipse.emf.emfstore.common.CommonUtil;
 import org.eclipse.emf.emfstore.common.model.Project;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -40,7 +41,7 @@ public abstract class WorkspaceTest {
 	@Before
 	public void setupProjectSpace() {
 		beforeHook();
-		Configuration.setTesting(true);
+		CommonUtil.setTesting(true);
 		WorkspaceManager workspaceManager = WorkspaceManager.getInstance();
 		ConnectionManager connectionManager = initConnectionManager();
 		if (connectionManager != null) {
@@ -51,8 +52,8 @@ public abstract class WorkspaceTest {
 
 			@Override
 			protected void doRun() {
-				ProjectSpace localProject = workspace.createLocalProject("testProject", "test Project");
-				setProjectSpace(localProject);
+				ProjectSpace localProjectSpace = workspace.createLocalProject("testProject", "test Project");
+				setProjectSpace(localProjectSpace);
 				setProject(getProjectSpace().getProject());
 			}
 		}.run(false);
@@ -71,7 +72,7 @@ public abstract class WorkspaceTest {
 	}
 
 	/**
-	 * Clean workspace.
+	 * Clean up workspace.
 	 */
 	@After
 	public void cleanProjectSpace() {
@@ -85,23 +86,37 @@ public abstract class WorkspaceTest {
 	 */
 	public void cleanProjectSpace(final ProjectSpace ps) {
 		new EMFStoreCommand() {
-
 			@Override
 			protected void doRun() {
+				int retried = 0;
 				try {
 					WorkspaceManager.getInstance().getCurrentWorkspace().deleteProjectSpace(ps);
 				} catch (IOException e) {
-					fail();
+					if (retried++ > 2) {
+						fail();
+					} else {
+						try {
+							Thread.sleep(retried * 1000);
+						} catch (InterruptedException e1) {
+							// ignore
+						}
+						WorkspaceUtil.logWarning(e.getMessage() + " Retrying...(" + retried + " out of 3)", e);
+					}
 				}
 			}
 		}.run(false);
+
+		setProject(null);
+		setProjectSpace(null);
 	}
 
 	/**
 	 * Delete all persisted data.
+	 * 
+	 * @throws IOException if deletion fails
 	 */
 	@AfterClass
-	public static void deleteData() {
+	public static void deleteData() throws IOException {
 		SetupHelper.cleanupWorkspace();
 	}
 

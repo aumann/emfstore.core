@@ -3,6 +3,7 @@ package org.eclipse.emf.emfstore.client.test.server.api;
 import java.util.HashSet;
 import java.util.List;
 
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.emfstore.client.model.ServerInfo;
 import org.eclipse.emf.emfstore.client.model.connectionmanager.ConnectionManager;
 import org.eclipse.emf.emfstore.common.model.EMFStoreProperty;
@@ -14,6 +15,7 @@ import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
 import org.eclipse.emf.emfstore.server.exceptions.InvalidVersionSpecException;
 import org.eclipse.emf.emfstore.server.filetransfer.FileChunk;
 import org.eclipse.emf.emfstore.server.filetransfer.FileTransferInformation;
+import org.eclipse.emf.emfstore.server.model.AuthenticationInformation;
 import org.eclipse.emf.emfstore.server.model.ClientVersionInfo;
 import org.eclipse.emf.emfstore.server.model.ModelFactory;
 import org.eclipse.emf.emfstore.server.model.ProjectHistory;
@@ -45,11 +47,13 @@ public class ConnectionMock implements ConnectionManager {
 		sessions = new HashSet<SessionId>();
 	}
 
-	public SessionId logIn(String username, String password, ServerInfo severInfo, ClientVersionInfo clientVersionInfo)
-		throws EmfStoreException {
+	public AuthenticationInformation logIn(String username, String password, ServerInfo severInfo,
+		ClientVersionInfo clientVersionInfo) throws EmfStoreException {
+		AuthenticationInformation information = ModelFactory.eINSTANCE.createAuthenticationInformation();
 		SessionId sessionId = ModelFactory.eINSTANCE.createSessionId();
 		sessions.add(sessionId);
-		return sessionId;
+		information.setSessionId(sessionId);
+		return information;
 	}
 
 	public void logout(SessionId sessionId) throws EmfStoreException {
@@ -192,5 +196,10 @@ public class ConnectionMock implements ConnectionManager {
 	public List<EMFStoreProperty> getEMFProperties(SessionId sessionId, ProjectId projectId) throws EmfStoreException {
 		checkSessionId(sessionId);
 		return ModelUtil.clone(emfStore.getEMFProperties(ModelUtil.clone(sessionId), ModelUtil.clone(projectId)));
+	}
+
+	public void registerEPackage(SessionId sessionId, EPackage pkg) throws EmfStoreException {
+		checkSessionId(sessionId);
+		emfStore.registerEPackage(ModelUtil.clone(sessionId), ModelUtil.clone(pkg));
 	}
 }

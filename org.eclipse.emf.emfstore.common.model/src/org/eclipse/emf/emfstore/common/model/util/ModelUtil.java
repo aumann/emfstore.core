@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -175,7 +176,16 @@ public final class ModelUtil {
 		return result;
 	}
 
-	private static EObject copyIdEObjectCollection(IdEObjectCollection collection, XMIResource res) {
+	/**
+	 * Copies the given {@link IdEObjectCollection} and writes the IDs it contains into the given {@link XMIResource}.
+	 * 
+	 * @param collection
+	 *            the collection to be copied
+	 * @param res
+	 *            the resource into which the collection's IDs should be written into
+	 * @return the copied collection
+	 */
+	public static EObject copyIdEObjectCollection(IdEObjectCollection collection, XMIResource res) {
 		IdEObjectCollection copiedCollection = clone(collection);
 
 		for (EObject modelElement : copiedCollection.getAllModelElements()) {
@@ -273,7 +283,6 @@ public final class ModelUtil {
 			resourceSaveOptions = new HashMap<Object, Object>();
 			resourceSaveOptions.put(XMLResource.OPTION_USE_ENCODED_ATTRIBUTE_STYLE, Boolean.TRUE);
 			resourceSaveOptions.put(XMLResource.OPTION_USE_CACHED_LOOKUP_TABLE, new ArrayList<Object>());
-			// TODO XMLResource.OPTION_ROOT_OBJECTS
 		}
 		return resourceSaveOptions;
 	}
@@ -767,7 +776,7 @@ public final class ModelUtil {
 	public static Set<EObject> getAllContainedModelElements(Collection<EObject> modelElements,
 		boolean includeTransientContainments, boolean ignoreSingletonDatatypes) {
 
-		Set<EObject> result = new HashSet<EObject>();
+		Set<EObject> result = new LinkedHashSet<EObject>();
 
 		for (EObject modelElement : modelElements) {
 			for (EObject containee : modelElement.eContents()) {

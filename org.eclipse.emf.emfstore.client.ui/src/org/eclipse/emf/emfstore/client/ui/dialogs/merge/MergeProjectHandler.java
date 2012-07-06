@@ -57,5 +57,4 @@ public class MergeProjectHandler extends AbstractConflictResolver implements Con
 		labelProvider.dispose();
 		return (open == Dialog.OK);
 	}
-
 }

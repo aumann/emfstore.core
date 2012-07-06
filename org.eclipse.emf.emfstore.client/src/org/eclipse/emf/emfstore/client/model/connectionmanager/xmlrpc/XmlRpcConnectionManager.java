@@ -12,6 +12,7 @@ package org.eclipse.emf.emfstore.client.model.connectionmanager.xmlrpc;
 
 import java.util.List;
 
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.emfstore.client.model.ServerInfo;
 import org.eclipse.emf.emfstore.client.model.connectionmanager.AbstractConnectionManager;
 import org.eclipse.emf.emfstore.client.model.connectionmanager.ConnectionManager;
@@ -22,6 +23,7 @@ import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
 import org.eclipse.emf.emfstore.server.exceptions.InvalidVersionSpecException;
 import org.eclipse.emf.emfstore.server.filetransfer.FileChunk;
 import org.eclipse.emf.emfstore.server.filetransfer.FileTransferInformation;
+import org.eclipse.emf.emfstore.server.model.AuthenticationInformation;
 import org.eclipse.emf.emfstore.server.model.ClientVersionInfo;
 import org.eclipse.emf.emfstore.server.model.ProjectHistory;
 import org.eclipse.emf.emfstore.server.model.ProjectId;
@@ -51,13 +53,14 @@ public class XmlRpcConnectionManager extends AbstractConnectionManager<XmlRpcCli
 	/**
 	 * {@inheritDoc}
 	 */
-	public SessionId logIn(String username, String password, ServerInfo serverInfo, ClientVersionInfo clientVersionInfo)
-		throws EmfStoreException {
+	public AuthenticationInformation logIn(String username, String password, ServerInfo serverInfo,
+		ClientVersionInfo clientVersionInfo) throws EmfStoreException {
 		XmlRpcClientManager clientManager = new XmlRpcClientManager(XmlRpcConnectionHandler.EMFSTORE);
 		clientManager.initConnection(serverInfo);
-		SessionId id = clientManager.callWithResult("logIn", SessionId.class, username, password, clientVersionInfo);
-		addConnectionProxy(id, clientManager);
-		return id;
+		AuthenticationInformation authenticationInformation = clientManager.callWithResult("logIn",
+			AuthenticationInformation.class, username, password, clientVersionInfo);
+		addConnectionProxy(authenticationInformation.getSessionId(), clientManager);
+		return authenticationInformation;
 	}
 
 	/**
@@ -251,4 +254,14 @@ public class XmlRpcConnectionManager extends AbstractConnectionManager<XmlRpcCli
 		return hasConnectionProxy(id);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.server.EmfStore#registerEPackage(org.eclipse.emf.emfstore.server.model.SessionId,
+	 *      org.eclipse.emf.ecore.EPackage)
+	 */
+	public void registerEPackage(SessionId sessionId, EPackage pkg) throws EmfStoreException {
+		getConnectionProxy(sessionId).call("registerEPackage", sessionId, pkg);
+
+	}
 }

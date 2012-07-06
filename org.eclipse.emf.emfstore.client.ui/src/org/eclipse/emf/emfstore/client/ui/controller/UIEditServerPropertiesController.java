@@ -41,8 +41,14 @@ public class UIEditServerPropertiesController extends AbstractEMFStoreUIControll
 		this.serverInfo = serverInfo;
 	}
 
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.common.MonitoredEMFStoreAction#doRun(org.eclipse.core.runtime.IProgressMonitor)
+	 */
 	@Override
-	public Void doRun(IProgressMonitor pm) throws EmfStoreException {
+	public Void doRun(IProgressMonitor monitor) throws EmfStoreException {
 		NewRepositoryWizard wizard = new NewRepositoryWizard();
 		wizard.setServerInfo(serverInfo);
 		WizardDialog dialog = new WizardDialog(getShell(), wizard);
