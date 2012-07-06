@@ -5,7 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.emf.emfstore.client.model.ModelFactory;
 import org.eclipse.emf.emfstore.client.model.ProjectSpace;
+import org.eclipse.emf.emfstore.client.model.Usersession;
 import org.eclipse.emf.emfstore.client.model.Workspace;
 import org.eclipse.emf.emfstore.client.model.impl.ProjectSpaceBase;
 import org.eclipse.emf.emfstore.client.model.util.EMFStoreCommand;
@@ -79,12 +81,18 @@ public class BranchTests extends CoreServerTest {
 				try {
 					Workspace workspace = getWorkspace();
 					workspace.setConnectionManager(getConnectionMock());
-					return workspace.checkout(ModelUtil.clone(projectSpace.getUsersession()),
-						ModelUtil.clone(projectSpace.getProjectInfo()), ModelUtil.clone(projectSpace.getBaseVersion()),
-						new NullProgressMonitor());
+					Usersession usersession = copy(projectSpace.getUsersession());
+					return workspace.checkout(usersession, ModelUtil.clone(projectSpace.getProjectInfo()),
+						ModelUtil.clone(projectSpace.getBaseVersion()), new NullProgressMonitor());
 				} catch (EmfStoreException e) {
 					throw new RuntimeException(e);
 				}
+			}
+
+			private Usersession copy(Usersession usersession) {
+				Usersession newSession = ModelFactory.eINSTANCE.createUsersession();
+				newSession.setSessionId(ModelUtil.clone(usersession.getSessionId()));
+				return newSession;
 			}
 		}.run(false);
 	}
