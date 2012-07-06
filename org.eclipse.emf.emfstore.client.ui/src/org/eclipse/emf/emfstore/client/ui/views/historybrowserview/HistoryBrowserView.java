@@ -92,10 +92,6 @@ import org.eclipse.ui.part.ViewPart;
  */
 public class HistoryBrowserView extends ViewPart implements ProjectSpaceContainer {
 
-	SWTPlotRenderer renderer;
-
-	IMockCommitProvider commitProvider;
-
 	/**
 	 * Treeviewer that provides a model element selection for selected
 	 * operations and mode element ids.
@@ -219,7 +215,11 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 
 	private TreeViewerColumn graphColumn;
 
-	private final int BRANCH_COLUMN = 1;
+	private static final int BRANCH_COLUMN = 1;
+
+	private SWTPlotRenderer renderer;
+
+	private ICommitProvider commitProvider;
 
 	/**
 	 * Constructor.
@@ -336,6 +336,11 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		hookToobar();
 	}
 
+	/**
+	 * Paints a certain column of the TreeViewer.
+	 * 
+	 * @param event The underlying paint event.
+	 */
 	protected void doPaint(final Event event) {
 		if (event.index != BRANCH_COLUMN) {
 			return;
@@ -359,10 +364,11 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 
 		assert data instanceof HistoryInfo : "Would have returned otherwise.";
 
-		final IMockCommit c = commitProvider.getCommitFor((HistoryInfo) data, !isCommitItem);
+		final IPlotCommit c = commitProvider.getCommitFor((HistoryInfo) data, !isCommitItem);
 		final PlotLane lane = c.getLane();
-		if (lane != null && lane.color.isDisposed())
+		if (lane != null && lane.color.isDisposed()) {
 			return;
+		}
 		// if (highlight != null && c.has(highlight))
 		// event.gc.setFont(hFont);
 		// else

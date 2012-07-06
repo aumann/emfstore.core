@@ -70,10 +70,16 @@ public class PlotLane implements Serializable {
 
 	}
 
+	/**
+	 * @return The lane's main color.
+	 */
 	public Color getSaturatedColor() {
 		return color;
 	}
 
+	/**
+	 * @return The lane's lighter color, used e.g. for expanded tree lanes.
+	 */
 	public Color getLightColor() {
 		return lightColor;
 	}

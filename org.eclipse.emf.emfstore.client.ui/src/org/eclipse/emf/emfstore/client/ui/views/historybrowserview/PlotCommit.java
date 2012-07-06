@@ -1,6 +1,7 @@
 package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -9,13 +10,17 @@ import org.eclipse.emf.emfstore.server.model.versioning.LogMessage;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Widget;
 
-public class PlotCommit implements IMockCommit {
+/**
+ * @author aleaum
+ * 
+ */
+public class PlotCommit implements IPlotCommit {
 
 	private HistoryInfo historyInfo;
 	private PlotLane lane;
 	private PlotLane[] passingLanes;
-	private List<IMockCommit> parents;
-	private List<IMockCommit> children;
+	private List<IPlotCommit> parents;
+	private List<IPlotCommit> children;
 	private Widget widget;
 	private boolean isRealCommit;
 	private LogMessage logMessage;
@@ -25,12 +30,18 @@ public class PlotCommit implements IMockCommit {
 	private Color color;
 	private Color lightColor;
 
+	/**
+	 * A PlotCommit object holds graphical information for a certain history object which is used for drawing in the
+	 * HistoryBrowserView, or rather the SWTPlotRenderer used by this view.
+	 * 
+	 * @param historyInfo The historyInfo that is represented by this PlotCommit
+	 */
 	public PlotCommit(HistoryInfo historyInfo) {
 		this.historyInfo = historyInfo;
 		this.lane = null;
 		this.passingLanes = new PlotLane[0];
-		this.parents = new ArrayList<IMockCommit>();
-		this.children = new ArrayList<IMockCommit>();
+		this.parents = new ArrayList<IPlotCommit>();
+		this.children = new ArrayList<IPlotCommit>();
 		this.widget = null;
 		this.isRealCommit = true;
 		this.logMessage = historyInfo.getLogMessage();
@@ -48,21 +59,36 @@ public class PlotCommit implements IMockCommit {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#setLane(org.eclipse.emf.emfstore.client.ui.views.historybrowserview.PlotLane)
+	 */
 	public void setLane(PlotLane lane) {
 		this.lane = lane;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getLane()
+	 */
 	public PlotLane getLane() {
 		return lane;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#addPassingLane(org.eclipse.emf.emfstore.client.ui.views.historybrowserview.PlotLane)
+	 */
 	public void addPassingLane(PlotLane c) {
 		final int cnt = passingLanes.length;
-		if (cnt == 0)
+		if (cnt == 0) {
 			passingLanes = new PlotLane[] { c };
-		else if (cnt == 1)
+		} else if (cnt == 1) {
 			passingLanes = new PlotLane[] { passingLanes[0], c };
-		else {
+		} else {
 			final PlotLane[] n = new PlotLane[cnt + 1];
 			System.arraycopy(passingLanes, 0, n, 0, cnt);
 			n[cnt] = c;
@@ -70,47 +96,88 @@ public class PlotCommit implements IMockCommit {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getPassingLanes()
+	 */
 	public PlotLane[] getPassingLanes() {
 		return passingLanes;
 	}
 
-	public void setParents(List<IMockCommit> parents) {
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#setParents(java.util.List)
+	 */
+	public void setParents(List<IPlotCommit> parents) {
 		this.parents = parents;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getParentCount()
+	 */
 	public int getParentCount() {
 		return parents.size();
 	}
 
-	public IMockCommit getParent(int i) {
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getParent(int)
+	 */
+	public IPlotCommit getParent(int i) {
 		return parents.get(i);
 	}
 
-	public void addChild(IMockCommit child) {
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#addChild(org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit)
+	 */
+	public void addChild(IPlotCommit child) {
 		children.add(child);
 	}
 
-	public IMockCommit getChild(int child) {
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getChild(int)
+	 */
+	public IPlotCommit getChild(int child) {
 		return children.get(child);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getChildCount()
+	 */
 	public int getChildCount() {
 		return children.size();
 	}
 
-	public boolean isChild(IMockCommit commit) {
-		for (IMockCommit mc : children) {
-			if (mc == commit)
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#isChild(org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit)
+	 */
+	public boolean isChild(IPlotCommit commit) {
+		for (IPlotCommit mc : children) {
+			if (mc == commit) {
 				return true;
+			}
 		}
 		return false;
 	}
 
-	public int getRefsLength() {
-		// TODO What to do here?
-		return 0;
-	}
-
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getShortMessage()
+	 */
 	public String getShortMessage() {
 		if (logMessage != null) {
 			return logMessage.getMessage();
@@ -118,22 +185,29 @@ public class PlotCommit implements IMockCommit {
 		return "message";
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#setIsRealCommit(boolean)
+	 */
 	public void setIsRealCommit(boolean isReal) {
 		isRealCommit = isReal;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#isRealCommit()
+	 */
 	public boolean isRealCommit() {
 		return isRealCommit;
 	}
 
-	public Widget getWidget() {
-		return widget;
-	}
-
-	public void setWidget(Widget widget) {
-		this.widget = widget;
-	}
-
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getCommitterName()
+	 */
 	public String getCommitterName() {
 		if (logMessage != null) {
 			return logMessage.getAuthor();
@@ -141,44 +215,89 @@ public class PlotCommit implements IMockCommit {
 		return "author";
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getBranch()
+	 */
 	public String getBranch() {
 		return branchName;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getId()
+	 */
 	public String getId() {
 		return idString;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getCommitDate()
+	 */
 	public Date getCommitDate() {
 		if (logMessage != null) {
 			return logMessage.getDate();
 		}
-		return new Date(2008, 11, 12);
+		return Calendar.getInstance().getTime();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#dispose()
+	 */
 	public void dispose() {
 		if (widget != null) {
 			widget.dispose();
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#isLocalHistoryOnly()
+	 */
 	public boolean isLocalHistoryOnly() {
 		return localHistoryOnly;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#setColor(org.eclipse.swt.graphics.Color)
+	 */
 	public void setColor(Color color) {
 		this.color = color;
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getColor()
+	 */
 	public Color getColor() {
 		return color;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#setLightColor(org.eclipse.swt.graphics.Color)
+	 */
 	public void setLightColor(Color color) {
 		this.lightColor = color;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getLightColor()
+	 */
 	public Color getLightColor() {
 		return lightColor;
 	}

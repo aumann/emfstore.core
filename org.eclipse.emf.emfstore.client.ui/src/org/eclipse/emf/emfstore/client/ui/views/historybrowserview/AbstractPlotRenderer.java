@@ -58,10 +58,6 @@ import org.eclipse.swt.graphics.Color;
  * If this is not true (like say in SWT) the implementation must perform the cell offset computations within the various
  * draw methods.
  * 
- * @param <TLane>
- *            type of lane being used by the application.
- * @param <TColor>
- *            type of color object used by the graphics library.
  */
 public abstract class AbstractPlotRenderer {
 	private static final int LANE_WIDTH = 14;
@@ -78,7 +74,7 @@ public abstract class AbstractPlotRenderer {
 	 * @param h
 	 *            total height (in pixels) of this cell.
 	 */
-	protected void paintCommit(final IMockCommit commit, final int h) {
+	protected void paintCommit(final IPlotCommit commit, final int h) {
 		final int dotSize = computeDotSize(h);
 		final PlotLane myLane = commit.getLane();
 		final int myLaneX = laneC(myLane);
@@ -95,7 +91,7 @@ public abstract class AbstractPlotRenderer {
 
 		final int nParent = commit.getParentCount();
 		for (int i = 0; i < nParent; i++) {
-			final IMockCommit p;
+			final IPlotCommit p;
 			final PlotLane pLane;
 			final Color pColor;
 			final int cx;
@@ -155,25 +151,23 @@ public abstract class AbstractPlotRenderer {
 		if (commit.isRealCommit()) {
 			textx += drawLabel(textx + dotSize, h / 2, commit);
 
-			int n = 0; // remove if refs get re-enabled
-
 			// final String msg = commit.getShortMessage();
 			// drawText(msg, textx + dotSize + n * 2, h / 2);
 		}
 	}
 
 	/**
-	 * Draw a decoration for the Ref ref at x,y
+	 * Draw a decoration for the IPlotCommit at x,y.
 	 * 
 	 * @param x
 	 *            left
 	 * @param y
 	 *            top
-	 * @param ref
-	 *            A peeled ref
+	 * @param commit
+	 *            A plot commit
 	 * @return width of label in pixels
 	 */
-	protected abstract int drawLabel(int x, int y, IMockCommit ref);
+	protected abstract int drawLabel(int x, int y, IPlotCommit commit);
 
 	private int computeDotSize(final int h) {
 		int d = (int) (Math.min(h, LANE_WIDTH) * 0.50f);
@@ -192,7 +186,7 @@ public abstract class AbstractPlotRenderer {
 	 * 
 	 * @param myLane
 	 *            the current lane. May be null.
-	 * @param b
+	 * @param fullSaturation if true a fully saturated color is returned, otherwise a lighter, washed-out one
 	 * @return graphics specific color reference. Must be a valid color.
 	 */
 	protected abstract Color laneColor(PlotLane myLane, boolean fullSaturation);

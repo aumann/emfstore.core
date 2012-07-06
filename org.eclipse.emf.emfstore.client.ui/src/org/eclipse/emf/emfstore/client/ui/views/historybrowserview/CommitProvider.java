@@ -9,7 +9,11 @@ import java.util.TreeSet;
 
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
 
-public class CommitProvider implements IMockCommitProvider {
+/**
+ * @author aleaum
+ *         A statical commit provider that always creates the same graph independent of the given history info list.
+ */
+public class CommitProvider implements ICommitProvider {
 
 	private MockCommit[] commits;
 
@@ -17,10 +21,15 @@ public class CommitProvider implements IMockCommitProvider {
 
 	private final HashSet<PlotLane> activeLanes = new HashSet<PlotLane>(32);
 
-	private Map<HistoryInfo, IMockCommit> commitForHistory = new HashMap<HistoryInfo, IMockCommit>();
+	private Map<HistoryInfo, IPlotCommit> commitForHistory = new HashMap<HistoryInfo, IPlotCommit>();
 
 	private int positionsAllocated = 0;
 
+	/**
+	 * Creates graphical IPlotCommits for the the given historyInfo.
+	 * 
+	 * @param historyInfo A list of historyInfo
+	 */
 	public CommitProvider(List<HistoryInfo> historyInfo) {
 		createCommitsForHistory(historyInfo);
 
@@ -211,12 +220,12 @@ public class CommitProvider implements IMockCommitProvider {
 		}
 	}
 
-	public IMockCommit[] getCommits() {
+	public IPlotCommit[] getCommits() {
 		return commits;
 	}
 
-	public IMockCommit getCommitFor(HistoryInfo info, boolean isOnlyAChildRequest) {
-		IMockCommit commit = commitForHistory.get(info);
+	public IPlotCommit getCommitFor(HistoryInfo info, boolean isOnlyAChildRequest) {
+		IPlotCommit commit = commitForHistory.get(info);
 		commit.setIsRealCommit(!isOnlyAChildRequest);
 		return commit;
 	}

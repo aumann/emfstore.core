@@ -7,15 +7,15 @@ import java.util.List;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Widget;
 
-public class MockCommit implements IMockCommit {
+public class MockCommit implements IPlotCommit {
 
 	PlotLane lane;
 
 	PlotLane[] passingLanes;
 
-	ArrayList<IMockCommit> parents;
+	ArrayList<IPlotCommit> parents;
 
-	ArrayList<IMockCommit> children;
+	ArrayList<IPlotCommit> children;
 
 	String shortMsg;
 
@@ -26,8 +26,8 @@ public class MockCommit implements IMockCommit {
 	public MockCommit() {
 		this.lane = null;
 		this.passingLanes = new PlotLane[0];
-		this.parents = new ArrayList<IMockCommit>();
-		this.children = new ArrayList<IMockCommit>();
+		this.parents = new ArrayList<IPlotCommit>();
+		this.children = new ArrayList<IPlotCommit>();
 		this.shortMsg = "foo";
 	}
 
@@ -43,7 +43,7 @@ public class MockCommit implements IMockCommit {
 		return parents.size();
 	}
 
-	public IMockCommit getParent(int i) {
+	public IPlotCommit getParent(int i) {
 		return parents.get(i);
 	}
 
@@ -69,8 +69,8 @@ public class MockCommit implements IMockCommit {
 
 	}
 
-	public boolean isChild(IMockCommit c) {
-		for (IMockCommit mc : children) {
+	public boolean isChild(IPlotCommit c) {
+		for (IPlotCommit mc : children) {
 			if (mc == c)
 				return true;
 		}
@@ -121,17 +121,17 @@ public class MockCommit implements IMockCommit {
 
 	}
 
-	public void setParents(List<IMockCommit> parents) {
+	public void setParents(List<IPlotCommit> parents) {
 		// TODO Auto-generated method stub
 
 	}
 
-	public void addChild(IMockCommit child) {
+	public void addChild(IPlotCommit child) {
 		// TODO Auto-generated method stub
 
 	}
 
-	public IMockCommit getChild(int childId) {
+	public IPlotCommit getChild(int childId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

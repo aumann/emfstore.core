@@ -100,7 +100,7 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 		resources.dispose();
 	}
 
-	void paint(final Event event, IMockCommit representer) {
+	void paint(final Event event, IPlotCommit representer) {
 		g = event.gc;
 
 		if (this.enableAntialias)
@@ -168,7 +168,7 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 	}
 
 	@Override
-	protected int drawLabel(int x, int y, IMockCommit commit) {
+	protected int drawLabel(int x, int y, IPlotCommit commit) {
 		String txt = commit.getBranch();
 		// String name = commit.getName();
 		// boolean tag = false;
@@ -252,7 +252,7 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 		return 10 + textsz.x;
 	}
 
-	private Color getLabelBorderColor(IMockCommit commit) {
+	private Color getLabelBorderColor(IPlotCommit commit) {
 		// if (commit.isLocalHistoryOnly()) {
 		// assert commit.getLane() == null : "Local history commits do not have a lane.";
 		// return LOCAL_HISTORY_BORDER_COLOR;
@@ -262,7 +262,7 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 		return commit.getColor();
 	}
 
-	private Color getLabelColor(IMockCommit commit) {
+	private Color getLabelColor(IPlotCommit commit) {
 		// if (commit.isLocalHistoryOnly()) {
 		// assert commit.getLane() == null : "Local history commits do not have a lane.";
 		// return LOCAL_HISTORY_INNER_COLOR;

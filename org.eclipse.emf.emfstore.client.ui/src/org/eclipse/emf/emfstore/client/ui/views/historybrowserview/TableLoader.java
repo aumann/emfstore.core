@@ -20,5 +20,5 @@ public interface TableLoader {
 	/**
 	 * @param c commit to be loaded
 	 */
-	void loadCommit(IMockCommit c);
+	void loadCommit(IPlotCommit c);
 }

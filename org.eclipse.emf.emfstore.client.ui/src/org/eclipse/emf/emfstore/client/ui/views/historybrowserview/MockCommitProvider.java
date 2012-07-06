@@ -6,7 +6,7 @@ import java.util.TreeSet;
 
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
 
-public class MockCommitProvider implements IMockCommitProvider {
+public class MockCommitProvider implements ICommitProvider {
 
 	private MockCommit[] commits;
 
@@ -194,11 +194,11 @@ public class MockCommitProvider implements IMockCommitProvider {
 		}
 	}
 
-	public IMockCommit[] getCommits() {
+	public IPlotCommit[] getCommits() {
 		return commits;
 	}
 
-	public IMockCommit getCommitFor(HistoryInfo info, boolean isOnlyAChild) {
+	public IPlotCommit getCommitFor(HistoryInfo info, boolean isOnlyAChild) {
 		return null;
 	}
 }

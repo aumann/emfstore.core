@@ -16,13 +16,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 
-public class PlotCommitProvider implements IMockCommitProvider {
+public class PlotCommitProvider implements ICommitProvider {
 
-	private IMockCommit[] commits;
+	private IPlotCommit[] commits;
 	private final TreeSet<Integer> freePositions;
 	private final HashSet<PlotLane> activeLanes;
 	private int positionsAllocated;
-	private Map<HistoryInfo, IMockCommit> commitForHistory = new HashMap<HistoryInfo, IMockCommit>();
+	private Map<HistoryInfo, IPlotCommit> commitForHistory = new HashMap<HistoryInfo, IPlotCommit>();
 	private int nextBranchColorIndex;
 	private Map<String, Integer> colorForBranch = new HashMap<String, Integer>();
 	private static List<Color> createdColors = new LinkedList<Color>();
@@ -40,7 +40,7 @@ public class PlotCommitProvider implements IMockCommitProvider {
 		this.freePositions = new TreeSet<Integer>();
 		this.activeLanes = new HashSet<PlotLane>(32);
 		this.positionsAllocated = 0;
-		this.commitForHistory = new HashMap<HistoryInfo, IMockCommit>();
+		this.commitForHistory = new HashMap<HistoryInfo, IPlotCommit>();
 
 		for (int i = 0; i < historyInfo.size(); i++) {
 			commits[i] = new PlotCommit(historyInfo.get(i));
@@ -105,7 +105,7 @@ public class PlotCommitProvider implements IMockCommitProvider {
 
 			// check if this historyinfo element is a merge
 			EList<PrimaryVersionSpec> mergedFrom = currInfo.getMergedFrom();
-			ArrayList<IMockCommit> parents = new ArrayList<IMockCommit>();
+			ArrayList<IPlotCommit> parents = new ArrayList<IPlotCommit>();
 			if (mergedFrom != null && mergedFrom.size() >= 1) {
 				for (PrimaryVersionSpec mergeParent : mergedFrom) {
 					parents.add(commits[identifierOffset - mergeParent.getIdentifier()]);
@@ -150,7 +150,7 @@ public class PlotCommitProvider implements IMockCommitProvider {
 	// }
 	// }
 
-	private void initCommit(int index, IMockCommit currCommit) {
+	private void initCommit(int index, IPlotCommit currCommit) {
 		setupChildren(currCommit);
 
 		final int nChildren = currCommit.getChildCount();
@@ -162,7 +162,7 @@ public class PlotCommitProvider implements IMockCommitProvider {
 			// Only one child, child has only us as their parent.
 			// Stay in the same lane as the child.
 			//
-			final IMockCommit c = currCommit.getChild(0);
+			final IPlotCommit c = currCommit.getChild(0);
 			if (c.getLane() == null) {
 				// Hmmph. This child must be the first along this lane.
 				//
@@ -173,7 +173,7 @@ public class PlotCommitProvider implements IMockCommitProvider {
 				activeLanes.add(c.getLane());
 			}
 			for (int r = index - 1; r >= 0; r--) {
-				final IMockCommit rObj = commits[r];
+				final IPlotCommit rObj = commits[r];
 				if (rObj == c) {
 					break;
 				}
@@ -206,7 +206,7 @@ public class PlotCommitProvider implements IMockCommitProvider {
 			PlotLane reservedLane = null;
 
 			for (int i = 0; i < nChildren; i++) {
-				final IMockCommit c = currCommit.getChild(i);
+				final IPlotCommit c = currCommit.getChild(i);
 				// don't forget to position all of your children if they are
 				// not already positioned.
 				if (c.getLane() == null) {
@@ -240,7 +240,7 @@ public class PlotCommitProvider implements IMockCommitProvider {
 		}
 	}
 
-	private void setupChildren(IMockCommit currCommit) {
+	private void setupChildren(IPlotCommit currCommit) {
 		int nParents = currCommit.getParentCount();
 		for (int i = 0; i < nParents; i++) {
 			currCommit.getParent(i).addChild(currCommit);
@@ -259,12 +259,12 @@ public class PlotCommitProvider implements IMockCommitProvider {
 		return p;
 	}
 
-	private void handleBlockedLanes(final int index, final IMockCommit commit, final int nChildren) {
+	private void handleBlockedLanes(final int index, final IPlotCommit commit, final int nChildren) {
 		// take care:
 		int remaining = nChildren;
 		BitSet blockedPositions = new BitSet();
 		for (int r = index - 1; r >= 0; r--) {
-			final IMockCommit rObj = commits[r];
+			final IPlotCommit rObj = commits[r];
 			if (commit.isChild(rObj)) {
 				if (--remaining == 0)
 					break;
@@ -299,12 +299,12 @@ public class PlotCommitProvider implements IMockCommitProvider {
 		}
 	}
 
-	public IMockCommit[] getCommits() {
+	public IPlotCommit[] getCommits() {
 		return commits;
 	}
 
-	public IMockCommit getCommitFor(HistoryInfo info, boolean onlyAChildRequest) {
-		IMockCommit comForInfo = commitForHistory.get(info);
+	public IPlotCommit getCommitFor(HistoryInfo info, boolean onlyAChildRequest) {
+		IPlotCommit comForInfo = commitForHistory.get(info);
 		comForInfo.setIsRealCommit(!onlyAChildRequest);
 		return comForInfo;
 	}
