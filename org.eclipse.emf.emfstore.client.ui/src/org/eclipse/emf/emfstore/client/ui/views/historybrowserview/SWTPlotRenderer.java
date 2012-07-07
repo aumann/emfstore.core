@@ -10,13 +10,9 @@
  *******************************************************************************/
 package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
 
-import java.sql.Ref;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
-import org.eclipse.jface.resource.ResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.graphics.Color;
@@ -26,7 +22,12 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 
+/**
+ * A renderer for IPlotCommits able to draw these commits into a table or tree cell.
+ */
 class SWTPlotRenderer extends AbstractPlotRenderer {
+
+	// The colors following are used for labels in the EGit renderer and might prove useful in the future.
 
 	// private static final RGB OUTER_HEAD = new RGB(0, 128, 0);
 	//
@@ -50,11 +51,11 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 
 	private static final int MAX_LABEL_LENGTH = 15;
 
-	private final Color sys_black;
+	private final Color sysColorBlack;
 
-	private final Color sys_gray;
+	private final Color sysColorGray;
 
-	private final Color sys_white;
+	private final Color sysColorWhite;
 
 	private final Color commitDotFill;
 
@@ -66,51 +67,62 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 
 	private boolean enableAntialias = true;
 
-	private ResourceManager resources = new LocalResourceManager(JFaceResources.getResources());
+	private GC g;
 
-	GC g;
+	private int cellX;
 
-	int cellX;
+	private int cellY;
 
-	int cellY;
+	private Color cellFG;
 
-	Color cellFG;
+	private Color cellBG;
 
-	Color cellBG;
-
-	private Ref headRef;
-
+	/**
+	 * Creates a new SWTPlotRenderer that can draw IPlotCommits for table/tree events.
+	 * 
+	 * @param d The display for the renderer.
+	 */
 	SWTPlotRenderer(final Display d) {
-		sys_black = d.getSystemColor(SWT.COLOR_BLACK);
-		sys_gray = d.getSystemColor(SWT.COLOR_GRAY);
-		sys_white = d.getSystemColor(SWT.COLOR_WHITE);
+		sysColorBlack = d.getSystemColor(SWT.COLOR_BLACK);
+		sysColorGray = d.getSystemColor(SWT.COLOR_GRAY);
+		sysColorWhite = d.getSystemColor(SWT.COLOR_WHITE);
 		commitDotFill = new Color(d, new RGB(220, 220, 220));
 		commitDotOutline = new Color(d, new RGB(110, 110, 110));
 	}
 
+	/**
+	 * Frees all resources reserved by the renderer.
+	 */
 	void dispose() {
 		commitDotFill.dispose();
 		commitDotOutline.dispose();
-		resources.dispose();
 	}
 
+	/**
+	 * Paints a IPlotCommit into the cell determined by the given event.
+	 * 
+	 * @param event The event triggering the painting.
+	 * @param representer The commit to paint.
+	 */
 	void paint(final Event event, IPlotCommit representer) {
 		g = event.gc;
 
-		if (this.enableAntialias)
+		if (this.enableAntialias) {
 			try {
 				g.setAntialias(SWT.ON);
 			} catch (SWTException e) {
 				this.enableAntialias = false;
 			}
+		}
 
 		// this.headRef = actHeadRef;
 		cellX = event.x;
 		cellY = event.y;
 		cellFG = g.getForeground();
 		cellBG = g.getBackground();
-		if (textHeight == 0)
+		if (textHeight == 0) {
 			textHeight = g.stringExtent("/").y; //$NON-NLS-1$
+		}
 
 		// final TableItem ti = (TableItem) event.item;
 		// IMockCommit commit = (IMockCommit) ti.getData();
@@ -130,6 +142,16 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 		g.drawLine(cellX + x1, cellY + y1, cellX + x2, cellY + y2);
 	}
 
+	/**
+	 * Draws a dot with the given parameters.
+	 * 
+	 * @param outline The color for the outline of the dot.
+	 * @param fill The color used to fill the dot.
+	 * @param x The left most coordinate of the dot.
+	 * @param y The top most coordinate of the dot.
+	 * @param w The width of the dot.
+	 * @param h The height of the dot.
+	 */
 	protected void drawDot(final Color outline, final Color fill, final int x, final int y, final int w, final int h) {
 		int dotX = cellX + x + 2;
 		int dotY = cellY + y + 1;
@@ -149,7 +171,7 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 
 	@Override
 	protected void drawBoundaryDot(final int x, final int y, final int w, final int h) {
-		drawDot(sys_gray, sys_white, x, y, w, h);
+		drawDot(sysColorGray, sysColorWhite, x, y, w, h);
 	}
 
 	@Override
@@ -223,7 +245,7 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 		// Draw backgrounds
 		g.setLineWidth(1);
 
-		g.setBackground(sys_white);
+		g.setBackground(sysColorWhite);
 		// g.fillRoundRectangle(cellX + x + 1, cellY + texty, textsz.x + 6, textsz.y + 1, arc, arc);
 
 		g.setForeground(getLabelBorderColor(commit));
@@ -234,7 +256,7 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 		// g.fillRoundRectangle(cellX + x + 2, cellY + texty + 1, textsz.x + 4, textsz.y - 4, arc - 1, arc - 1);
 
 		g.drawRoundRectangle(cellX + x, cellY + texty - 1, textsz.x + 7, textsz.y - 1, arc, arc);
-		g.setForeground(sys_black);
+		g.setForeground(sysColorBlack);
 
 		// Draw text
 		g.drawString(txt, cellX + x + 4, cellY + texty, true);
@@ -282,9 +304,9 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 		Color color;
 		if (myLane == null) {
 			if (fullSaturation) {
-				color = sys_black;
+				color = sysColorBlack;
 			} else {
-				color = sys_gray;
+				color = sysColorGray;
 			}
 		} else {
 			if (fullSaturation) {

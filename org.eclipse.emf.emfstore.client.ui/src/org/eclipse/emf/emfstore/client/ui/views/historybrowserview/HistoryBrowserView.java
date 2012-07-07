@@ -219,7 +219,7 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 
 	private SWTPlotRenderer renderer;
 
-	private ICommitProvider commitProvider;
+	private IPlotCommitProvider commitProvider;
 
 	/**
 	 * Constructor.
@@ -366,7 +366,7 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 
 		final IPlotCommit c = commitProvider.getCommitFor((HistoryInfo) data, !isCommitItem);
 		final PlotLane lane = c.getLane();
-		if (lane != null && lane.color.isDisposed()) {
+		if (lane != null && lane.getSaturatedColor().isDisposed()) {
 			return;
 		}
 		// if (highlight != null && c.has(highlight))

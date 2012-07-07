@@ -30,7 +30,7 @@ import org.eclipse.swt.widgets.Display;
  * @author Aumann, Faltermeier
  * 
  */
-public class PlotCommitProvider implements ICommitProvider {
+public class PlotCommitProvider implements IPlotCommitProvider {
 
 	private IPlotCommit[] commits;
 	private final TreeSet<Integer> freePositions;
@@ -328,7 +328,7 @@ public class PlotCommitProvider implements ICommitProvider {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.ICommitProvider#getCommitFor(org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo,
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommitProvider#getCommitFor(org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo,
 	 *      boolean)
 	 */
 	public IPlotCommit getCommitFor(HistoryInfo info, boolean onlyAChildRequest) {

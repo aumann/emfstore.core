@@ -19,7 +19,7 @@ import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
  * @author Aumann, Faltermeier
  * 
  */
-public interface ICommitProvider {
+public interface IPlotCommitProvider {
 
 	/**
 	 * Gets a plot commit for the provided history info.
