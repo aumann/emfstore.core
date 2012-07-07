@@ -1,29 +1,34 @@
+/*******************************************************************************
+ * Copyright (c) 2008-2011 Chair for Applied Software Engineering,
+ * Technische Universitaet Muenchen.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ ******************************************************************************/
 package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
-import org.eclipse.emf.emfstore.server.model.versioning.LogMessage;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Widget;
 
 /**
- * @author aleaum
+ * @author Aumann, Faltermeier
  * 
  */
 public class PlotCommit implements IPlotCommit {
 
-	private HistoryInfo historyInfo;
 	private PlotLane lane;
 	private PlotLane[] passingLanes;
 	private List<IPlotCommit> parents;
 	private List<IPlotCommit> children;
 	private Widget widget;
 	private boolean isRealCommit;
-	private LogMessage logMessage;
 	private String branchName;
 	private String idString;
 	private boolean localHistoryOnly;
@@ -37,14 +42,12 @@ public class PlotCommit implements IPlotCommit {
 	 * @param historyInfo The historyInfo that is represented by this PlotCommit
 	 */
 	public PlotCommit(HistoryInfo historyInfo) {
-		this.historyInfo = historyInfo;
 		this.lane = null;
 		this.passingLanes = new PlotLane[0];
 		this.parents = new ArrayList<IPlotCommit>();
 		this.children = new ArrayList<IPlotCommit>();
 		this.widget = null;
 		this.isRealCommit = true;
-		this.logMessage = historyInfo.getLogMessage();
 
 		if (historyInfo.getPrimerySpec().getIdentifier() < 0) {
 			localHistoryOnly = true;
@@ -176,18 +179,6 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getShortMessage()
-	 */
-	public String getShortMessage() {
-		if (logMessage != null) {
-			return logMessage.getMessage();
-		}
-		return "message";
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * 
 	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#setIsRealCommit(boolean)
 	 */
 	public void setIsRealCommit(boolean isReal) {
@@ -206,18 +197,6 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getCommitterName()
-	 */
-	public String getCommitterName() {
-		if (logMessage != null) {
-			return logMessage.getAuthor();
-		}
-		return "author";
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * 
 	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getBranch()
 	 */
 	public String getBranch() {
@@ -231,18 +210,6 @@ public class PlotCommit implements IPlotCommit {
 	 */
 	public String getId() {
 		return idString;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getCommitDate()
-	 */
-	public Date getCommitDate() {
-		if (logMessage != null) {
-			return logMessage.getDate();
-		}
-		return Calendar.getInstance().getTime();
 	}
 
 	/**

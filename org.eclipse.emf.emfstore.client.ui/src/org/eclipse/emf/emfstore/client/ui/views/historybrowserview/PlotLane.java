@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (C) 2008, Shawn O. Pearce <spearce@spearce.org>
  * and other copyright owners as documented in the project's IP log.
  * This program and the accompanying materials are made available
@@ -50,12 +50,12 @@ import org.eclipse.ui.PlatformUI;
 public class PlotLane implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	int position;
+	private int position;
 
 	// if colors get created, remember to dispose them in the dispose function below!
-	Color color = PlatformUI.getWorkbench().getDisplay().getSystemColor(SWT.COLOR_BLACK);
+	private Color color = PlatformUI.getWorkbench().getDisplay().getSystemColor(SWT.COLOR_BLACK);
 
-	Color lightColor = PlatformUI.getWorkbench().getDisplay().getSystemColor(SWT.COLOR_GRAY);
+	private Color lightColor = PlatformUI.getWorkbench().getDisplay().getSystemColor(SWT.COLOR_GRAY);
 
 	/**
 	 * Logical location of this lane within the graphing plane.
@@ -66,8 +66,29 @@ public class PlotLane implements Serializable {
 		return position;
 	}
 
+	/**
+	 * Sets the logical position of this lane. See {@link #getPosition()}.
+	 * 
+	 * @param position The new position of this lane.
+	 */
+	public void setPosition(int position) {
+		this.position = position;
+	}
+
+	/**
+	 * Disposes the lane and frees all reserved resources.
+	 */
 	public void dispose() {
 
+	}
+
+	/**
+	 * Sets this lane's main color.
+	 * 
+	 * @param color The lane's color.
+	 */
+	public void setSaturatedColor(Color color) {
+		this.color = color;
 	}
 
 	/**
@@ -75,6 +96,15 @@ public class PlotLane implements Serializable {
 	 */
 	public Color getSaturatedColor() {
 		return color;
+	}
+
+	/**
+	 * Sets the light color of this lane {@link #getLightColor()}.
+	 * 
+	 * @param lightColor The new light color f this commit.
+	 */
+	public void setLightColor(Color lightColor) {
+		this.lightColor = lightColor;
 	}
 
 	/**

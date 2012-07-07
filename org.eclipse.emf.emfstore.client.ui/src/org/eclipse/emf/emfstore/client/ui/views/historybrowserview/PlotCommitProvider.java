@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2008-2011 Chair for Applied Software Engineering,
+ * Technische Universitaet Muenchen.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors:
+ ******************************************************************************/
 package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
 
 import java.util.ArrayList;
@@ -16,6 +26,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 
+/**
+ * @author Aumann, Faltermeier
+ * 
+ */
 public class PlotCommitProvider implements ICommitProvider {
 
 	private IPlotCommit[] commits;
@@ -34,6 +48,11 @@ public class PlotCommitProvider implements ICommitProvider {
 		setUpLightColors();
 	}
 
+	/**
+	 * Creates a new PlotCommitProvider from a list of {@linkplain HistoryInfo} objects.
+	 * 
+	 * @param historyInfo The history info for which the plot commits should be created.
+	 */
 	public PlotCommitProvider(List<HistoryInfo> historyInfo) {
 		this.nextBranchColorIndex = 0;
 		this.commits = new PlotCommit[historyInfo.size()];
@@ -167,8 +186,8 @@ public class PlotCommitProvider implements ICommitProvider {
 				// Hmmph. This child must be the first along this lane.
 				//
 				PlotLane lane = nextFreeLane();
-				lane.color = c.getColor();
-				lane.lightColor = c.getLightColor();
+				lane.setSaturatedColor(c.getColor());
+				lane.setLightColor(c.getLightColor());
 				c.setLane(lane);
 				activeLanes.add(c.getLane());
 			}
@@ -211,28 +230,31 @@ public class PlotCommitProvider implements ICommitProvider {
 				// not already positioned.
 				if (c.getLane() == null) {
 					PlotLane lane = nextFreeLane();
-					lane.color = c.getColor();
-					lane.lightColor = c.getLightColor();
+					lane.setSaturatedColor(c.getColor());
+					lane.setLightColor(c.getLightColor());
 					c.setLane(lane);
 					activeLanes.add(c.getLane());
-					if (reservedLane != null)
+					if (reservedLane != null) {
 						closeLane(c.getLane());
-					else
+					} else {
 						reservedLane = c.getLane();
-				} else if (reservedLane == null && activeLanes.contains(c.getLane()))
+					}
+				} else if (reservedLane == null && activeLanes.contains(c.getLane())) {
 					reservedLane = c.getLane();
-				else
+				} else {
 					closeLane(c.getLane());
+				}
 			}
 
 			// finally all children are processed. We can close the lane on that
 			// position our current commit will be on.
-			if (reservedLane != null)
+			if (reservedLane != null) {
 				closeLane(reservedLane);
+			}
 
 			PlotLane lane = nextFreeLane();
-			lane.color = currCommit.getColor();
-			lane.lightColor = currCommit.getLightColor();
+			lane.setSaturatedColor(currCommit.getColor());
+			lane.setLightColor(currCommit.getLightColor());
 			currCommit.setLane(lane);
 			activeLanes.add(currCommit.getLane());
 
@@ -250,10 +272,10 @@ public class PlotCommitProvider implements ICommitProvider {
 	private PlotLane nextFreeLane() {
 		final PlotLane p = new PlotLane();
 		if (freePositions.isEmpty()) {
-			p.position = positionsAllocated++;
+			p.setPosition(positionsAllocated++);
 		} else {
 			final Integer min = freePositions.first();
-			p.position = min.intValue();
+			p.setPosition(min.intValue());
 			freePositions.remove(min);
 		}
 		return p;
@@ -266,29 +288,33 @@ public class PlotCommitProvider implements ICommitProvider {
 		for (int r = index - 1; r >= 0; r--) {
 			final IPlotCommit rObj = commits[r];
 			if (commit.isChild(rObj)) {
-				if (--remaining == 0)
+				if (--remaining == 0) {
 					break;
+				}
 			}
 			if (rObj != null) {
 				PlotLane lane = rObj.getLane();
-				if (lane != null)
+				if (lane != null) {
 					blockedPositions.set(lane.getPosition());
+				}
 				rObj.addPassingLane(commit.getLane());
 			}
 		}
 		// Now let's check whether we have to reposition the lane
 		if (blockedPositions.get(commit.getLane().getPosition())) {
 			int newPos = -1;
-			for (Integer pos : freePositions)
+			for (Integer pos : freePositions) {
 				if (!blockedPositions.get(pos.intValue())) {
 					newPos = pos.intValue();
 					break;
 				}
-			if (newPos == -1)
+			}
+			if (newPos == -1) {
 				newPos = positionsAllocated++;
+			}
 			freePositions.add(Integer.valueOf(commit.getLane().getPosition()));
 			activeLanes.remove(commit.getLane());
-			commit.getLane().position = newPos;
+			commit.getLane().setPosition(newPos);
 			activeLanes.add(commit.getLane());
 		}
 	}
@@ -299,10 +325,12 @@ public class PlotCommitProvider implements ICommitProvider {
 		}
 	}
 
-	public IPlotCommit[] getCommits() {
-		return commits;
-	}
-
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.ICommitProvider#getCommitFor(org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo,
+	 *      boolean)
+	 */
 	public IPlotCommit getCommitFor(HistoryInfo info, boolean onlyAChildRequest) {
 		IPlotCommit comForInfo = commitForHistory.get(info);
 		comForInfo.setIsRealCommit(!onlyAChildRequest);

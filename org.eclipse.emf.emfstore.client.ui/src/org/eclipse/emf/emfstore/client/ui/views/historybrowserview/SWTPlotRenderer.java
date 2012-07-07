@@ -28,31 +28,27 @@ import org.eclipse.swt.widgets.Event;
 
 class SWTPlotRenderer extends AbstractPlotRenderer {
 
-	private static final RGB OUTER_HEAD = new RGB(0, 128, 0);
-
-	private static final RGB INNER_HEAD = new RGB(188, 220, 188);
-
-	private static final RGB OUTER_TAG = new RGB(121, 120, 13);
-
-	private static final RGB INNER_TAG = new RGB(249, 255, 199);
-
-	private static final RGB OUTER_ANNOTATED = new RGB(104, 78, 0);
-
-	private static final RGB INNER_ANNOTATED = new RGB(255, 239, 192);
-
-	private static final RGB OUTER_REMOTE = new RGB(80, 80, 80);
-
-	private static final RGB INNER_REMOTE = new RGB(225, 225, 225);
-
-	private static final RGB OUTER_OTHER = new RGB(30, 30, 30);
-
-	private static final RGB INNER_OTHER = new RGB(250, 250, 250);
+	// private static final RGB OUTER_HEAD = new RGB(0, 128, 0);
+	//
+	// private static final RGB INNER_HEAD = new RGB(188, 220, 188);
+	//
+	// private static final RGB OUTER_TAG = new RGB(121, 120, 13);
+	//
+	// private static final RGB INNER_TAG = new RGB(249, 255, 199);
+	//
+	// private static final RGB OUTER_ANNOTATED = new RGB(104, 78, 0);
+	//
+	// private static final RGB INNER_ANNOTATED = new RGB(255, 239, 192);
+	//
+	// private static final RGB OUTER_REMOTE = new RGB(80, 80, 80);
+	//
+	// private static final RGB INNER_REMOTE = new RGB(225, 225, 225);
+	//
+	// private static final RGB OUTER_OTHER = new RGB(30, 30, 30);
+	//
+	// private static final RGB INNER_OTHER = new RGB(250, 250, 250);
 
 	private static final int MAX_LABEL_LENGTH = 15;
-
-	private final Color LOCAL_HISTORY_BORDER_COLOR;
-
-	private final Color LOCAL_HISTORY_INNER_COLOR;
 
 	private final Color sys_black;
 
@@ -90,8 +86,6 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 		sys_white = d.getSystemColor(SWT.COLOR_WHITE);
 		commitDotFill = new Color(d, new RGB(220, 220, 220));
 		commitDotOutline = new Color(d, new RGB(110, 110, 110));
-		LOCAL_HISTORY_BORDER_COLOR = sys_black;
-		LOCAL_HISTORY_INNER_COLOR = sys_white;
 	}
 
 	void dispose() {

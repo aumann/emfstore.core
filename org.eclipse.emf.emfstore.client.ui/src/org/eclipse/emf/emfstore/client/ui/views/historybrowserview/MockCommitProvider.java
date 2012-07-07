@@ -145,10 +145,10 @@ public class MockCommitProvider implements ICommitProvider {
 	private PlotLane nextFreeLane() {
 		final PlotLane p = new PlotLane();
 		if (freePositions.isEmpty()) {
-			p.position = positionsAllocated++;
+			p.setPosition(positionsAllocated++);
 		} else {
 			final Integer min = freePositions.first();
-			p.position = min.intValue();
+			p.setPosition(min.intValue());
 			freePositions.remove(min);
 		}
 		return p;
@@ -183,7 +183,7 @@ public class MockCommitProvider implements ICommitProvider {
 				newPos = positionsAllocated++;
 			freePositions.add(Integer.valueOf(commit.lane.getPosition()));
 			activeLanes.remove(commit.lane);
-			commit.lane.position = newPos;
+			commit.lane.setPosition(newPos);
 			activeLanes.add(commit.lane);
 		}
 	}
