@@ -44,6 +44,9 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 		Display.getDefault().getSystemColor(SWT.COLOR_GREEN), Display.getDefault().getSystemColor(SWT.COLOR_RED) };
 	private static final Color[] COLORS_LIGHT = new Color[COLORS.length];
 
+	private static final Color[] COLORS_TRUNK = new Color[] { Display.getDefault().getSystemColor(SWT.COLOR_BLACK),
+		createLightColor(Display.getDefault().getSystemColor(SWT.COLOR_GRAY)) };
+
 	static {
 		setUpLightColors();
 	}
@@ -86,7 +89,11 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 	private static Color createLightColor(Color color) {
 		float[] hsbColor = java.awt.Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
 		hsbColor[1] = hsbColor[1] * 0.2f;
-		hsbColor[2] = hsbColor[2];
+		hsbColor[2] = hsbColor[2] * 1.1f;
+
+		if (hsbColor[2] > 1f) {
+			hsbColor[2] = 1f;
+		}
 
 		int lightColorRGB = java.awt.Color.HSBtoRGB(hsbColor[0], hsbColor[1], hsbColor[2]);
 
@@ -99,10 +106,9 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 	}
 
 	private Color[] getColorsForBranch(String branch) {
-		if ("trunk".equals(branch)) {
-			Color[] colors = new Color[] { Display.getDefault().getSystemColor(SWT.COLOR_BLACK),
-				Display.getDefault().getSystemColor(SWT.COLOR_GRAY) };
-			return colors;
+		String trunkIdentifier = "trunk";
+		if (trunkIdentifier.equals(branch)) {
+			return COLORS_TRUNK;
 		}
 
 		Integer colorIndex = colorForBranch.get(branch);
@@ -128,7 +134,6 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 			if (mergedFrom != null && mergedFrom.size() >= 1) {
 				for (PrimaryVersionSpec mergeParent : mergedFrom) {
 					parents.add(commits[identifierOffset - mergeParent.getIdentifier()]);
-					System.out.println(identifierOffset - mergeParent.getIdentifier() + " is parent of " + i);
 				}
 				commits[i].setParents(parents);
 
@@ -137,37 +142,12 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 			PrimaryVersionSpec parentSpec = currInfo.getPreviousSpec();
 			if (parentSpec != null) {
 				parents.add(commits[identifierOffset - parentSpec.getIdentifier()]);
-				System.out.println(identifierOffset - parentSpec.getIdentifier() + " is parent of " + i);
 			}
 			if (!parents.isEmpty()) {
 				commits[i].setParents(parents);
 			}
 		}
 	}
-
-	// private void setupParents(List<HistoryInfo> historyInfos) {
-	// for (int i = 0; i < historyInfos.size(); i++) {
-	// HistoryInfo info = historyInfos.get(i);
-	// PlotCommit commit = (PlotCommit) commits[i];
-	// // TODO is this really the parent relation?
-	// List<PrimaryVersionSpec> versionSpecs = info.getMergedFrom();
-	// if (versionSpecs != null && versionSpecs.size() > 1) {
-	// // this is a merge
-	// ArrayList<IMockCommit> parents = new ArrayList<IMockCommit>(versionSpecs.size());
-	// for (int j = 0; j < versionSpecs.size(); j++) {
-	// parents.set(j, commitForHistory.get(versionSpecs.get(j).eContainer()));
-	// }
-	// commit.setParents(parents);
-	// } else {
-	// ArrayList<IMockCommit> parents = new ArrayList<IMockCommit>();
-	// IMockCommit c = commitForHistory.get(info);
-	// if (c != null) {
-	// parents.add(c);
-	// commit.setParents(parents);
-	// }
-	// }
-	// }
-	// }
 
 	private void initCommit(int index, IPlotCommit currCommit) {
 		setupChildren(currCommit);
@@ -180,11 +160,9 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 		if (nChildren == 1 && currCommit.getChild(0).getParentCount() < 2) {
 			// Only one child, child has only us as their parent.
 			// Stay in the same lane as the child.
-			//
 			final IPlotCommit c = currCommit.getChild(0);
 			if (c.getLane() == null) {
 				// Hmmph. This child must be the first along this lane.
-				//
 				PlotLane lane = nextFreeLane();
 				lane.setSaturatedColor(c.getColor());
 				lane.setLightColor(c.getLightColor());
@@ -204,7 +182,6 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 		} else {
 			// More than one child, or our child is a merge.
 			// Use a different lane.
-			//
 
 			// Process all our children. Especially important when there is more
 			// than one child (e.g. a commit is processed where other branches
