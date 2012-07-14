@@ -22,7 +22,6 @@ public class SampleAPITest extends CoreServerTest {
 			@Override
 			protected void doRun() {
 				ps.getProject().addModelElement(createTestElement("Horst"));
-
 				try {
 					ps.shareProject();
 				} catch (EmfStoreException e) {

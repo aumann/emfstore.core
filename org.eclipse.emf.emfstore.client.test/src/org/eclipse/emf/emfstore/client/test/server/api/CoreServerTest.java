@@ -49,6 +49,14 @@ public abstract class CoreServerTest extends WorkspaceTest {
 		return connectionMock;
 	}
 
+	public EmfStoreImpl getEmfStore() {
+		return emfStore;
+	}
+
+	public ConnectionMock getConnectionMock() {
+		return connectionMock;
+	}
+
 	public ServerSpace getServerSpace() {
 		return serverSpace;
 	}

@@ -14,6 +14,7 @@ import java.util.Date;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.emfstore.client.model.ProjectSpace;
+import org.eclipse.emf.emfstore.client.model.util.WorkspaceUtil;
 import org.eclipse.emf.emfstore.client.ui.handlers.AbstractEMFStoreUIController;
 import org.eclipse.emf.emfstore.client.ui.views.historybrowserview.HistoryBrowserView;
 import org.eclipse.emf.emfstore.common.model.util.ModelUtil;
@@ -23,6 +24,7 @@ import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.TagVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.VersioningFactory;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IWorkbenchPage;
@@ -65,8 +67,14 @@ public class UIAddTagController extends AbstractEMFStoreUIController<Void> {
 		return (HistoryBrowserView) activePage.getActivePart();
 	}
 
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.common.MonitoredEMFStoreAction#doRun(org.eclipse.core.runtime.IProgressMonitor)
+	 */
 	@Override
-	public Void doRun(IProgressMonitor pm) throws EmfStoreException {
+	public Void doRun(IProgressMonitor monitor) throws EmfStoreException {
 
 		HistoryBrowserView historyBrowserView = getHistoryBrowserViewFromActivePart();
 
@@ -91,7 +99,13 @@ public class UIAddTagController extends AbstractEMFStoreUIController<Void> {
 			TagVersionSpec tag = VersioningFactory.eINSTANCE.createTagVersionSpec();
 			tag.setName(tagName);
 
-			projectSpace.addTag(versionSpec, tag);
+			try {
+				projectSpace.addTag(versionSpec, tag);
+			} catch (EmfStoreException e) {
+				WorkspaceUtil.logException(e.getMessage(), e);
+				MessageDialog.openError(getShell(), "Error", "Could not create tag. Reason: " + e.getMessage());
+				return null;
+			}
 			// also add tag to the selected history info
 			historyInfo.getTagSpecs().add(tag);
 		}

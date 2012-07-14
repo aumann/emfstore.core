@@ -63,4 +63,11 @@ public class Versions {
 		}
 		return false;
 	}
+
+	public static TagVersionSpec TAG(String tag, String branch) {
+		TagVersionSpec tagSpec = VersioningFactory.eINSTANCE.createTagVersionSpec();
+		tagSpec.setBranch(branch);
+		tagSpec.setName(tag);
+		return tagSpec;
+	}
 }

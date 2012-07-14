@@ -10,11 +10,13 @@
  ******************************************************************************/
 package org.eclipse.emf.emfstore.client.ui.controller;
 
+import java.util.concurrent.Callable;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.emfstore.client.model.ServerInfo;
 import org.eclipse.emf.emfstore.client.model.Usersession;
 import org.eclipse.emf.emfstore.client.model.WorkspaceManager;
-import org.eclipse.emf.emfstore.client.ui.common.RunInUIThreadWithResult;
+import org.eclipse.emf.emfstore.client.ui.common.RunInUI;
 import org.eclipse.emf.emfstore.client.ui.handlers.AbstractEMFStoreUIController;
 import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
 import org.eclipse.emf.emfstore.server.model.ProjectId;
@@ -101,34 +103,41 @@ public class UIDeleteRemoteProjectController extends AbstractEMFStoreUIControlle
 	 * 
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.handlers.AbstractEMFStoreUIController#doRun(org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.emf.emfstore.client.ui.common.MonitoredEMFStoreAction#doRun(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Override
 	public Void doRun(IProgressMonitor progressMonitor) throws EmfStoreException {
-		if (projectInfo != null) {
-			deleteRemoteProject(projectInfo, progressMonitor);
-			return null;
-		} else if (session != null) {
-			deleteRemoteProject(session, projectId, deleteFiles);
-			return null;
+
+		try {
+
+			if (projectInfo != null) {
+				deleteRemoteProject(projectInfo, progressMonitor);
+				return null;
+			} else if (session != null) {
+				deleteRemoteProject(session, projectId, deleteFiles);
+				return null;
+			}
+
+			deleteRemoteProject(serverInfo, projectId, deleteFiles, progressMonitor);
+		} catch (EmfStoreException e) {
+			MessageDialog.openError(getShell(), "Delete project failed.",
+				"Deletion of project " + projectInfo.getName() + " failed: " + e.getMessage());
 		}
 
-		deleteRemoteProject(serverInfo, projectId, deleteFiles, progressMonitor);
 		return null;
 	}
 
 	private void deleteRemoteProject(final ProjectInfo projectInfo, IProgressMonitor monitor) throws EmfStoreException {
-		Boolean[] ret = new RunInUIThreadWithResult<Boolean[]>(getShell()) {
 
-			@Override
-			public Boolean[] doRun(Shell shell) {
+		Boolean[] ret = RunInUI.runWithResult(new Callable<Boolean[]>() {
+			public Boolean[] call() throws Exception {
 				MessageDialogWithToggle dialog = MessageDialogWithToggle.openOkCancelConfirm(getShell(), "Delete "
 					+ projectInfo.getName(),
 					String.format("Are you sure you want to delete \'%s\'", projectInfo.getName()),
 					"Delete project contents (cannot be undone)", false, null, null);
 				return new Boolean[] { dialog.getReturnCode() == MessageDialog.OK, dialog.getToggleState() };
 			}
-		}.execute();
+		});
 
 		boolean shouldDelete = ret[0];
 		boolean deleteFiles = ret[1];

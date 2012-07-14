@@ -12,11 +12,13 @@ package org.eclipse.emf.emfstore.server.core;
 
 import java.util.List;
 
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.emfstore.common.model.EMFStoreProperty;
 import org.eclipse.emf.emfstore.common.model.Project;
 import org.eclipse.emf.emfstore.server.EmfStore;
 import org.eclipse.emf.emfstore.server.accesscontrol.AuthorizationControl;
 import org.eclipse.emf.emfstore.server.core.subinterfaces.EMFStorePropertiesSubInterfaceImpl;
+import org.eclipse.emf.emfstore.server.core.subinterfaces.EPackageSubInterfaceImpl;
 import org.eclipse.emf.emfstore.server.core.subinterfaces.FileTransferSubInterfaceImpl;
 import org.eclipse.emf.emfstore.server.core.subinterfaces.HistorySubInterfaceImpl;
 import org.eclipse.emf.emfstore.server.core.subinterfaces.ProjectPropertiesSubInterfaceImpl;
@@ -81,6 +83,7 @@ public class EmfStoreImpl extends AbstractEmfstoreInterface implements EmfStore 
 		addSubInterface(new FileTransferSubInterfaceImpl(this));
 		addSubInterface(new ProjectPropertiesSubInterfaceImpl(this));
 		addSubInterface(new EMFStorePropertiesSubInterfaceImpl(this));
+		addSubInterface(new EPackageSubInterfaceImpl(this));
 	}
 
 	/**
@@ -286,4 +289,15 @@ public class EmfStoreImpl extends AbstractEmfstoreInterface implements EmfStore 
 		return propertiesInterface.setProperties(properties, projectId);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public void registerEPackage(SessionId sessionId, EPackage ePackage) throws EmfStoreException {
+		sanityCheckObjects(sessionId, ePackage);
+		checkServerAdminAccess(sessionId);
+
+		EPackageSubInterfaceImpl ePackageSubInterface = getSubInterface(EPackageSubInterfaceImpl.class);
+
+		ePackageSubInterface.registerEPackage(ePackage);
+	}
 }

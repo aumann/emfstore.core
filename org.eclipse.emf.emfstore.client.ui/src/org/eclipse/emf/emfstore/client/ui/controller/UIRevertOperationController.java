@@ -41,6 +41,12 @@ public class UIRevertOperationController extends AbstractEMFStoreUIController<Vo
 		this.projectSpace = projectSpace;
 	}
 
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.common.MonitoredEMFStoreAction#doRun(org.eclipse.core.runtime.IProgressMonitor)
+	 */
 	@Override
 	public Void doRun(IProgressMonitor progressMonitor) throws EmfStoreException {
 
@@ -51,7 +57,7 @@ public class UIRevertOperationController extends AbstractEMFStoreUIController<Vo
 			progressMonitor.beginTask("Revert project...", 100);
 			progressMonitor.worked(10);
 			projectSpace.revert();
-			MessageDialog.openInformation(shell, "Revert", "Reverted project ");
+			MessageDialog.openInformation(getShell(), "Revert", "Reverted project ");
 		}
 
 		return null;

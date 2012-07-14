@@ -15,7 +15,6 @@ import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
 public abstract class UnknownEMFStoreWorkloadCommand<T> {
 
 	private static final int POLLING_INTERVAL = 500;
-	private static final int TIMEOUT_THRESHOLD = 600000; // 10 minutes
 	private final IProgressMonitor monitor;
 	private int worked;
 
@@ -34,7 +33,6 @@ public abstract class UnknownEMFStoreWorkloadCommand<T> {
 	}
 
 	public T execute() throws EmfStoreException {
-		int timeout = 0;
 
 		Future<T> future = SingletonHolder.executor.submit(new Callable<T>() {
 			public T call() throws Exception {
@@ -55,12 +53,11 @@ public abstract class UnknownEMFStoreWorkloadCommand<T> {
 				throw new EmfStoreException("Workload command got interrupted", e);
 			} catch (ExecutionException e) {
 				WorkspaceUtil.logException(e.getMessage(), e);
-				throw new EmfStoreException("Workload could not be executed.", e);
+				throw new EmfStoreException(e.getCause().getMessage());
 			} catch (TimeoutException e) {
 				// do nothing
 			}
 
-			timeout += POLLING_INTERVAL;
 			monitor.worked(1);
 			worked++;
 		}

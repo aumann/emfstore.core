@@ -31,7 +31,6 @@ import org.eclipse.ui.progress.IProgressService;
  */
 public abstract class MonitoredEMFStoreAction<T> {
 
-	private EmfStoreException exception;
 	private final boolean cancelable;
 	private T returnValue;
 	private final boolean fork;
@@ -53,13 +52,11 @@ public abstract class MonitoredEMFStoreAction<T> {
 	 * Executes the request using the {@link IProgressService} of Eclipse.
 	 * 
 	 * @return the return value as determined by {@link #doRun(IProgressMonitor)}
-	 * @throws EmfStoreException in case the {@link #doRun(IProgressMonitor)} throws an exception
 	 * 
 	 */
-	public final T execute() throws EmfStoreException {
+	public final T execute() {
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		IProgressService progressService = workbench.getProgressService();
-		exception = null;
 
 		try {
 			progressService.run(fork, cancelable, new IRunnableWithProgress() {
@@ -67,7 +64,7 @@ public abstract class MonitoredEMFStoreAction<T> {
 					try {
 						returnValue = doRun(monitor);
 					} catch (EmfStoreException e) {
-						exception = e;
+						handleException(e);
 					}
 				}
 			});
@@ -77,20 +74,39 @@ public abstract class MonitoredEMFStoreAction<T> {
 			WorkspaceUtil.logException("Error during execution of an EMFStore UI controller: " + e.getMessage(), e);
 		}
 
-		if (exception != null) {
-			throw exception;
-		}
-
 		return returnValue;
 	}
 
 	/**
-	 * The actual behavior that should be performed when the {@link #execute()} is called.
+	 * Generic exception handling method that is called in case {@link #doRun(IProgressMonitor)} throws an
+	 * {@link EmfStoreException}.<br/>
+	 * Clients may override this method if they want to treat all {@link EmfStoreException} equally. Otherwise
+	 * they are obliged to handle {@link EmfStoreException} in {@link #doRun(IProgressMonitor)}, if possible.
+	 * 
+	 * @param e
+	 *            the exception that has been thrown
+	 */
+	protected abstract void handleException(EmfStoreException e);
+
+	/**
+	 * The actual behavior that should be performed when the {@link #execute()} is called.<br/>
+	 * Must be implemented by clients.
 	 * 
 	 * @param monitor
 	 *            the {@link IProgressMonitor} that should be used by clients to update the status of their progress
 	 * @return an optional return value
-	 * @throws EmfStoreException in case an error occurs during execution of the request
+	 * 
+	 * @throws EmfStoreException
+	 *             in case an error occurs
 	 */
 	public abstract T doRun(IProgressMonitor monitor) throws EmfStoreException;
+
+	/**
+	 * Whether this action runs in its own thread.
+	 * 
+	 * @return true, if this action has been forked to run in its own thread, false otherwise
+	 */
+	public boolean isForked() {
+		return fork;
+	}
 }

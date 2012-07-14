@@ -9,10 +9,10 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import org.eclipse.emf.emfstore.client.model.Configuration;
 import org.eclipse.emf.emfstore.client.model.connectionmanager.xmlrpc.XmlRpcClientManager;
 import org.eclipse.emf.emfstore.client.model.connectionmanager.xmlrpc.XmlRpcConnectionManager;
 import org.eclipse.emf.emfstore.client.test.SetupHelper;
+import org.eclipse.emf.emfstore.common.CommonUtil;
 import org.eclipse.emf.emfstore.common.model.Project;
 import org.eclipse.emf.emfstore.server.ServerConfiguration;
 import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
@@ -20,6 +20,7 @@ import org.eclipse.emf.emfstore.server.exceptions.InvalidInputException;
 import org.eclipse.emf.emfstore.server.exceptions.UnknownSessionException;
 import org.eclipse.emf.emfstore.server.model.ProjectId;
 import org.eclipse.emf.emfstore.server.model.SessionId;
+import org.eclipse.emf.emfstore.server.model.versioning.BranchVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryQuery;
 import org.eclipse.emf.emfstore.server.model.versioning.LogMessage;
@@ -46,10 +47,7 @@ public class InvalidArgumentsTest extends ServerTests {
 	@BeforeClass
 	public static void setUpBeforeClass() throws EmfStoreException, IOException {
 		ServerConfiguration.setTesting(true);
-		Configuration.setTesting(true);
-
-		// delete all data before test start
-		SetupHelper.removeServerTestProfile();
+		CommonUtil.setTesting(true);
 
 		SetupHelper.addUserFileToServer(false);
 
@@ -127,7 +125,7 @@ public class InvalidArgumentsTest extends ServerTests {
 			testAllInvalidCombinations(getConnectionManager().getClass().getMethod(
 				"createVersion",
 				new Class[] { SessionId.class, ProjectId.class, PrimaryVersionSpec.class, ChangePackage.class,
-					LogMessage.class }));
+					BranchVersionSpec.class, PrimaryVersionSpec.class, LogMessage.class }));
 		} catch (SecurityException e) {
 			throw new EmfStoreException(e);
 		} catch (NoSuchMethodException e) {

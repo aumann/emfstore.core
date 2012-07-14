@@ -11,12 +11,16 @@
 
 package org.eclipse.emf.emfstore.client.ui.controller;
 
+import java.util.concurrent.Callable;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.emfstore.client.model.ProjectSpace;
 import org.eclipse.emf.emfstore.client.model.exceptions.LoginCanceledException;
 import org.eclipse.emf.emfstore.client.model.impl.ProjectSpaceImpl;
+import org.eclipse.emf.emfstore.client.ui.common.RunInUI;
 import org.eclipse.emf.emfstore.client.ui.handlers.AbstractEMFStoreUIController;
 import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 
 /**
@@ -43,13 +47,35 @@ public class UIShareProjectController extends AbstractEMFStoreUIController<Void>
 		this.projectSpace = projectSpace;
 	}
 
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.common.MonitoredEMFStoreAction#doRun(org.eclipse.core.runtime.IProgressMonitor)
+	 */
 	@Override
 	public Void doRun(final IProgressMonitor progressMonitor) throws EmfStoreException {
 		try {
 			((ProjectSpaceImpl) projectSpace).shareProject(null, progressMonitor);
+			RunInUI.run(new Callable<Void>() {
+				public Void call() throws Exception {
+					MessageDialog.openInformation(getShell(), "Share succeeded",
+						"The project has been successfully shared.");
+					return null;
+				}
+			});
 		} catch (LoginCanceledException e) {
 			// fail silently
+		} catch (final EmfStoreException e) {
+			RunInUI.run(new Callable<Void>() {
+				public Void call() throws Exception {
+					MessageDialog.openError(getShell(), "Share project failed",
+						"Share project failed: " + e.getMessage());
+					return null;
+				}
+			});
 		}
+
 		return null;
 	}
 }

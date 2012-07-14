@@ -16,6 +16,7 @@ package org.eclipse.emf.emfstore.server.connection.xmlrpc;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.emfstore.common.model.EMFStoreProperty;
 import org.eclipse.emf.emfstore.common.model.Project;
 import org.eclipse.emf.emfstore.server.EmfStore;
@@ -25,6 +26,7 @@ import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
 import org.eclipse.emf.emfstore.server.exceptions.InvalidVersionSpecException;
 import org.eclipse.emf.emfstore.server.filetransfer.FileChunk;
 import org.eclipse.emf.emfstore.server.filetransfer.FileTransferInformation;
+import org.eclipse.emf.emfstore.server.model.AuthenticationInformation;
 import org.eclipse.emf.emfstore.server.model.ClientVersionInfo;
 import org.eclipse.emf.emfstore.server.model.ProjectHistory;
 import org.eclipse.emf.emfstore.server.model.ProjectId;
@@ -61,7 +63,7 @@ public class XmlRpcEmfStoreImpl implements EmfStore, AuthenticationControl {
 	/**
 	 * {@inheritDoc}
 	 */
-	public SessionId logIn(String username, String password, ClientVersionInfo clientVersionInfo)
+	public AuthenticationInformation logIn(String username, String password, ClientVersionInfo clientVersionInfo)
 		throws AccessControlException {
 		return getAccessControl().logIn(username, password, clientVersionInfo);
 	}
@@ -235,4 +237,14 @@ public class XmlRpcEmfStoreImpl implements EmfStore, AuthenticationControl {
 		return getEmfStore().getEMFProperties(sessionId, projectId);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.server.EmfStore#registerEPackage(org.eclipse.emf.emfstore.server.model.SessionId,
+	 *      org.eclipse.emf.ecore.EPackage)
+	 */
+	public void registerEPackage(SessionId sessionId, EPackage pkg) throws EmfStoreException {
+		getEmfStore().registerEPackage(sessionId, pkg);
+
+	}
 }

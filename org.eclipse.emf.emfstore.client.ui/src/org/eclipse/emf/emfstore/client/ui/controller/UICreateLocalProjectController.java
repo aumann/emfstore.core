@@ -75,6 +75,12 @@ public class UICreateLocalProjectController extends AbstractEMFStoreUIController
 		return WorkspaceManager.getInstance().getCurrentWorkspace().createLocalProject(name, description);
 	}
 
+	/**
+	 * 
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.common.MonitoredEMFStoreAction#doRun(org.eclipse.core.runtime.IProgressMonitor)
+	 */
 	@Override
 	public ProjectSpace doRun(IProgressMonitor monitor) throws EmfStoreException {
 		if (name == null) {

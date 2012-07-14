@@ -10,13 +10,16 @@
  ******************************************************************************/
 package org.eclipse.emf.emfstore.client.ui.controller;
 
+import java.util.concurrent.Callable;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.emfstore.client.model.ProjectSpace;
 import org.eclipse.emf.emfstore.client.model.controller.callbacks.CommitCallback;
-import org.eclipse.emf.emfstore.client.ui.common.RunInUIThread;
-import org.eclipse.emf.emfstore.client.ui.common.RunInUIThreadWithResult;
+import org.eclipse.emf.emfstore.client.model.util.WorkspaceUtil;
+import org.eclipse.emf.emfstore.client.ui.common.RunInUI;
 import org.eclipse.emf.emfstore.client.ui.dialogs.CommitDialog;
 import org.eclipse.emf.emfstore.client.ui.handlers.AbstractEMFStoreUIController;
+import org.eclipse.emf.emfstore.server.exceptions.BaseVersionOutdatedException;
 import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
 import org.eclipse.emf.emfstore.server.model.versioning.ChangePackage;
 import org.eclipse.emf.emfstore.server.model.versioning.LogMessage;
@@ -62,13 +65,12 @@ public class UICommitProjectController extends AbstractEMFStoreUIController<Prim
 	 * @see org.eclipse.emf.emfstore.client.model.controller.callbacks.CommitCallback#noLocalChanges(org.eclipse.emf.emfstore.client.model.ProjectSpace)
 	 */
 	public void noLocalChanges(ProjectSpace projectSpace) {
-		new RunInUIThread(getShell()) {
-			@Override
-			public Void doRun(Shell shell) {
-				MessageDialog.openInformation(shell, null, "No local changes in your project. No need to commit.");
+		RunInUI.run(new Callable<Void>() {
+			public Void call() throws Exception {
+				MessageDialog.openInformation(getShell(), null, "No local changes in your project. No need to commit.");
 				return null;
 			}
-		}.execute();
+		});
 	}
 
 	/**
@@ -80,23 +82,22 @@ public class UICommitProjectController extends AbstractEMFStoreUIController<Prim
 	public boolean baseVersionOutOfDate(final ProjectSpace projectSpace) {
 
 		final String message = "Your project is outdated, you need to update before commit. Do you want to update now?";
+		return RunInUI.runWithResult(new Callable<Boolean>() {
 
-		return new RunInUIThreadWithResult<Boolean>(getShell()) {
-			@Override
-			public Boolean doRun(Shell shell) {
-				boolean shouldUpdate = MessageDialog.openConfirm(shell, "Confirmation", message);
-
+			public Boolean call() throws Exception {
+				boolean shouldUpdate = MessageDialog.openConfirm(getShell(), "Confirmation", message);
 				if (shouldUpdate) {
-					try {
-						new UIUpdateProjectController(getShell(), projectSpace).execute();
-					} catch (EmfStoreException e) {
-						handleException(e);
+					PrimaryVersionSpec baseVersion = UICommitProjectController.this.projectSpace.getBaseVersion();
+					PrimaryVersionSpec version = new UIUpdateProjectController(getShell(), projectSpace).execute();
+					if (version.equals(baseVersion)) {
+						return false;
 					}
-				}
 
+				}
 				return shouldUpdate;
 			}
-		}.execute();
+		});
+
 	}
 
 	/**
@@ -109,27 +110,25 @@ public class UICommitProjectController extends AbstractEMFStoreUIController<Prim
 	public boolean inspectChanges(ProjectSpace projectSpace, ChangePackage changePackage) {
 
 		if (changePackage.getOperations().isEmpty()) {
+			RunInUI.run(new Callable<Void>() {
 
-			new RunInUIThread(getShell()) {
-				@Override
-				public Void doRun(Shell shell) {
+				public Void call() throws Exception {
 					MessageDialog.openInformation(getShell(), "No local changes",
 						"Your local changes were mutually exclusive.\n" + "There are no changes pending for commit.");
 					return null;
 				}
-			}.execute();
+			});
 
 			return false;
 		}
 
 		final CommitDialog commitDialog = new CommitDialog(getShell(), changePackage, projectSpace);
 
-		dialogReturnValue = new RunInUIThreadWithResult<Integer>(getShell()) {
-			@Override
-			public Integer doRun(Shell shell) {
+		dialogReturnValue = RunInUI.runWithResult(new Callable<Integer>() {
+			public Integer call() throws Exception {
 				return commitDialog.open();
 			}
-		}.execute();
+		});
 
 		if (dialogReturnValue == Dialog.OK) {
 			changePackage.getLogMessage().setMessage(commitDialog.getLogText());
@@ -143,12 +142,27 @@ public class UICommitProjectController extends AbstractEMFStoreUIController<Prim
 	 * 
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.handlers.AbstractEMFStoreUIController#doRun(org.eclipse.core.runtime.IProgressMonitor)
+	 * @see org.eclipse.emf.emfstore.client.ui.common.MonitoredEMFStoreAction#doRun(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Override
 	public PrimaryVersionSpec doRun(final IProgressMonitor progressMonitor) throws EmfStoreException {
-		PrimaryVersionSpec version = projectSpace.commit(logMessage, UICommitProjectController.this, progressMonitor);
+		PrimaryVersionSpec version;
+		try {
+			version = projectSpace.commit(logMessage, UICommitProjectController.this, progressMonitor);
+			return version;
+		} catch (BaseVersionOutdatedException e) {
+			// project is out of date and user canceled update
+			// ignore
+		} catch (final EmfStoreException e) {
+			WorkspaceUtil.logException(e.getMessage(), e);
+			RunInUI.run(new Callable<Void>() {
+				public Void call() throws Exception {
+					MessageDialog.openError(getShell(), "Commit failed", "Commit failed: " + e.getMessage());
+					return null;
+				}
+			});
+		}
 
-		return version;
+		return null;
 	}
 }
