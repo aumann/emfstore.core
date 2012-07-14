@@ -355,8 +355,8 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 			isCommitItem = false;
 			currItem = currItem.getParentItem();
 			if (currItem == null) {
-				// no history info in parent hierarchy, do not draw
-				// happens e.g. if the user deactivates showing the commits
+				// no history info in parent hierarchy, do not draw.
+				// Happens e.g. if the user deactivates showing the commits
 				return;
 			}
 			data = currItem.getData();
@@ -671,8 +671,9 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		int temp = end - startOffset;
 		int start = (temp > 0 ? temp : 0);
 
-		PrimaryVersionSpec source = VersioningFactory.eINSTANCE.createPrimaryVersionSpec();
-		source.setIdentifier(start);
+		Versions.PRIMARY(projectSpace.getBaseVersion(), start);
+
+		PrimaryVersionSpec source = Versions.PRIMARY(start);
 		PrimaryVersionSpec target = VersioningFactory.eINSTANCE.createPrimaryVersionSpec();
 		target.setIdentifier(end);
 		query.setSource(source);
