@@ -34,7 +34,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
+package org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph;
 
 import java.io.Serializable;
 

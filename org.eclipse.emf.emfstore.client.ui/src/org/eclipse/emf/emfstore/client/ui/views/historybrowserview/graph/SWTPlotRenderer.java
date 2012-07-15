@@ -8,7 +8,7 @@
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  *******************************************************************************/
-package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
+package org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +25,7 @@ import org.eclipse.swt.widgets.Event;
 /**
  * A renderer for IPlotCommits able to draw these commits into a table or tree cell.
  */
-class SWTPlotRenderer extends AbstractPlotRenderer {
+public class SWTPlotRenderer extends AbstractPlotRenderer {
 
 	// The colors following are used for labels in the EGit renderer and might prove useful in the future.
 
@@ -82,7 +82,7 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 	 * 
 	 * @param d The display for the renderer.
 	 */
-	SWTPlotRenderer(final Display d) {
+	public SWTPlotRenderer(final Display d) {
 		sysColorBlack = d.getSystemColor(SWT.COLOR_BLACK);
 		sysColorGray = d.getSystemColor(SWT.COLOR_GRAY);
 		sysColorWhite = d.getSystemColor(SWT.COLOR_WHITE);
@@ -104,7 +104,7 @@ class SWTPlotRenderer extends AbstractPlotRenderer {
 	 * @param event The event triggering the painting.
 	 * @param representer The commit to paint.
 	 */
-	void paint(final Event event, IPlotCommit representer) {
+	public void paint(final Event event, IPlotCommit representer) {
 		g = event.gc;
 
 		if (this.enableAntialias) {

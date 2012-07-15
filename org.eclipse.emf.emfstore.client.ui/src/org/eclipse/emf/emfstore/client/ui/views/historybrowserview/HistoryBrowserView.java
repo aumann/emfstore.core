@@ -29,6 +29,11 @@ import org.eclipse.emf.emfstore.client.ui.Activator;
 import org.eclipse.emf.emfstore.client.ui.dialogs.EMFStoreMessageDialog;
 import org.eclipse.emf.emfstore.client.ui.views.changes.ChangePackageVisualizationHelper;
 import org.eclipse.emf.emfstore.client.ui.views.emfstorebrowser.provider.ESBrowserLabelProvider;
+import org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit;
+import org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommitProvider;
+import org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.PlotCommitProvider;
+import org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.PlotLane;
+import org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.SWTPlotRenderer;
 import org.eclipse.emf.emfstore.client.ui.views.scm.SCMContentProvider;
 import org.eclipse.emf.emfstore.client.ui.views.scm.SCMLabelProvider;
 import org.eclipse.emf.emfstore.common.model.ModelElementId;
@@ -101,6 +106,12 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 	private final class TreeViewerWithModelElementSelectionProvider extends TreeViewer {
 		private TreeViewerWithModelElementSelectionProvider(Composite parent, int style) {
 			super(parent, style);
+		}
+
+		@Override
+		protected Widget internalExpand(Object elementOrPath, boolean expand) {
+			// TODO Auto-generated method stub
+			return super.internalExpand(elementOrPath, expand);
 		}
 
 		/**
@@ -205,7 +216,9 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 
 	private TreeViewerColumn changesColumn;
 
-	private TreeViewerColumn logColumn;
+	private TreeViewerColumn commitInfoColumn;
+
+	private TreeViewerColumn messageColumn;
 
 	private LogMessageColumnLabelProvider logLabelProvider;
 
@@ -308,11 +321,11 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 
 		changesColumn = new TreeViewerColumn(viewer, SWT.NONE);
 		changesColumn.getColumn().setText("Changes");
-		changesColumn.getColumn().setWidth(400);
+		changesColumn.getColumn().setWidth(200);
 
 		graphColumn = new TreeViewerColumn(viewer, SWT.NONE);
 		graphColumn.getColumn().setText("Branches");
-		graphColumn.getColumn().setWidth(200);
+		graphColumn.getColumn().setWidth(150);
 		viewer.getTree().addListener(SWT.PaintItem, new Listener() {
 
 			public void handleEvent(Event event) {
@@ -321,9 +334,13 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 			}
 		});
 
-		logColumn = new TreeViewerColumn(viewer, SWT.NONE);
-		logColumn.getColumn().setText("Commit information");
-		logColumn.getColumn().setWidth(300);
+		messageColumn = new TreeViewerColumn(viewer, SWT.NONE);
+		messageColumn.getColumn().setText("Commit message");
+		messageColumn.getColumn().setWidth(250);
+
+		commitInfoColumn = new TreeViewerColumn(viewer, SWT.NONE);
+		commitInfoColumn.getColumn().setText("Author and date");
+		commitInfoColumn.getColumn().setWidth(200);
 
 		renderer = new SWTPlotRenderer(parent.getDisplay());
 
@@ -612,7 +629,7 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 	 *            the input model element
 	 */
 	public void setInput(ProjectSpace projectSpace, EObject me) {
-		// noProjectHint.dispose();
+		noProjectHint.dispose();
 		this.parent.layout();
 		this.projectSpace = projectSpace;
 		modelElement = me;
@@ -635,11 +652,13 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 
 		graphColumn.setLabelProvider(new BranchGraphLabelProvider());
 
-		labelProvider = new SCMLabelProvider(project);
+		labelProvider = new HistorySCMLabelProvider(project);
 		changesColumn.setLabelProvider(labelProvider);
 
 		logLabelProvider = new LogMessageColumnLabelProvider(project);
-		logColumn.setLabelProvider(logLabelProvider);
+		messageColumn.setLabelProvider(logLabelProvider);
+
+		commitInfoColumn.setLabelProvider(new CommitInfoColumnLabelProvider());
 
 		refresh();
 	}

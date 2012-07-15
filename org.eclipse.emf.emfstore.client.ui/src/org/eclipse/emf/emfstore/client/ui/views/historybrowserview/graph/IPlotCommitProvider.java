@@ -8,7 +8,7 @@
  * 
  * Contributors:
  ******************************************************************************/
-package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
+package org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph;
 
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
 

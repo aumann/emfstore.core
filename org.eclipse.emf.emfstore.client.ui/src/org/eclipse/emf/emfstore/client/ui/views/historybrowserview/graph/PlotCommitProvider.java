@@ -8,7 +8,7 @@
  * 
  * Contributors:
  ******************************************************************************/
-package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
+package org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -305,7 +305,7 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommitProvider#getCommitFor(org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo,
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommitProvider#getCommitFor(org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo,
 	 *      boolean)
 	 */
 	public IPlotCommit getCommitFor(HistoryInfo info, boolean onlyAChildRequest) {

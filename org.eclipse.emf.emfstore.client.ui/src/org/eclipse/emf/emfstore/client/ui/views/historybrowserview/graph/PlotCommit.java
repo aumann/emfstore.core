@@ -8,7 +8,7 @@
  * 
  * Contributors:
  ******************************************************************************/
-package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
+package org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +65,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#setLane(org.eclipse.emf.emfstore.client.ui.views.historybrowserview.PlotLane)
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#setLane(org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.PlotLane)
 	 */
 	public void setLane(PlotLane lane) {
 		this.lane = lane;
@@ -74,7 +74,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getLane()
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#getLane()
 	 */
 	public PlotLane getLane() {
 		return lane;
@@ -83,7 +83,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#addPassingLane(org.eclipse.emf.emfstore.client.ui.views.historybrowserview.PlotLane)
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#addPassingLane(org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.PlotLane)
 	 */
 	public void addPassingLane(PlotLane c) {
 		final int cnt = passingLanes.length;
@@ -102,7 +102,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getPassingLanes()
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#getPassingLanes()
 	 */
 	public PlotLane[] getPassingLanes() {
 		return passingLanes;
@@ -111,7 +111,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#setParents(java.util.List)
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#setParents(java.util.List)
 	 */
 	public void setParents(List<IPlotCommit> parents) {
 		this.parents = parents;
@@ -120,7 +120,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getParentCount()
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#getParentCount()
 	 */
 	public int getParentCount() {
 		return parents.size();
@@ -129,7 +129,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getParent(int)
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#getParent(int)
 	 */
 	public IPlotCommit getParent(int i) {
 		return parents.get(i);
@@ -138,7 +138,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#addChild(org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit)
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#addChild(org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit)
 	 */
 	public void addChild(IPlotCommit child) {
 		children.add(child);
@@ -147,7 +147,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getChild(int)
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#getChild(int)
 	 */
 	public IPlotCommit getChild(int child) {
 		return children.get(child);
@@ -156,7 +156,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getChildCount()
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#getChildCount()
 	 */
 	public int getChildCount() {
 		return children.size();
@@ -165,7 +165,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#isChild(org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit)
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#isChild(org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit)
 	 */
 	public boolean isChild(IPlotCommit commit) {
 		for (IPlotCommit mc : children) {
@@ -179,7 +179,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#setIsRealCommit(boolean)
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#setIsRealCommit(boolean)
 	 */
 	public void setIsRealCommit(boolean isReal) {
 		isRealCommit = isReal;
@@ -188,7 +188,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#isRealCommit()
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#isRealCommit()
 	 */
 	public boolean isRealCommit() {
 		return isRealCommit;
@@ -197,7 +197,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getBranch()
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#getBranch()
 	 */
 	public String getBranch() {
 		return branchName;
@@ -206,7 +206,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getId()
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#getId()
 	 */
 	public String getId() {
 		return idString;
@@ -215,7 +215,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#dispose()
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#dispose()
 	 */
 	public void dispose() {
 		if (widget != null) {
@@ -226,7 +226,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#isLocalHistoryOnly()
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#isLocalHistoryOnly()
 	 */
 	public boolean isLocalHistoryOnly() {
 		return localHistoryOnly;
@@ -235,7 +235,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#setColor(org.eclipse.swt.graphics.Color)
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#setColor(org.eclipse.swt.graphics.Color)
 	 */
 	public void setColor(Color color) {
 		this.color = color;
@@ -245,7 +245,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getColor()
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#getColor()
 	 */
 	public Color getColor() {
 		return color;
@@ -254,7 +254,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#setLightColor(org.eclipse.swt.graphics.Color)
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#setLightColor(org.eclipse.swt.graphics.Color)
 	 */
 	public void setLightColor(Color color) {
 		this.lightColor = color;
@@ -263,7 +263,7 @@ public class PlotCommit implements IPlotCommit {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.IPlotCommit#getLightColor()
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#getLightColor()
 	 */
 	public Color getLightColor() {
 		return lightColor;
