@@ -264,7 +264,7 @@ public class SWTPlotRenderer extends AbstractPlotRenderer {
 		// if (isHead)
 		// g.setFont(oldFont);
 
-		labelCoordinates.put(commit.getId(), new Point(x, x + textsz.x));
+		labelCoordinates.put(String.valueOf(commit.getId()), new Point(x, x + textsz.x));
 		return 10 + textsz.x;
 	}
 

@@ -37,8 +37,10 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 	private final HashSet<PlotLane> activeLanes;
 	private int positionsAllocated;
 	private Map<HistoryInfo, IPlotCommit> commitForHistory = new HashMap<HistoryInfo, IPlotCommit>();
+	private Map<Integer, IPlotCommit> commitForID;
 	private int nextBranchColorIndex;
 	private Map<String, Integer> colorForBranch = new HashMap<String, Integer>();
+
 	private static List<Color> createdSaturatedColors = new LinkedList<Color>();
 	private static List<Color> createdLightColors = new LinkedList<Color>();
 	private static Color[] saturatedColors;
@@ -74,10 +76,19 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 			commits[i].setLightColor(branchColors[1]);
 		}
 
+		setupCommitIdLookUp();
+
 		setupParents(historyInfo);
 
 		for (int i = 0; i < commits.length; i++) {
 			initCommit(i, commits[i]);
+		}
+	}
+
+	private void setupCommitIdLookUp() {
+		commitForID = new HashMap<Integer, IPlotCommit>();
+		for (IPlotCommit commit : commits) {
+			commitForID.put(Integer.valueOf(commit.getId()), commit);
 		}
 	}
 
@@ -151,7 +162,6 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 	}
 
 	private void setupParents(List<HistoryInfo> historyInfos) {
-		int identifierOffset = historyInfos.size() - 1;
 		for (int i = 0; i < historyInfos.size(); i++) {
 			HistoryInfo currInfo = historyInfos.get(i);
 
@@ -160,15 +170,17 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 			ArrayList<IPlotCommit> parents = new ArrayList<IPlotCommit>();
 			if (mergedFrom != null && mergedFrom.size() >= 1) {
 				for (PrimaryVersionSpec mergeParent : mergedFrom) {
-					parents.add(commits[identifierOffset - mergeParent.getIdentifier()]);
+					if (commitForID.containsKey(mergeParent.getIdentifier())) {
+						parents.add(commitForID.get(mergeParent.getIdentifier()));
+					}
 				}
 				commits[i].setParents(parents);
 
 			}
 			// we only have one parent or none
 			PrimaryVersionSpec parentSpec = currInfo.getPreviousSpec();
-			if (parentSpec != null) {
-				parents.add(commits[identifierOffset - parentSpec.getIdentifier()]);
+			if (parentSpec != null && commitForID.containsKey(parentSpec.getIdentifier())) {
+				parents.add(commitForID.get(parentSpec.getIdentifier()));
 			}
 			if (!parents.isEmpty()) {
 				commits[i].setParents(parents);

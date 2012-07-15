@@ -122,7 +122,7 @@ public interface IPlotCommit {
 	/**
 	 * @return The unique identifier of this commit, usually a number.
 	 */
-	String getId();
+	int getId();
 
 	/**
 	 * Disposes this commit and all aquired resources.

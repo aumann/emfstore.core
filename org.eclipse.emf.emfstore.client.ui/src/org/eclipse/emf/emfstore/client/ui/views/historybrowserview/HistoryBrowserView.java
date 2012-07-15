@@ -665,9 +665,9 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 	}
 
 	// TODO BRANCH work in progress
-	private HistoryQuery getQuery(int end) throws EmfStoreException {
+	private HistoryQuery getQuery(int end) {
 
-		boolean allVersions = false;
+		boolean allVersions = true;
 		RangeQuery query = HistoryQueryBuilder.rangeQuery(projectSpace.getBaseVersion(), 5, 10, allVersions, false,
 			false, true);
 

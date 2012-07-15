@@ -30,7 +30,7 @@ public class PlotCommit implements IPlotCommit {
 	private Widget widget;
 	private boolean isRealCommit;
 	private String branchName;
-	private String idString;
+	private int id;
 	private boolean localHistoryOnly;
 	private Color color;
 	private Color lightColor;
@@ -54,10 +54,10 @@ public class PlotCommit implements IPlotCommit {
 			this.branchName = "local";
 		} else if (historyInfo.getPrimerySpec() != null) {
 			this.branchName = historyInfo.getPrimerySpec().getBranch();
-			this.idString = String.valueOf(historyInfo.getPrimerySpec().getIdentifier());
+			this.id = historyInfo.getPrimerySpec().getIdentifier();
 		} else {
 			this.branchName = "Strange";
-			this.idString = "Strange ID";
+			this.id = -666;
 			localHistoryOnly = true;
 		}
 	}
@@ -208,8 +208,8 @@ public class PlotCommit implements IPlotCommit {
 	 * 
 	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommit#getId()
 	 */
-	public String getId() {
-		return idString;
+	public int getId() {
+		return id;
 	}
 
 	/**
