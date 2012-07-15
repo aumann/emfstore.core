@@ -679,8 +679,7 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 			currentEnd = headVersion;// -1;
 		} else {
 			currentEnd = end;
-			PrimaryVersionSpec tempVersionSpec = VersioningFactory.eINSTANCE.createPrimaryVersionSpec();
-			tempVersionSpec.setIdentifier(end);
+			PrimaryVersionSpec tempVersionSpec = Versions.PRIMARY(projectSpace.getBaseVersion(), end);
 			end = projectSpace.resolveVersionSpec(tempVersionSpec).getIdentifier();
 		}
 
