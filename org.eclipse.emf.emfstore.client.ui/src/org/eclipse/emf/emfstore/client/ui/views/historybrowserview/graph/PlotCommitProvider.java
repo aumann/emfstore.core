@@ -39,15 +39,17 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 	private Map<HistoryInfo, IPlotCommit> commitForHistory = new HashMap<HistoryInfo, IPlotCommit>();
 	private int nextBranchColorIndex;
 	private Map<String, Integer> colorForBranch = new HashMap<String, Integer>();
-	private static List<Color> createdColors = new LinkedList<Color>();
-	private static final Color[] COLORS = new Color[] { Display.getDefault().getSystemColor(SWT.COLOR_BLUE),
-		Display.getDefault().getSystemColor(SWT.COLOR_GREEN), Display.getDefault().getSystemColor(SWT.COLOR_RED) };
-	private static final Color[] COLORS_LIGHT = new Color[COLORS.length];
+	private static List<Color> createdSaturatedColors = new LinkedList<Color>();
+	private static List<Color> createdLightColors = new LinkedList<Color>();
+	private static Color[] saturatedColors;
+	private static Color[] lightColors;
 
 	private static final Color[] COLORS_TRUNK = new Color[] { Display.getDefault().getSystemColor(SWT.COLOR_BLACK),
 		createLightColor(Display.getDefault().getSystemColor(SWT.COLOR_GRAY)) };
 
 	static {
+		// if this should ever become non-static, make sure to dispose colors in created(Light/Saturated)Colors
+		setUpSaturatedColors();
 		setUpLightColors();
 	}
 
@@ -79,11 +81,36 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 		}
 	}
 
+	private static void setUpSaturatedColors() {
+		saturatedColors = new Color[8];
+		saturatedColors[0] = getSysColor(SWT.COLOR_BLUE);
+		saturatedColors[1] = getSysColor(SWT.COLOR_RED);
+		saturatedColors[2] = getSysColor(SWT.COLOR_GREEN);
+		saturatedColors[3] = getSysColor(SWT.COLOR_CYAN);
+		saturatedColors[4] = getSysColor(SWT.COLOR_YELLOW);
+
+		Color orange = new Color(Display.getDefault(), 255, 148, 0);
+		Color violet = new Color(Display.getDefault(), 128, 0, 128);
+		Color brown = new Color(Display.getDefault(), 148, 64, 0);
+		saturatedColors[5] = orange;
+		saturatedColors[6] = violet;
+		saturatedColors[7] = brown;
+
+		createdSaturatedColors.add(orange);
+		createdSaturatedColors.add(violet);
+		createdSaturatedColors.add(brown);
+	}
+
 	private static void setUpLightColors() {
-		for (int i = 0; i < COLORS.length; i++) {
-			COLORS_LIGHT[i] = createLightColor(COLORS[i]);
+		lightColors = new Color[saturatedColors.length];
+		for (int i = 0; i < saturatedColors.length; i++) {
+			lightColors[i] = createLightColor(saturatedColors[i]);
 		}
 
+	}
+
+	private static Color getSysColor(int color) {
+		return Display.getDefault().getSystemColor(color);
 	}
 
 	private static Color createLightColor(Color color) {
@@ -101,7 +128,7 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 
 		Color lightColorSWT = new Color(Display.getDefault(), lightColor.getRed(), lightColor.getGreen(),
 			lightColor.getBlue());
-		createdColors.add(lightColorSWT);
+		createdLightColors.add(lightColorSWT);
 		return lightColorSWT;
 	}
 
@@ -115,12 +142,12 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 		if (colorIndex == null) {
 			colorIndex = nextBranchColorIndex;
 			colorForBranch.put(branch, colorIndex);
-			nextBranchColorIndex = (nextBranchColorIndex + 1) % COLORS.length;
+			nextBranchColorIndex = (nextBranchColorIndex + 1) % saturatedColors.length;
 		}
-		Color[] colors = new Color[2];
-		colors[0] = COLORS[colorIndex];
-		colors[1] = COLORS_LIGHT[colorIndex];
-		return colors;
+		Color[] retColors = new Color[2];
+		retColors[0] = saturatedColors[colorIndex];
+		retColors[1] = lightColors[colorIndex];
+		return retColors;
 	}
 
 	private void setupParents(List<HistoryInfo> historyInfos) {
