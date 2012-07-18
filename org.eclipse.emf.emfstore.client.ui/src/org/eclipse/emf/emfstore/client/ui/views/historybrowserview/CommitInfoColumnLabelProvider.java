@@ -35,4 +35,9 @@ public class CommitInfoColumnLabelProvider extends ColumnLabelProvider {
 		}
 		return null;
 	}
+
+	@Override
+	public String getToolTipText(Object element) {
+		return getText(element);
+	}
 }

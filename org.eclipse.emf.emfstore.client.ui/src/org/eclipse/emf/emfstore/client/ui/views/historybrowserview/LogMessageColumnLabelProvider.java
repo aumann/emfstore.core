@@ -66,4 +66,9 @@ public class LogMessageColumnLabelProvider extends SCMLabelProvider {
 		return null;
 	}
 
+	@Override
+	public String getToolTipText(Object element) {
+		return getText(element);
+	}
+
 }

@@ -10,8 +10,6 @@
  ******************************************************************************/
 package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
 
-import java.text.SimpleDateFormat;
-
 import org.eclipse.emf.emfstore.client.model.WorkspaceManager;
 import org.eclipse.emf.emfstore.client.ui.views.scm.SCMLabelProvider;
 import org.eclipse.emf.emfstore.common.model.Project;
@@ -30,7 +28,6 @@ public class HistorySCMLabelProvider extends SCMLabelProvider {
 			return LOCAL_REVISION;
 		}
 
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd, HH:mm");
 		String baseVersion = "";
 		if (historyInfo.getPrimerySpec().getIdentifier() == WorkspaceManager.getProjectSpace(getProject())
 			.getBaseVersion().getIdentifier()) {
@@ -50,26 +47,12 @@ public class HistorySCMLabelProvider extends SCMLabelProvider {
 		builder.append(baseVersion);
 		builder.append("Version ");
 		builder.append(historyInfo.getPrimerySpec().getIdentifier());
-		// LogMessage logMessage = null;
-
-		// if (historyInfo.getLogMessage() != null) {
-		// logMessage = historyInfo.getLogMessage();
-		// } else if (historyInfo.getChangePackage() != null && historyInfo.getChangePackage().getLogMessage() != null)
-		// {
-		// logMessage = historyInfo.getChangePackage().getLogMessage();
-		// }
-		// if (logMessage != null) {
-		// builder.append(" [");
-		// builder.append(logMessage.getAuthor());
-		// Date clientDate = logMessage.getClientDate();
-		// if (clientDate != null) {
-		// builder.append(" @ ");
-		// builder.append(dateFormat.format(clientDate));
-		// }
-		// builder.append("] ");
-		// builder.append(logMessage.getMessage());
-		// }
 		return builder.toString();
+	}
+
+	@Override
+	public String getToolTipText(Object element) {
+		return getText(element);
 	}
 
 }
