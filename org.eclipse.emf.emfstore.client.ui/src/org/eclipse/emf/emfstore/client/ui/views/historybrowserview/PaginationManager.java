@@ -50,6 +50,8 @@ public class PaginationManager {
 		this.projectSpace = projectSpace;
 	}
 
+	// TODO: handle swapover correctly
+
 	/**
 	 * @return The history info objects to be displayed on the current page.
 	 * @throws EmfStoreException If an exception gets thrown contacting the server.
