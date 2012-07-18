@@ -48,6 +48,7 @@ import org.eclipse.emf.emfstore.server.model.versioning.RangeQuery;
 import org.eclipse.emf.emfstore.server.model.versioning.TagVersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.VersionSpec;
 import org.eclipse.emf.emfstore.server.model.versioning.VersioningFactory;
+import org.eclipse.emf.emfstore.server.model.versioning.Versions;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.AbstractOperation;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.CompositeOperation;
 import org.eclipse.emf.emfstore.server.model.versioning.operations.OperationId;
@@ -552,8 +553,17 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 
 	/**
 	 * Refreshes the view using the current end point.
+	 * 
+	 * @throws EmfStoreException
 	 */
 	public void refresh() {
+		int prevHead = headVersion;
+		try {
+			headVersion = projectSpace.resolveVersionSpec(Versions.HEAD_VERSION(projectSpace.getBaseVersion()))
+				.getIdentifier();
+		} catch (EmfStoreException e) {
+			headVersion = prevHead;
+		}
 		load(currentEnd);
 		viewer.setContentProvider(contentProvider);
 		List<HistoryInfo> historyInfos = getHistoryInfos();
@@ -667,9 +677,21 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 	// TODO BRANCH work in progress
 	private HistoryQuery getQuery(int end) {
 
+		int above, below;
+		above = (int) Math.ceil(startOffset * 1 / 5.0);
+		below = (int) Math.floor(startOffset * 4 / 5.0);
+		if (above + below > startOffset) {
+			below = startOffset - above; // always same amount of elements
+		}
+
 		boolean allVersions = true;
-		RangeQuery query = HistoryQueryBuilder.rangeQuery(projectSpace.getBaseVersion(), 5, 10, allVersions, false,
-			false, true);
+		PrimaryVersionSpec version;
+		if (end != -1) {
+			version = Versions.PRIMARY(projectSpace.getBaseVersion(), end);
+		} else {
+			version = projectSpace.getBaseVersion();
+		}
+		RangeQuery query = HistoryQueryBuilder.rangeQuery(version, above, below, allVersions, false, false, true);
 
 		// query.setIncludeChangePackage(true);
 		// if (modelElement != null && !(modelElement instanceof ProjectSpace)) {
