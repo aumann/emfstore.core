@@ -96,6 +96,7 @@ import org.eclipse.ui.part.ViewPart;
  * @author Hodaie
  * @author Wesendonk
  * @author Shterev
+ * @author Aumann
  */
 public class HistoryBrowserView extends ViewPart implements ProjectSpaceContainer {
 
@@ -183,6 +184,16 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 	}
 
 	private List<HistoryInfo> historyInfos;
+
+	/**
+	 * The version around which history queries are created. At initialization time this is the base version. It gets
+	 * change if the user clicks on 'show next x elements'
+	 */
+	private PrimaryVersionSpec currentCenterVersionShown;
+
+	private PrimaryVersionSpec oldestVersionShown;
+
+	private PrimaryVersionSpec newestVersionShown;
 
 	private ProjectSpace projectSpace;
 
@@ -686,8 +697,8 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 
 		boolean allVersions = true;
 		PrimaryVersionSpec version;
-		if (end != -1) {
-			version = Versions.PRIMARY(projectSpace.getBaseVersion(), end);
+		if (oldestVersionShown != null) {
+			version = oldestVersionShown;
 		} else {
 			version = projectSpace.getBaseVersion();
 		}

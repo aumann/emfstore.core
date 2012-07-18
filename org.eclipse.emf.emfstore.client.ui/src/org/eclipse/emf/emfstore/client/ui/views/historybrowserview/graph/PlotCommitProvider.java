@@ -27,6 +27,11 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Display;
 
 /**
+ * This class manages the creation of PlotCommits from HistoryInfos. See {@link IPlotCommitProvider} for
+ * interface details.
+ * 
+ * Major parts of graph lane logic taken from org.eclipse.jgit.revplot.PlotCommitList.
+ * 
  * @author Aumann, Faltermeier
  * 
  */

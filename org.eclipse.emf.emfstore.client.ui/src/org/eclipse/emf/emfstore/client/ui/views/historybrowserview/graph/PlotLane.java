@@ -1,5 +1,6 @@
 /*******************************************************************************
  * Copyright (C) 2008, Shawn O. Pearce <spearce@spearce.org>
+ * Copyright (C) 2012, Alexander Aumann <alexander.f.aumann@gmail.com>
  * and other copyright owners as documented in the project's IP log.
  * This program and the accompanying materials are made available
  * under the terms of the Eclipse Distribution License v1.0 which
@@ -45,7 +46,8 @@ import org.eclipse.ui.PlatformUI;
 /**
  * A line space within the graph.
  * <p>
- * Commits are strung onto a lane. For many UIs a lane represents a column.
+ * Commits are strung onto a lane. For many UIs a lane represents a column. Originally taken from
+ * org.eclipse.egit.ui.internal.history.
  */
 public class PlotLane implements Serializable {
 	private static final long serialVersionUID = 1L;

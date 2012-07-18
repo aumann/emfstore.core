@@ -3,6 +3,7 @@
  * Copyright (C) 2008, Shawn O. Pearce <spearce@spearce.org>
  * Copyright (C) 2011, Mathias Kinzler <mathias.kinzler@sap.com>
  * Copyright (C) 2011, Matthias Sohn <matthias.sohn@sap.com>*
+ * Copyright (C) 2012, Alexander Aumann <alexander.f.aumann@gmail.com>
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,6 +25,7 @@ import org.eclipse.swt.widgets.Event;
 
 /**
  * A renderer for IPlotCommits able to draw these commits into a table or tree cell.
+ * Originally taken from org.eclipse.egit.ui.internal.history.
  */
 public class SWTPlotRenderer extends AbstractPlotRenderer {
 

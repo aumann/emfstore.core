@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2008, Shawn O. Pearce <spearce@spearce.org>
+ * Copyright (C) 2012, Alexander Aumann <alexander.f.aumann@gmail.com>
  * and other copyright owners as documented in the project's IP log.
  * This program and the accompanying materials are made available
  * under the terms of the Eclipse Distribution License v1.0 which
@@ -57,6 +58,8 @@ import org.eclipse.swt.graphics.Color;
  * All drawing methods assume the coordinate space for the current commit's cell starts at (upper left corner is) 0,0.
  * If this is not true (like say in SWT) the implementation must perform the cell offset computations within the various
  * draw methods.
+ * 
+ * Adapted from: org.eclipse.jgit.revplot.PlotCommitList.AbstractPlotRenderer
  * 
  */
 public abstract class AbstractPlotRenderer {
