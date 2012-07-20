@@ -17,8 +17,9 @@ import org.eclipse.emf.emfstore.server.model.versioning.util.HistoryQueryBuilder
  */
 public class PaginationManager {
 	/**
-	 * The version around which history queries are created. At initialization time this is the base version. It gets
-	 * change if the user clicks on 'show next x elements'
+	 * The version around which history queries are created. At initialization
+	 * time this is the base version. It gets change if the user clicks on 'show
+	 * next x elements'
 	 */
 	private PrimaryVersionSpec currentCenterVersionShown;
 
@@ -33,16 +34,19 @@ public class PaginationManager {
 	private boolean prevPage = false;
 
 	/**
-	 * Creates a new PaginationManager with given page range around the central version. The central version is
-	 * initialized to be the base version.
+	 * Creates a new PaginationManager with given page range around the central
+	 * version. The central version is initialized to be the base version.
 	 * 
-	 * Note that the real number of versions shown might be smaller if there are not enough versions above (e.g. base
-	 * version == head version) or below the
-	 * center version (e.g. only x revisions yet, but below is larger).
+	 * Note that the real number of versions shown might be smaller if there are
+	 * not enough versions above (e.g. base version == head version) or below
+	 * the center version (e.g. only x revisions yet, but below is larger).
 	 * 
-	 * @param projectSpace The project space to operate on.
-	 * @param aboveCenterCount The number of versions shown above the central version.
-	 * @param belowCenterCount The number of versions shown below the central version.
+	 * @param projectSpace
+	 *            The project space to operate on.
+	 * @param aboveCenterCount
+	 *            The number of versions shown above the central version.
+	 * @param belowCenterCount
+	 *            The number of versions shown below the central version.
 	 */
 	public PaginationManager(ProjectSpace projectSpace, int aboveCenterCount, int belowCenterCount) {
 		this.aboveCenterCount = aboveCenterCount;
@@ -52,7 +56,8 @@ public class PaginationManager {
 
 	/**
 	 * @return The history info objects to be displayed on the current page.
-	 * @throws EmfStoreException If an exception gets thrown contacting the server.
+	 * @throws EmfStoreException
+	 *             If an exception gets thrown contacting the server.
 	 */
 	public List<HistoryInfo> retrieveHistoryInfos() throws EmfStoreException {
 		PrimaryVersionSpec newCenterVersion;
@@ -66,7 +71,9 @@ public class PaginationManager {
 				}
 			}
 			assert beforeCurrent != -1 : "The currently shown center version should be contained in the currently shown history infos, why has it vanished?";
-			afterCurrent = currentlyPresentedInfos.size() - beforeCurrent - 1; // 1 == currentCenter
+			afterCurrent = currentlyPresentedInfos.size() - beforeCurrent - 1; // 1
+																				// ==
+																				// currentCenter
 			if (prevPage && beforeCurrent >= aboveCenterCount) {
 				// there might be more versions, so swap page if there are
 				newCenterVersion = currentlyPresentedInfos.get(0).getPrimerySpec();
@@ -83,7 +90,7 @@ public class PaginationManager {
 
 		if (newCenterVersion != null && !currentCenterVersionShown.equals(newCenterVersion)) {
 
-			setCorrectCenterVersionAndHistory(historyInfos);
+			setCorrectCenterVersionAndHistory(historyInfos, beforeCurrent);
 
 			currentCenterVersionShown = newCenterVersion;
 		}
@@ -94,10 +101,10 @@ public class PaginationManager {
 	}
 
 	/**
-	 * Set correct center version and displayed History infos.
-	 * 1) prev page: check if there are enough previous versions
-	 * if not: set centerVersion further down to retrieve more lower versions
-	 * 2) next page : similiar to prev page
+	 * Set correct center version and displayed History infos. 1) prev page:
+	 * check if there are enough previous versions if not: set centerVersion
+	 * further down to retrieve more lower versions 2) next page : similiar to
+	 * prev page
 	 * 
 	 * @param historyInfos
 	 */
@@ -118,37 +125,46 @@ public class PaginationManager {
 				currentCenterVersionPos = i;
 			}
 		}
-		PrimaryVersionSpec newCenterVersion;
+		PrimaryVersionSpec newCenterVersion = currentCenterVersionShown;
 
 		if (prevPage) {
 			if (newerVersions < aboveCenterCount) {
 				List<HistoryInfo> mergedInfos = mergeHistoryInfoLists(newQueryHistoryInfos, currentlyPresentedInfos);
 				int oldCenterPos = findPositionOfId(currentCenterVersionShown.getIdentifier(), mergedInfos);
 
-				// not enough versions
-				// go further down
-				newCenterVersion = newQueryHistoryInfos.get(Math.min(olderVersions, newQueryHistoryInfos.size() - 1))
-					.getPrimerySpec();
-				if (newCenterVersion.getIdentifier() != currentCenterVersionShown.getIdentifier()) {
-					currentCenterVersionShown = newCenterVersion;
-					query = getQuery(newCenterVersion); // reretrieve
-					newQueryHistoryInfos = projectSpace.getHistoryInfo(query);
-				}
+				// not enough versions: go further down, but never further than the old center as this is supposed to be
+				// prevPage and thus at the very least not nextPage
+				int newCenterPos = Math.min(Math.min(aboveCenterCount, oldCenterPos), newQueryHistoryInfos.size() - 1);
+				newCenterVersion = mergedInfos.get(newCenterPos).getPrimerySpec();
+				currentlyPresentedInfos = cutInfos(mergedInfos, newCenterPos);
 			}
 
 		} else {
 			assert nextPage;
 			if (olderVersions < belowCenterCount) {
-				int size = newQueryHistoryInfos.size();
-				newCenterVersion = newQueryHistoryInfos.get(Math.max(size - olderVersions, 0)).getPrimerySpec();
-				if (newCenterVersion.getIdentifier() != currentCenterVersionShown.getIdentifier()) {
-					query = getQuery(newCenterVersion); // reretrieve
-					newQueryHistoryInfos = projectSpace.getHistoryInfo(query);
-				}
+				List<HistoryInfo> mergedInfos = mergeHistoryInfoLists(newQueryHistoryInfos, currentlyPresentedInfos);
+				int oldCenterPos = findPositionOfId(currentCenterVersionShown.getIdentifier(), mergedInfos);
+
+				// not enough versions: go further up, but never further than the old center as this is supposed to be
+				// nextPage and thus at the very least not prevPage
+				int newCenterPos = Math.max(Math.max(mergedInfos.size() - 1 - belowCenterCount, oldCenterPos), 0);
+				newCenterVersion = mergedInfos.get(newCenterPos).getPrimerySpec();
+				currentlyPresentedInfos = cutInfos(mergedInfos, newCenterPos);
 			}
 
 		}
+		currentCenterVersionShown = newCenterVersion;
 
+	}
+
+	private List<HistoryInfo> cutInfos(List<HistoryInfo> mergedInfos, int newCenterPos) {
+		int smallestIndexIn = Math.max(0, newCenterPos - aboveCenterCount);
+		int largestIndexIn = Math.min(mergedInfos.size() - 1, newCenterPos + belowCenterCount);
+		List<HistoryInfo> cut = new ArrayList<HistoryInfo>();
+		for (int i = smallestIndexIn; i <= largestIndexIn; i++) {
+			cut.add(mergedInfos.get(i));
+		}
+		return cut;
 	}
 
 	private int findPositionOfId(int identifier, List<HistoryInfo> mergedInfos) {
@@ -195,7 +211,8 @@ public class PaginationManager {
 		assert overLapVersionPosInNewerVersions != -1 : "As the new query is based around the first/last version of the previous query there must be at least one overlapping version.";
 
 		// now start merging from the overlap version on
-		// actually merging should be unnecessary as all versions should be contained from the overlap on
+		// actually merging should be unnecessary as all versions should be
+		// contained from the overlap on
 		// but merging is more robust if paging ever gets mixed with new calls
 		int currentPosNewer = overLapVersionPosInNewerVersions;
 		int currentPosOlder = 0;
@@ -208,7 +225,8 @@ public class PaginationManager {
 				nextMergeCandidate = olderVersions.get(currentPosOlder);
 				++currentPosOlder;
 			}
-			if (idOfLastVersionMerged != getId(nextMergeCandidate)) { // avoid duplicates
+			if (idOfLastVersionMerged != getId(nextMergeCandidate)) { // avoid
+																		// duplicates
 				mergedInfos.add(nextMergeCandidate);
 				idOfLastVersionMerged = getId(nextMergeCandidate);
 			}
@@ -216,7 +234,8 @@ public class PaginationManager {
 		// add rest of the list that is not at the end
 		for (int i = currentPosNewer; i < newerVersions.size(); i++) {
 			HistoryInfo nextMergeCandidate = newerVersions.get(i);
-			if (idOfLastVersionMerged != getId(nextMergeCandidate)) { // avoid duplicates
+			if (idOfLastVersionMerged != getId(nextMergeCandidate)) { // avoid
+																		// duplicates
 				mergedInfos.add(nextMergeCandidate);
 				idOfLastVersionMerged = getId(nextMergeCandidate);
 			}
@@ -224,7 +243,8 @@ public class PaginationManager {
 
 		for (int i = currentPosOlder; i < olderVersions.size(); i++) {
 			HistoryInfo nextMergeCandidate = olderVersions.get(i);
-			if (idOfLastVersionMerged != getId(nextMergeCandidate)) { // avoid duplicates
+			if (idOfLastVersionMerged != getId(nextMergeCandidate)) { // avoid
+																		// duplicates
 				mergedInfos.add(nextMergeCandidate);
 				idOfLastVersionMerged = getId(nextMergeCandidate);
 			}
@@ -253,14 +273,16 @@ public class PaginationManager {
 	}
 
 	/**
-	 * Swaps to the next page. Call {@link #retrieveHistoryInfos()} to retrieve the new page.
+	 * Swaps to the next page. Call {@link #retrieveHistoryInfos()} to retrieve
+	 * the new page.
 	 */
 	public void nextPage() {
 		nextPage = true;
 	}
 
 	/**
-	 * Swaps to the previous page. Call {@link #retrieveHistoryInfos()} to retrieve the new page.
+	 * Swaps to the previous page. Call {@link #retrieveHistoryInfos()} to
+	 * retrieve the new page.
 	 */
 	public void previousPage() {
 		prevPage = true;
