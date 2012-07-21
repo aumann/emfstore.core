@@ -90,14 +90,14 @@ public class PaginationManager {
 
 		if (newCenterVersion != null && !currentCenterVersionShown.equals(newCenterVersion)) {
 
-			setCorrectCenterVersionAndHistory(historyInfos, beforeCurrent);
+			setCorrectCenterVersionAndHistory(historyInfos, newCenterVersion.getIdentifier(), beforeCurrent);
 
-			currentCenterVersionShown = newCenterVersion;
+		} else {
+
+			currentlyPresentedInfos = historyInfos;
 		}
-
-		currentlyPresentedInfos = historyInfos;
 		prevPage = nextPage = false;
-		return historyInfos;
+		return currentlyPresentedInfos;
 	}
 
 	/**
@@ -108,50 +108,54 @@ public class PaginationManager {
 	 * 
 	 * @param historyInfos
 	 */
-	private void setCorrectCenterVersionAndHistory(List<HistoryInfo> newQueryHistoryInfos,
+	private void setCorrectCenterVersionAndHistory(List<HistoryInfo> newQueryHistoryInfos, int newCenterVersionId,
 		int positionOfOldCenterInCurrentDisplay) {
 		int idOfCurrentVersionShown = currentlyPresentedInfos.get(positionOfOldCenterInCurrentDisplay).getPrimerySpec()
 			.getIdentifier();
 		int olderVersions = 0, newerVersions = 0;
-		int currentCenterVersionPos = -1;
+		int newCenterVersionPos = -1;
+		int oldCenterVersionPos = -1;
 		for (int i = 0; i < newQueryHistoryInfos.size(); i++) {
 			int idOfI = newQueryHistoryInfos.get(i).getPrimerySpec().getIdentifier();
-			if (idOfI > idOfCurrentVersionShown) {
+			if (idOfI > newCenterVersionId) {
 				++newerVersions;
-			} else if (idOfI < idOfCurrentVersionShown) {
+			} else if (idOfI < newCenterVersionId) {
 				++olderVersions;
+			} else if (idOfI == newCenterVersionId) {
+				assert newCenterVersionPos == -1 : "Should not be in there twice.";
+				newCenterVersionPos = i;
 			} else if (idOfI == idOfCurrentVersionShown) {
-				assert currentCenterVersionPos == -1 : "Should not be in there twice.";
-				currentCenterVersionPos = i;
+				assert oldCenterVersionPos == -1 : "Should not be in there twice.";
+				oldCenterVersionPos = i;
 			}
 		}
-		PrimaryVersionSpec newCenterVersion = currentCenterVersionShown;
+		assert newCenterVersionPos != -1 : "The query is based around this version. So it must be there.";
+		PrimaryVersionSpec newCenterVersion = newQueryHistoryInfos.get(newCenterVersionPos).getPrimerySpec();
 
-		if (prevPage) {
-			if (newerVersions < aboveCenterCount) {
-				List<HistoryInfo> mergedInfos = mergeHistoryInfoLists(newQueryHistoryInfos, currentlyPresentedInfos);
-				int oldCenterPos = findPositionOfId(currentCenterVersionShown.getIdentifier(), mergedInfos);
+		assert prevPage ^ nextPage;
 
-				// not enough versions: go further down, but never further than the old center as this is supposed to be
-				// prevPage and thus at the very least not nextPage
-				int newCenterPos = Math.min(Math.min(aboveCenterCount, oldCenterPos), newQueryHistoryInfos.size() - 1);
-				newCenterVersion = mergedInfos.get(newCenterPos).getPrimerySpec();
-				currentlyPresentedInfos = cutInfos(mergedInfos, newCenterPos);
-			}
+		if (prevPage && newerVersions < aboveCenterCount) {
+			List<HistoryInfo> mergedInfos = mergeHistoryInfoLists(newQueryHistoryInfos, currentlyPresentedInfos);
+			int oldCenterPos = findPositionOfId(currentCenterVersionShown.getIdentifier(), mergedInfos);
+
+			// not enough versions: go further down, but never further than the old center as this is supposed to be
+			// prevPage and thus at the very least not nextPage
+			int newCenterPos = Math.min(Math.min(aboveCenterCount, oldCenterPos), newQueryHistoryInfos.size() - 1);
+			newCenterVersion = mergedInfos.get(newCenterPos).getPrimerySpec();
+			currentlyPresentedInfos = cutInfos(mergedInfos, newCenterPos);
+
+		} else if (nextPage && olderVersions < belowCenterCount) {
+			List<HistoryInfo> mergedInfos = mergeHistoryInfoLists(newQueryHistoryInfos, currentlyPresentedInfos);
+			int oldCenterPos = findPositionOfId(currentCenterVersionShown.getIdentifier(), mergedInfos);
+
+			// not enough versions: go further up, but never further than the old center as this is supposed to be
+			// nextPage and thus at the very least not prevPage
+			int newCenterPos = Math.max(Math.max(mergedInfos.size() - 1 - belowCenterCount, oldCenterPos), 0);
+			newCenterVersion = mergedInfos.get(newCenterPos).getPrimerySpec();
+			currentlyPresentedInfos = cutInfos(mergedInfos, newCenterPos);
 
 		} else {
-			assert nextPage;
-			if (olderVersions < belowCenterCount) {
-				List<HistoryInfo> mergedInfos = mergeHistoryInfoLists(newQueryHistoryInfos, currentlyPresentedInfos);
-				int oldCenterPos = findPositionOfId(currentCenterVersionShown.getIdentifier(), mergedInfos);
-
-				// not enough versions: go further up, but never further than the old center as this is supposed to be
-				// nextPage and thus at the very least not prevPage
-				int newCenterPos = Math.max(Math.max(mergedInfos.size() - 1 - belowCenterCount, oldCenterPos), 0);
-				newCenterVersion = mergedInfos.get(newCenterPos).getPrimerySpec();
-				currentlyPresentedInfos = cutInfos(mergedInfos, newCenterPos);
-			}
-
+			currentlyPresentedInfos = newQueryHistoryInfos;
 		}
 		currentCenterVersionShown = newCenterVersion;
 
