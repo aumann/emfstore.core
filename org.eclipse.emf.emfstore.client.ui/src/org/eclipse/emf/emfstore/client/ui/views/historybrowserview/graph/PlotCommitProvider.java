@@ -201,7 +201,8 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 			return;
 		}
 
-		if (nChildren == 1 && currCommit.getChild(0).getParentCount() < 2) {
+		if (nChildren == 1 && currCommit.getChild(0).getParentCount() < 2
+			&& !currCommit.getChild(0).getBranch().equals(currCommit.getBranch())) {
 			// Only one child, child has only us as their parent.
 			// Stay in the same lane as the child.
 			final IPlotCommit c = currCommit.getChild(0);
