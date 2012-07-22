@@ -10,6 +10,8 @@
  ******************************************************************************/
 package org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph;
 
+import java.util.List;
+
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
 
 /**
@@ -30,5 +32,12 @@ public interface IPlotCommitProvider {
 	 * @return The requested plot commit.
 	 */
 	IPlotCommit getCommitFor(HistoryInfo info, boolean isReal);
+
+	/**
+	 * Sets a new list of {@link HistoryInfo} objects for the same input. This keeps e.g. branch colors etc.
+	 * 
+	 * @param newInfos The update {@link HistoryInfo} list.
+	 */
+	void refresh(List<HistoryInfo> newInfos);
 
 }

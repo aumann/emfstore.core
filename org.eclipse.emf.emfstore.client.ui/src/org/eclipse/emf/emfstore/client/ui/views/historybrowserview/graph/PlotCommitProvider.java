@@ -65,17 +65,29 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 	 * 
 	 * @param historyInfo The history info for which the plot commits should be created.
 	 */
-	public PlotCommitProvider(List<HistoryInfo> historyInfo) {
+	public PlotCommitProvider() {
 		this.nextBranchColorIndex = 0;
-		this.commits = new PlotCommit[historyInfo.size()];
 		this.freePositions = new TreeSet<Integer>();
 		this.activeLanes = new HashSet<PlotLane>(32);
-		this.positionsAllocated = 0;
 		this.commitForHistory = new HashMap<HistoryInfo, IPlotCommit>();
 
-		for (int i = 0; i < historyInfo.size(); i++) {
-			commits[i] = new PlotCommit(historyInfo.get(i));
-			commitForHistory.put(historyInfo.get(i), commits[i]);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @see org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph.IPlotCommitProvider#refresh(java.util.List)
+	 */
+	public void refresh(List<HistoryInfo> newInfos) {
+		this.positionsAllocated = 0;
+		this.commits = new PlotCommit[newInfos.size()];
+		this.freePositions.clear();
+		this.activeLanes.clear();
+		this.commitForHistory.clear();
+
+		for (int i = 0; i < newInfos.size(); i++) {
+			commits[i] = new PlotCommit(newInfos.get(i));
+			commitForHistory.put(newInfos.get(i), commits[i]);
 			Color[] branchColors = getColorsForBranch(commits[i].getBranch());
 			commits[i].setColor(branchColors[0]);
 			commits[i].setLightColor(branchColors[1]);
@@ -83,7 +95,7 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 
 		setupCommitIdLookUp();
 
-		setupParents(historyInfo);
+		setupParents(newInfos);
 
 		for (int i = 0; i < commits.length; i++) {
 			initCommit(i, commits[i]);

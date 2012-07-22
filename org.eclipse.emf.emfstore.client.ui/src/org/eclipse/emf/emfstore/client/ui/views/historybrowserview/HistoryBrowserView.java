@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.edit.provider.ComposedAdapterFactory;
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
@@ -556,7 +557,7 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		load();
 		viewer.setContentProvider(contentProvider);
 		List<HistoryInfo> historyInfos = getHistoryInfos();
-		commitProvider = new PlotCommitProvider(historyInfos);
+		commitProvider.refresh(historyInfos);
 		viewer.setInput(historyInfos);
 	}
 
@@ -588,7 +589,9 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 				if (hi.getPrimerySpec().equals(projectSpace.getBaseVersion())) {
 					TagVersionSpec spec = VersioningFactory.eINSTANCE.createTagVersionSpec();
 					spec.setName(VersionSpec.BASE);
-					hi.getTagSpecs().add(spec);
+
+					if (!containsTag(hi.getTagSpecs(), spec))
+						hi.getTagSpecs().add(spec);
 					break;
 				}
 			}
@@ -609,6 +612,23 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		logLabelProvider.setChangePackageVisualizationHelper(changePackageVisualizationHelper);
 
 		// contentProvider.setChangePackageVisualizationHelper(changePackageVisualizationHelper);
+	}
+
+	/**
+	 * Checks whether the list of TagVersionSpec's contains the given spec. This method exists as the EList
+	 * implementation does not base contain on {@link #equals(Object)}.
+	 * 
+	 * @param tagSpecs The list to search for the containing object.
+	 * @param spec The object to search for.
+	 * @return true if the object has been found, false otherwise.
+	 */
+	private boolean containsTag(EList<TagVersionSpec> tagSpecs, TagVersionSpec spec) {
+		for (TagVersionSpec listSpec : tagSpecs) {
+			if (listSpec.equals(spec)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -637,6 +657,7 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		String label = "History for ";
 		Project project = projectSpace.getProject();
 		contentProvider = new SCMContentProvider();
+		commitProvider = new PlotCommitProvider();
 		paginationManager = new PaginationManager(projectSpace, infosAboveCenter, infosBelowCenter);
 
 		if (me != null && project.containsInstance(me)) {
