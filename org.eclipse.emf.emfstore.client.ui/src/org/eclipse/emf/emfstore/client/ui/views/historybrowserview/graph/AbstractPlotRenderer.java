@@ -131,7 +131,7 @@ public abstract class AbstractPlotRenderer {
 		final int dotX = myLaneX - dotSize / 2 - 1;
 		final int dotY = (h - dotSize) / 2;
 
-		if (commit.isRealCommit() && commit.getChildCount() > 0) {
+		if (commit.isRealCommit() && !commit.isLocalHistoryOnly() && commit.getChildCount() > 0) {
 			drawLine(myColor, myLaneX, 0, myLaneX, dotY, LINE_WIDTH);
 		}
 
