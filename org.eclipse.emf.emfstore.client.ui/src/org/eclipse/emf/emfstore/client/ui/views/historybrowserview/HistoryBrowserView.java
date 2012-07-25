@@ -24,7 +24,6 @@ import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider;
 import org.eclipse.emf.emfstore.client.model.ProjectSpace;
 import org.eclipse.emf.emfstore.client.model.WorkspaceManager;
 import org.eclipse.emf.emfstore.client.model.connectionmanager.ServerCall;
-import org.eclipse.emf.emfstore.client.model.observers.OpenModelElementObserver;
 import org.eclipse.emf.emfstore.client.model.util.ProjectSpaceContainer;
 import org.eclipse.emf.emfstore.client.ui.Activator;
 import org.eclipse.emf.emfstore.client.ui.dialogs.EMFStoreMessageDialog;
@@ -308,8 +307,9 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 				if (event.getSelection() instanceof IStructuredSelection) {
 					Object element = ((IStructuredSelection) event.getSelection()).getFirstElement();
 					if (element instanceof EObject) {
-						WorkspaceManager.getObserverBus().notify(OpenModelElementObserver.class)
-							.openModelElement((EObject) element);
+						// TODO: not implementors for OpenModelElementObserver available
+						// WorkspaceManager.getObserverBus().notify(OpenModelElementObserver.class)
+						// .openModelElement((EObject) element);
 						// ElementOpenerHelper.openModelElement((EObject) node.getValue(), VIEW_ID);
 					}
 				}
@@ -549,7 +549,7 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 	public void refresh() {
 		int prevHead = headVersion;
 		try {
-			headVersion = projectSpace.resolveVersionSpec(Versions.HEAD_VERSION(projectSpace.getBaseVersion()))
+			headVersion = projectSpace.resolveVersionSpec(Versions.createHEAD(projectSpace.getBaseVersion()))
 				.getIdentifier();
 		} catch (EmfStoreException e) {
 			headVersion = prevHead;

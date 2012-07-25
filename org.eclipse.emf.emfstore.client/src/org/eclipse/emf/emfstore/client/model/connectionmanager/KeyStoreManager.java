@@ -112,6 +112,8 @@ public final class KeyStoreManager {
 
 	/**
 	 * This method sets the JVM properties in order to use SSL encryption.
+	 * 
+	 * @throws IOException
 	 */
 	public void setupKeys() {
 		// No changes to exception handling here, due to call nature.
@@ -121,9 +123,9 @@ public final class KeyStoreManager {
 			if (!emfstoreDir.exists()) {
 				emfstoreDir.mkdir();
 			}
+			InputStream inputStream = getClass().getResourceAsStream(KEYSTORENAME);
 			try {
 				// configure file
-				InputStream inputStream = getClass().getResourceAsStream(KEYSTORENAME);
 				File clientKeyTarget = new File(Configuration.getWorkspaceDirectory() + KEYSTORENAME);
 				// copy to destination
 				FileUtil.copyFile(inputStream, clientKeyTarget);
@@ -131,6 +133,12 @@ public final class KeyStoreManager {
 				// TODO OW: exception? - now the user will be alerted to the
 				// problem as soon as he tries to connect.
 				// throw new ConnectionException("Couldn't find keystore.");
+			} finally {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					// TODO: ignore exception for now, as above
+				}
 			}
 		}
 
@@ -203,12 +211,24 @@ public final class KeyStoreManager {
 	 *             illegal operations.
 	 */
 	public void addCertificate(String alias, String path) throws InvalidCertificateException, CertificateStoreException {
+		FileInputStream fileInputStream = null;
 		try {
-			addCertificate(alias, new FileInputStream(path));
+			fileInputStream = new FileInputStream(path);
+			addCertificate(alias, fileInputStream);
 		} catch (FileNotFoundException e) {
 			String message = "Storing certificate failed!";
 			WorkspaceUtil.logException(message, e);
 			throw new CertificateStoreException(message, e);
+		} finally {
+			if (fileInputStream != null) {
+				try {
+					fileInputStream.close();
+				} catch (IOException e) {
+					String message = "Storing certificate failed!";
+					WorkspaceUtil.logException(message, e);
+					throw new CertificateStoreException(message, e);
+				}
+			}
 		}
 	}
 
@@ -288,7 +308,9 @@ public final class KeyStoreManager {
 		if (keyStore == null) {
 			try {
 				keyStore = KeyStore.getInstance("JKS");
-				keyStore.load(new FileInputStream(getPathToKeyStore()), KEYSTOREPASSWORD.toCharArray());
+				FileInputStream fileInputStream = new FileInputStream(getPathToKeyStore());
+				keyStore.load(fileInputStream, KEYSTOREPASSWORD.toCharArray());
+				fileInputStream.close();
 			} catch (KeyStoreException e) {
 				String message = "Loading certificate failed!";
 				WorkspaceUtil.logWarning(message, e);

@@ -41,9 +41,8 @@ import org.eclipse.swt.widgets.Shell;
  * @author wesendon
  * 
  */
-public class UICreateBranchController extends
-		AbstractEMFStoreUIController<PrimaryVersionSpec> implements
-		CommitCallback {
+public class UICreateBranchController extends AbstractEMFStoreUIController<PrimaryVersionSpec> implements
+	CommitCallback {
 
 	private final ProjectSpace projectSpace;
 	private LogMessage logMessage;
@@ -51,29 +50,28 @@ public class UICreateBranchController extends
 	private BranchVersionSpec branch;
 
 	/**
-	 * Default constructor.
+	 * Constructor.
 	 * 
 	 * @param shell
-	 *            active shell
+	 *            the parent {@link Shell} that should be used during the creation of the branch
 	 * @param projectSpace
-	 *            projectspace
+	 *            the project space for which to create a branch for
 	 */
 	public UICreateBranchController(Shell shell, ProjectSpace projectSpace) {
 		this(shell, projectSpace, null);
 	}
 
 	/**
-	 * Default constructor.
+	 * Constructor.
 	 * 
 	 * @param shell
-	 *            active shell
+	 *            the parent {@link Shell} that should be used during the creation of the branch
 	 * @param projectSpace
-	 *            projectspace
+	 *            the project space for which to create a branch for
 	 * @param branch
-	 *            branch specifier
+	 *            the branch to be committed
 	 */
-	public UICreateBranchController(Shell shell, ProjectSpace projectSpace,
-			BranchVersionSpec branch) {
+	public UICreateBranchController(Shell shell, ProjectSpace projectSpace, BranchVersionSpec branch) {
 		super(shell, true, true);
 		this.projectSpace = projectSpace;
 		this.branch = branch;
@@ -88,8 +86,7 @@ public class UICreateBranchController extends
 	public void noLocalChanges(ProjectSpace projectSpace) {
 		RunInUI.run(new Callable<Void>() {
 			public Void call() throws Exception {
-				MessageDialog.openInformation(getShell(), null,
-						"No local changes in your project. No need to commit.");
+				MessageDialog.openInformation(getShell(), null, "No local changes in your project. No need to commit.");
 				return null;
 			}
 		});
@@ -107,13 +104,10 @@ public class UICreateBranchController extends
 		return RunInUI.runWithResult(new Callable<Boolean>() {
 
 			public Boolean call() throws Exception {
-				boolean shouldUpdate = MessageDialog.openConfirm(getShell(),
-						"Confirmation", message);
+				boolean shouldUpdate = MessageDialog.openConfirm(getShell(), "Confirmation", message);
 				if (shouldUpdate) {
-					PrimaryVersionSpec baseVersion = UICreateBranchController.this.projectSpace
-							.getBaseVersion();
-					PrimaryVersionSpec version = new UIUpdateProjectController(
-							getShell(), projectSpace).execute();
+					PrimaryVersionSpec baseVersion = UICreateBranchController.this.projectSpace.getBaseVersion();
+					PrimaryVersionSpec version = new UIUpdateProjectController(getShell(), projectSpace).execute();
 					if (version.equals(baseVersion)) {
 						return false;
 					}
@@ -131,11 +125,9 @@ public class UICreateBranchController extends
 	 * @see org.eclipse.emf.emfstore.client.model.controller.callbacks.CommitCallback#inspectChanges(org.eclipse.emf.emfstore.client.model.ProjectSpace,
 	 *      org.eclipse.emf.emfstore.server.model.versioning.ChangePackage)
 	 */
-	public boolean inspectChanges(ProjectSpace projectSpace,
-			ChangePackage changePackage) {
+	public boolean inspectChanges(ProjectSpace projectSpace, ChangePackage changePackage) {
 
-		final CommitDialog commitDialog = new CommitDialog(getShell(),
-				changePackage, projectSpace);
+		final CommitDialog commitDialog = new CommitDialog(getShell(), changePackage, projectSpace);
 
 		dialogReturnValue = RunInUI.runWithResult(new Callable<Integer>() {
 			public Integer call() throws Exception {
@@ -158,14 +150,12 @@ public class UICreateBranchController extends
 	 * @see org.eclipse.emf.emfstore.client.ui.handlers.AbstractEMFStoreUIController#doRun(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Override
-	public PrimaryVersionSpec doRun(final IProgressMonitor progressMonitor)
-			throws EmfStoreException {
+	public PrimaryVersionSpec doRun(final IProgressMonitor progressMonitor) throws EmfStoreException {
 		try {
 			if (branch == null) {
 				branch = branchSelection(projectSpace);
 			}
-			return projectSpace.commitToBranch(branch, logMessage,
-					UICreateBranchController.this, progressMonitor);
+			return projectSpace.commitToBranch(branch, logMessage, UICreateBranchController.this, progressMonitor);
 		} catch (BaseVersionOutdatedException e) {
 			// project is out of date and user canceled update
 			// ignore
@@ -174,7 +164,7 @@ public class UICreateBranchController extends
 			RunInUI.run(new Callable<Void>() {
 				public Void call() throws Exception {
 					MessageDialog.openError(getShell(), "Create Branch failed",
-							"Create Branch failed: " + e.getMessage());
+						"Create Branch failed: " + e.getMessage());
 					return null;
 				}
 			});
@@ -183,30 +173,24 @@ public class UICreateBranchController extends
 		return null;
 	}
 
-	private BranchVersionSpec branchSelection(final ProjectSpace projectSpace)
-			throws EmfStoreException {
-		final List<BranchInfo> branches = ((ProjectSpaceBase) projectSpace)
-				.getBranches();
+	private BranchVersionSpec branchSelection(final ProjectSpace projectSpace) throws EmfStoreException {
+		final List<BranchInfo> branches = ((ProjectSpaceBase) projectSpace).getBranches();
 
 		@SuppressWarnings("static-access")
-		String branch = new RunInUI.WithException()
-				.runWithResult(new Callable<String>() {
+		String branch = new RunInUI.WithException().runWithResult(new Callable<String>() {
 
-					public String call() throws Exception {
-						BranchSelectionDialog.Creation dialog = new BranchSelectionDialog.Creation(
-								getShell(), projectSpace.getBaseVersion(),
-								branches);
-						dialog.setBlockOnOpen(true);
+			public String call() throws Exception {
+				BranchSelectionDialog.Creation dialog = new BranchSelectionDialog.Creation(getShell(), projectSpace
+					.getBaseVersion(), branches);
+				dialog.setBlockOnOpen(true);
 
-						if (dialog.open() != Dialog.OK
-								|| dialog.getNewBranch() == null
-								|| dialog.getNewBranch().equals("")) {
-							throw new EmfStoreException("No Branch specified");
-						}
-						return dialog.getNewBranch();
-					}
-				});
+				if (dialog.open() != Dialog.OK || dialog.getNewBranch() == null || dialog.getNewBranch().equals("")) {
+					throw new EmfStoreException("No Branch specified");
+				}
+				return dialog.getNewBranch();
+			}
+		});
 
-		return Versions.BRANCH(branch);
+		return Versions.createBRANCH(branch);
 	}
 }

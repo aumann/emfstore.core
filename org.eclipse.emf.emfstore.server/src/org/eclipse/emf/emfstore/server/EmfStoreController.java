@@ -262,12 +262,13 @@ public class EmfStoreController implements IApplication, Runnable {
 	 * Returns the history cache.
 	 * 
 	 * @param serverSpace target server space
+	 * @param resetForTest reinits the cache.
 	 * 
 	 * @return the history cache.
 	 */
-	public static HistoryCache getHistoryCache(ServerSpace serverSpace) {
+	public static HistoryCache getHistoryCache(ServerSpace serverSpace, boolean resetForTest) {
 		if (ServerConfiguration.isTesting()) {
-			if (testHistoryCache == null) {
+			if (testHistoryCache == null || resetForTest) {
 				testHistoryCache = initHistoryCache(serverSpace);
 			}
 			return testHistoryCache;
@@ -428,15 +429,22 @@ public class EmfStoreController implements IApplication, Runnable {
 	private Properties initProperties() {
 		File propertyFile = new File(ServerConfiguration.getConfFile());
 		Properties properties = new Properties();
+		FileInputStream fis = null;
 		try {
-			FileInputStream fis = new FileInputStream(propertyFile);
+			fis = new FileInputStream(propertyFile);
 			properties.load(fis);
 			ServerConfiguration.setProperties(properties);
-			fis.close();
 			ModelUtil.logInfo("Property file read. (" + propertyFile.getAbsolutePath() + ")");
 		} catch (IOException e) {
 			ModelUtil.logWarning("Property initialization failed, using default properties.", e);
+		} finally {
+			try {
+				fis.close();
+			} catch (IOException e) {
+				ModelUtil.logWarning("Closing of properties file failed.", e);
+			}
 		}
+
 		return properties;
 	}
 
@@ -495,6 +503,14 @@ public class EmfStoreController implements IApplication, Runnable {
 				System.out.println(line);
 			}
 		} catch (IOException e) {
+			// ignore
+		} finally {
+			try {
+				reader.close();
+				inputStream.close();
+			} catch (IOException e) {
+				// ignore
+			}
 		}
 	}
 

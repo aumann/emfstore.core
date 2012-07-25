@@ -80,6 +80,10 @@ public class SetupHelper {
 	private String projectPath;
 	private TestProjectEnum projectTemplate;
 
+	private int minObjectsCount;
+	private long seed;
+	private String modelKey;
+
 	/**
 	 * @param projectTemplate test project to initialize SetupHelper
 	 */
@@ -97,6 +101,12 @@ public class SetupHelper {
 		LOGGER.log(Level.INFO, "SetupHelper instantiated with " + absolutePath);
 	}
 
+	public SetupHelper(String modelKey, int minObjectsCount, long seed) {
+		this.minObjectsCount = minObjectsCount;
+		this.seed = seed;
+		this.modelKey = modelKey;
+	}
+
 	/**
 	 * Generates a project randomly.
 	 * 
@@ -110,24 +120,24 @@ public class SetupHelper {
 	 *            an initial seed value
 	 * @return the project space containing the generated project
 	 */
-	public static ProjectSpace generateProject(String modelKey, int width, int depth, long seed) {
-		ProjectSpace createLocalProject = WorkspaceManager.getInstance().getCurrentWorkspace()
-			.createLocalProject("", "");
+	public void generateRandomProject() {
 		Project project = org.eclipse.emf.emfstore.common.model.ModelFactory.eINSTANCE.createProject();
-		ModelMutatorConfiguration config = createModelMutatorConfigurationRandom(modelKey, project, width, depth, seed);
+		ModelMutatorConfiguration config = createModelMutatorConfigurationRandom(modelKey, project, minObjectsCount,
+			seed);
 		Configuration.setAutoSave(false);
 		ModelMutator.generateModel(config);
-		createLocalProject.setProject(project);
-		return createLocalProject;
+		testProjectSpace = WorkspaceManager.getInstance().getCurrentWorkspace()
+			.importProject(project, "Generated project", "");
+		testProject = testProjectSpace.getProject();
+		projectId = testProjectSpace.getProjectId();
 	}
 
-	private static ModelMutatorConfiguration createModelMutatorConfigurationRandom(String modelKey, EObject rootObject,
-		int width, int depth, long seed) {
+	private ModelMutatorConfiguration createModelMutatorConfigurationRandom(String modelKey, EObject rootObject,
+		int minObjectsCount, long seed) {
 		ModelMutatorConfiguration config = new ModelMutatorConfiguration(ModelMutatorUtil.getEPackage(modelKey),
 			rootObject, seed);
 		config.setIgnoreAndLog(false);
-		config.setDepth(depth);
-		config.setWidth(width);
+		config.setMinObjectsCount(minObjectsCount);
 		List<EStructuralFeature> eStructuralFeaturesToIgnore = new ArrayList<EStructuralFeature>();
 		eStructuralFeaturesToIgnore.remove(org.eclipse.emf.emfstore.common.model.ModelPackage.eINSTANCE
 			.getProject_CutElements());
@@ -356,9 +366,11 @@ public class SetupHelper {
 		if (projectTemplate != null) {
 			// we are using a project template
 			setupTestProjectSpace(projectTemplate);
-		} else {
+		} else if (projectPath != null) {
 			// we are using the absolute path of an exported unicase project (.ucp file)
 			setupTestProjectSpace(projectPath);
+		} else {
+			generateRandomProject();
 		}
 		LOGGER.log(Level.INFO, "projectspace initialized");
 
@@ -456,11 +468,20 @@ public class SetupHelper {
 	 * @throws IOException if deletion fails
 	 */
 	public static void cleanupWorkspace() throws IOException {
+		final Workspace currentWorkspace = WorkspaceManager.getInstance().getCurrentWorkspace();
+		new EMFStoreCommand() {
+			@Override
+			protected void doRun() {
+				for (ProjectSpace projectSpace : new ArrayList<ProjectSpace>(currentWorkspace.getProjectSpaces())) {
+					try {
+						currentWorkspace.deleteProjectSpace(projectSpace);
+					} catch (IOException e) {
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		}.run(false);
 
-		Workspace currentWorkspace = WorkspaceManager.getInstance().getCurrentWorkspace();
-		for (ProjectSpace projectSpace : new ArrayList<ProjectSpace>(currentWorkspace.getProjectSpaces())) {
-			currentWorkspace.deleteProjectSpace(projectSpace);
-		}
 		String workspacePath = Configuration.getWorkspaceDirectory();
 		File workspaceDirectory = new File(workspacePath);
 		FileFilter workspaceFileFilter = new FileFilter() {
