@@ -13,12 +13,12 @@ package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.emfstore.client.model.ProjectSpace;
 import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryQuery;
 import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
-import org.eclipse.emf.emfstore.server.model.versioning.RangeQuery;
 import org.eclipse.emf.emfstore.server.model.versioning.util.HistoryQueryBuilder;
 
 /**
@@ -47,6 +47,8 @@ public class PaginationManager {
 
 	private boolean showAllVersions;
 
+	private EObject modelElement;
+
 	/**
 	 * Creates a new PaginationManager with given page range around the central
 	 * version. The central version is initialized to be the base version.
@@ -57,15 +59,18 @@ public class PaginationManager {
 	 * 
 	 * @param projectSpace
 	 *            The project space to operate on.
+	 * @param modelElement An optional modelElement to show the history for. <code>null</code> to show the history for
+	 *            the project space.
 	 * @param aboveCenterCount
 	 *            The number of versions shown above the central version.
 	 * @param belowCenterCount
 	 *            The number of versions shown below the central version.
 	 */
-	public PaginationManager(ProjectSpace projectSpace, int aboveCenterCount, int belowCenterCount) {
+	public PaginationManager(ProjectSpace projectSpace, EObject modelElement, int aboveCenterCount, int belowCenterCount) {
 		this.aboveCenterCount = aboveCenterCount;
 		this.belowCenterCount = belowCenterCount;
 		this.projectSpace = projectSpace;
+		this.modelElement = modelElement;
 	}
 
 	/**
@@ -293,8 +298,17 @@ public class PaginationManager {
 			version = projectSpace.getBaseVersion();
 			currentCenterVersionShown = version;
 		}
-		RangeQuery query = HistoryQueryBuilder.rangeQuery(version, aboveCenterCount, belowCenterCount, showAllVersions,
-			!showAllVersions, !showAllVersions, true);
+
+		HistoryQuery query;
+		if (modelElement != null && !(modelElement instanceof ProjectSpace)
+			&& projectSpace.getProject().containsInstance(modelElement)) {
+			query = HistoryQueryBuilder.modelelementQuery(version,
+				projectSpace.getProject().getModelElementId(modelElement), aboveCenterCount, belowCenterCount,
+				showAllVersions, true);
+		} else {
+			query = HistoryQueryBuilder.rangeQuery(version, aboveCenterCount, belowCenterCount, showAllVersions,
+				!showAllVersions, !showAllVersions, true);
+		}
 
 		return query;
 	}

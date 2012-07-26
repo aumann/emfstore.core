@@ -678,7 +678,7 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		Project project = projectSpace.getProject();
 		contentProvider = new SCMContentProvider();
 		commitProvider = new PlotCommitProvider();
-		paginationManager = new PaginationManager(projectSpace, INFOS_ABOVE_BASE, INFOS_BELOW_BASE);
+		paginationManager = new PaginationManager(projectSpace, me, INFOS_ABOVE_BASE, INFOS_BELOW_BASE);
 		paginationManager.setShowAllVersions(DEFAULT_SHOW_ALL_BRANCHES);
 
 		if (me != null && project.containsInstance(me)) {
