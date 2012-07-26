@@ -532,7 +532,8 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 						MessageDialog.openError(getSite().getShell(), "Error", "A numeric value was expected!");
 						run();
 					} catch (EmfStoreException e) {
-						EMFStoreMessageDialog.showExceptionDialog(e);
+						EMFStoreMessageDialog
+							.showExceptionDialog("Error: The version you requested does not exist.", e);
 					}
 				}
 			}

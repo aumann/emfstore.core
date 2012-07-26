@@ -19,6 +19,7 @@ import org.eclipse.emf.emfstore.server.exceptions.EmfStoreException;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryQuery;
 import org.eclipse.emf.emfstore.server.model.versioning.PrimaryVersionSpec;
+import org.eclipse.emf.emfstore.server.model.versioning.Versions;
 import org.eclipse.emf.emfstore.server.model.versioning.util.HistoryQueryBuilder;
 
 /**
@@ -49,6 +50,8 @@ public class PaginationManager {
 
 	private EObject modelElement;
 
+	private final String projectBranch;
+
 	/**
 	 * Creates a new PaginationManager with given page range around the central
 	 * version. The central version is initialized to be the base version.
@@ -71,6 +74,7 @@ public class PaginationManager {
 		this.belowCenterCount = belowCenterCount;
 		this.projectSpace = projectSpace;
 		this.modelElement = modelElement;
+		this.projectBranch = projectSpace.getBaseVersion().getBranch();
 	}
 
 	/**
@@ -141,7 +145,7 @@ public class PaginationManager {
 			} else if (idOfI < newCenterVersionId) {
 				++olderVersions;
 			} else if (idOfI == newCenterVersionId) {
-				assert newCenterVersionPos == -1 : "Should not be in there twice.";
+				// assert newCenterVersionPos == -1 : "Should not be in there twice.";
 				newCenterVersionPos = i;
 			}
 			if (idOfI == idOfCurrentVersionShown) {
@@ -192,13 +196,26 @@ public class PaginationManager {
 	}
 
 	private int findPositionOfId(int identifier, List<HistoryInfo> mergedInfos) {
-		for (int i = 0; i < mergedInfos.size(); i++) {
-			if (getId(mergedInfos.get(i)) <= identifier) {
+		return findPositionOfId(identifier, mergedInfos, true);
+	}
+
+	/**
+	 * @param identifier
+	 * @param infoList
+	 * @param mustBeIn When true, an exception is thrown if the id is not in the list range.
+	 * @return The index of the first version with id <= identifier (the first version in the list that is not newer).
+	 */
+	private int findPositionOfId(int identifier, List<HistoryInfo> infoList, boolean mustBeIn) {
+		for (int i = 0; i < infoList.size(); i++) {
+			if (getId(infoList.get(i)) <= identifier) {
 				return i;
 			}
 		}
-		assert false : "Unexpected.";
-		return mergedInfos.size() - 1;
+		if (mustBeIn) {
+			throw new IllegalArgumentException("Did not find version with id " + identifier + " but should be in.");
+		}
+		return -1;
+
 	}
 
 	private int getId(HistoryInfo info) {
@@ -226,7 +243,9 @@ public class PaginationManager {
 				projectSpace.getProject().getModelElementId(modelElement), aboveCenter, belowCenter, showAllVersions,
 				true);
 		} else {
-			query = HistoryQueryBuilder.rangeQuery(version, aboveCenter, belowCenter, showAllVersions,
+			// don't just use the version, as it might be on the wrong branch
+			PrimaryVersionSpec queryVersion = Versions.createPRIMARY(projectBranch, version.getIdentifier());
+			query = HistoryQueryBuilder.rangeQuery(queryVersion, aboveCenter, belowCenter, showAllVersions,
 				!showAllVersions, !showAllVersions, true);
 		}
 
@@ -281,34 +300,48 @@ public class PaginationManager {
 
 		int newestVersion = getId(currentlyPresentedInfos.get(0));
 		int oldestVersion = getId(currentlyPresentedInfos.get(currentlyPresentedInfos.size() - 1));
-
-		List<HistoryInfo> currentHistoryInfosBU = currentlyPresentedInfos;
-		PrimaryVersionSpec currentCenterBU = currentCenterVersionShown;
+		//
+		// List<HistoryInfo> currentHistoryInfosBU = currentlyPresentedInfos;
+		// PrimaryVersionSpec currentCenterBU = currentCenterVersionShown;
 
 		if (newestVersion >= id && id >= oldestVersion) {
 			return true; // already there
 		}
 
-		List<HistoryInfo> historyInfos = new ArrayList<HistoryInfo>();
-		while (!containsId(historyInfos, id)) {
-			if (id > newestVersion) {
-				// retrieve newer versions until the desired id is in range (i.e. either found or not found)
-				prevPage = true;
-			} else {
-				nextPage = true;
-			}
-			List<HistoryInfo> result = retrieveHistoryInfos();
-			if (getId(result.get(0)) == newestVersion || getId(result.get(result.size() - 1)) == oldestVersion) {
-				// could not find the desired version range
-				assert !containsId(result, id);
-				currentlyPresentedInfos = currentHistoryInfosBU;
-				currentCenterVersionShown = currentCenterBU;
-				return false;
-			}
-			newestVersion = getId(result.get(0));
-			oldestVersion = getId(result.get(result.size() - 1));
+		HistoryQuery query = getQuery(Versions.createPRIMARY(projectSpace.getBaseVersion(), id), aboveCenterCount
+			+ belowCenterCount, aboveCenterCount + belowCenterCount);
+		List<HistoryInfo> historyInfos = projectSpace.getHistoryInfo(query);
+		int requestedIdPos = findPositionOfId(id, historyInfos, false);
+		boolean contained = containsId(historyInfos, id);
+		int newCenterPos;
+		if (!contained) {
+			return false;
 		}
+		// The id is at least in the returned range
+		if (requestedIdPos != -1) {
+			// the id is really in there
+			newCenterPos = getPosForIdTakingAboveBelowIntoAccount(historyInfos, requestedIdPos);
+		} else {
+			// id in range but not in
+			requestedIdPos = findPositionOfId(id, historyInfos);
+			newCenterPos = getPosForIdTakingAboveBelowIntoAccount(historyInfos, requestedIdPos);
+		}
+		currentCenterVersionShown = historyInfos.get(newCenterPos).getPrimerySpec();
+		currentlyPresentedInfos = cutInfos(historyInfos, newCenterPos);
+
 		return true;
+	}
+
+	private int getPosForIdTakingAboveBelowIntoAccount(List<HistoryInfo> infoList, int pos) {
+		int newCenterPos;
+		if (pos + belowCenterCount > infoList.size()) {
+			newCenterPos = Math.max(0, infoList.size() - belowCenterCount - 1);
+		} else if (pos - aboveCenterCount < 0) {
+			newCenterPos = Math.min(infoList.size() - 1, aboveCenterCount);
+		} else {
+			newCenterPos = pos;
+		}
+		return newCenterPos;
 	}
 
 	private boolean containsId(List<HistoryInfo> infos, int id) {
