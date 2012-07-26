@@ -11,7 +11,9 @@
 package org.eclipse.emf.emfstore.client.ui.views.historybrowserview.graph;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -116,6 +118,21 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 		for (int i = 0; i < dummyParents.length; i++) {
 			wholeArray[i + offsetForDummyParents] = dummyParents[i];
 		}
+
+		Arrays.sort(wholeArray, new Comparator<IPlotCommit>() {
+
+			public int compare(IPlotCommit arg0, IPlotCommit arg1) {
+				if (arg0.getId() != -1 && arg1.getId() != -1) {
+					return arg1.getId() - arg0.getId();
+				} else if (arg0.getId() == -1) {
+					// keep local to the top
+					return -1;
+				} else {
+					return 1;
+				}
+			}
+		});
+
 		return wholeArray;
 	}
 
