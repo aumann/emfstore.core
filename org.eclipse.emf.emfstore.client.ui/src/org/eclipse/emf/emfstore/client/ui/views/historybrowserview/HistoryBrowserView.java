@@ -96,8 +96,8 @@ import org.eclipse.ui.part.ViewPart;
  * @author Aumann
  */
 public class HistoryBrowserView extends ViewPart implements ProjectSpaceContainer {
-	private static final int INFOS_ABOVE_BASE = 2;
-	private static final int INFOS_BELOW_BASE = 4;
+	private static final int INFOS_ABOVE_BASE = 5;
+	private static final int INFOS_BELOW_BASE = 10;
 	private static final boolean DEFAULT_SHOW_ALL_BRANCHES = true;
 
 	/**
