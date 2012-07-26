@@ -447,7 +447,7 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 			}
 
 		};
-		showAllBranches.setImageDescriptor(Activator.getImageDescriptor("icons/showallbranches.png"));
+		showAllBranches.setImageDescriptor(Activator.getImageDescriptor("icons/arrow_branch.png"));
 		showAllBranches.setToolTipText("Show All Branches");
 		showAllBranches.setChecked(DEFAULT_SHOW_ALL_BRANCHES);
 		menuManager.add(showAllBranches);
