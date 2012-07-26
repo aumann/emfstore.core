@@ -63,7 +63,6 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 	/**
 	 * Creates a new PlotCommitProvider from a list of {@linkplain HistoryInfo} objects.
 	 * 
-	 * @param historyInfo The history info for which the plot commits should be created.
 	 */
 	public PlotCommitProvider() {
 		this.nextBranchColorIndex = 0;
@@ -84,6 +83,7 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 		this.freePositions.clear();
 		this.activeLanes.clear();
 		this.commitForHistory.clear();
+		this.dummyParentForId.clear();
 
 		for (int i = 0; i < newInfos.size(); i++) {
 			commits[i] = new PlotCommit(newInfos.get(i));
@@ -97,15 +97,32 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 
 		setupParents(newInfos);
 
+		commits = insertDummyParents(dummyParentForId.values().toArray(new IPlotCommit[0]), commits);
+
 		for (int i = 0; i < commits.length; i++) {
 			initCommit(i, commits[i]);
 		}
 	}
 
+	private IPlotCommit[] insertDummyParents(IPlotCommit[] dummyParents, IPlotCommit[] realCommits) {
+		IPlotCommit[] wholeArray = new IPlotCommit[dummyParents.length + realCommits.length];
+
+		for (int i = 0; i < realCommits.length; i++) {
+			wholeArray[i] = realCommits[i];
+		}
+
+		int offsetForDummyParents = realCommits.length;
+
+		for (int i = 0; i < dummyParents.length; i++) {
+			wholeArray[i + offsetForDummyParents] = dummyParents[i];
+		}
+		return wholeArray;
+	}
+
 	private void setupCommitIdLookUp() {
 		commitForID = new HashMap<Integer, IPlotCommit>();
 		for (IPlotCommit commit : commits) {
-			commitForID.put(Integer.valueOf(commit.getId()), commit);
+			commitForID.put(commit.getId(), commit);
 		}
 	}
 
@@ -189,6 +206,9 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 				for (PrimaryVersionSpec mergeParent : mergedFrom) {
 					if (commitForID.containsKey(mergeParent.getIdentifier())) {
 						parents.add(commitForID.get(mergeParent.getIdentifier()));
+					} else {
+						// out of page range
+						parents.add(getDummyParent(mergeParent.getIdentifier(), mergeParent.getBranch()));
 					}
 				}
 				commits[i].setParents(parents);
@@ -196,9 +216,15 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 			}
 			// we only have one parent or none
 			PrimaryVersionSpec parentSpec = currInfo.getPreviousSpec();
-			if (parentSpec != null && commitForID.containsKey(parentSpec.getIdentifier())) {
-				parents.add(commitForID.get(parentSpec.getIdentifier()));
+			if (parentSpec != null) {
+				if (commitForID.containsKey(parentSpec.getIdentifier())) {
+					parents.add(commitForID.get(parentSpec.getIdentifier()));
+				} else {
+					// out of page range
+					parents.add(getDummyParent(parentSpec.getIdentifier(), parentSpec.getBranch()));
+				}
 			}
+
 			if (!parents.isEmpty()) {
 				commits[i].setParents(parents);
 			}
@@ -369,6 +395,17 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 		IPlotCommit comForInfo = commitForHistory.get(info);
 		comForInfo.setIsRealCommit(!onlyAChildRequest);
 		return comForInfo;
+	}
+
+	private Map<Integer, IPlotCommit> dummyParentForId = new HashMap<Integer, IPlotCommit>();
+
+	private IPlotCommit getDummyParent(int id, String parentBranch) {
+		if (!dummyParentForId.containsKey(id)) {
+			IPlotCommit dummyParent = new PlotCommit(id, parentBranch);
+			dummyParentForId.put(id, dummyParent);
+
+		}
+		return dummyParentForId.get(id);
 	}
 
 }

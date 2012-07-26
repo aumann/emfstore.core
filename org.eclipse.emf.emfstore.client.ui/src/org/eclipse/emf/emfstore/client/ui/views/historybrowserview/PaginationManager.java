@@ -114,7 +114,8 @@ public class PaginationManager {
 		if (newCenterVersion != null && !currentCenterVersionShown.equals(newCenterVersion)) {
 			setCorrectCenterVersionAndHistory(historyInfos, newCenterVersion.getIdentifier(), beforeCurrent);
 		} else {
-			currentlyPresentedInfos = historyInfos;
+			currentlyPresentedInfos = cutInfos(historyInfos,
+				findPositionOfId(currentCenterVersionShown.getIdentifier(), historyInfos));
 		}
 		prevPage = false;
 		nextPage = false;
@@ -150,7 +151,10 @@ public class PaginationManager {
 				oldCenterVersionPos = i;
 			}
 		}
-		assert newCenterVersionPos != -1 : "The query is based around this version. So it must be there.";
+		// assert newCenterVersionPos != -1 : "The query is based around this version. So it must be there.";
+		if (newCenterVersionPos == -1) {
+			newCenterVersionPos = Math.max(0, newerVersions - 1);
+		}
 		PrimaryVersionSpec newCenterVersion = newQueryHistoryInfos.get(newCenterVersionPos).getPrimerySpec();
 
 		assert prevPage ^ nextPage;
@@ -176,7 +180,8 @@ public class PaginationManager {
 			currentlyPresentedInfos = cutInfos(mergedInfos, newCenterPos);
 
 		} else {
-			currentlyPresentedInfos = newQueryHistoryInfos;
+			newCenterVersion = newQueryHistoryInfos.get(newCenterVersionPos).getPrimerySpec();
+			currentlyPresentedInfos = cutInfos(newQueryHistoryInfos, newCenterVersionPos);
 		}
 		currentCenterVersionShown = newCenterVersion;
 
@@ -306,8 +311,10 @@ public class PaginationManager {
 	 * 
 	 * @param centerVersion The query center version.
 	 * @return
+	 * @throws EmfStoreException
 	 */
-	private HistoryQuery getQuery(PrimaryVersionSpec centerVersion, int aboveCenter, int belowCenter) {
+	private HistoryQuery getQuery(PrimaryVersionSpec centerVersion, int aboveCenter, int belowCenter)
+		throws EmfStoreException {
 		PrimaryVersionSpec version;
 		if (centerVersion != null) {
 			version = centerVersion;
@@ -317,19 +324,50 @@ public class PaginationManager {
 		}
 
 		HistoryQuery query;
+		QueryMargins margins;
+		if (centerVersion != null && !centerVersion.getBranch().equals(projectBranch)) {
+			margins = getBranchAdaptedMargins(centerVersion, aboveCenter, belowCenter);
+		} else {
+			margins = new QueryMargins();
+			margins.aboveCenter = aboveCenter;
+			margins.belowCenter = belowCenter;
+			margins.querySpec = version;
+		}
 		if (modelElement != null && !(modelElement instanceof ProjectSpace)
 			&& projectSpace.getProject().containsInstance(modelElement)) {
-			query = HistoryQueryBuilder.modelelementQuery(version,
-				projectSpace.getProject().getModelElementId(modelElement), aboveCenter, belowCenter, showAllVersions,
-				true);
+			query = HistoryQueryBuilder.modelelementQuery(margins.querySpec, projectSpace.getProject()
+				.getModelElementId(modelElement), margins.aboveCenter, margins.belowCenter, showAllVersions, true);
 		} else {
-			// don't just use the version, as it might be on the wrong branch
-			PrimaryVersionSpec queryVersion = Versions.createPRIMARY(projectBranch, version.getIdentifier());
-			query = HistoryQueryBuilder.rangeQuery(queryVersion, aboveCenter, belowCenter, showAllVersions,
-				!showAllVersions, !showAllVersions, true);
+			query = HistoryQueryBuilder.rangeQuery(margins.querySpec, margins.aboveCenter, margins.belowCenter,
+				showAllVersions, !showAllVersions, !showAllVersions, true);
 		}
 
 		return query;
+	}
+
+	/**
+	 * Helper functions for retrieving history info when the current margin info is of the wrong branch.
+	 * 
+	 * @throws EmfStoreException
+	 */
+	private QueryMargins getBranchAdaptedMargins(PrimaryVersionSpec centerVersion, int aboveCenter, int belowCenter)
+		throws EmfStoreException {
+		QueryMargins margins = new QueryMargins();
+		centerVersion.setBranch(projectBranch);
+		margins.aboveCenter = aboveCenter;
+		margins.belowCenter = belowCenter;
+
+		// currently always the biggest primary version of given branch which is equal or lower
+		// to the given versionSpec
+		PrimaryVersionSpec nearestSpec = projectSpace.resolveVersionSpec(centerVersion);
+		if (nearestSpec.getIdentifier() < centerVersion.getIdentifier()) {
+			margins.aboveCenter = aboveCenter + (centerVersion.getIdentifier() - nearestSpec.getIdentifier()) + 1;
+		} else if (nearestSpec.getIdentifier() > centerVersion.getIdentifier()) {
+			margins.belowCenter = belowCenter + (nearestSpec.getIdentifier() - centerVersion.getIdentifier() + 1);
+		}
+		margins.querySpec = nearestSpec;
+
+		return margins;
 	}
 
 	/**
@@ -341,6 +379,8 @@ public class PaginationManager {
 	 */
 	public void setShowAllVersions(boolean allVersions) {
 		showAllVersions = allVersions;
+		currentCenterVersionShown = null;
+		currentlyPresentedInfos.clear();
 	}
 
 	/**
@@ -432,5 +472,14 @@ public class PaginationManager {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Helper class containing parameters for history query.
+	 */
+	private class QueryMargins {
+		private int belowCenter;
+		private int aboveCenter;
+		private PrimaryVersionSpec querySpec;
 	}
 }

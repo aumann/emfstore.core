@@ -42,16 +42,12 @@ public class PlotCommit implements IPlotCommit {
 	 * @param historyInfo The historyInfo that is represented by this PlotCommit
 	 */
 	public PlotCommit(HistoryInfo historyInfo) {
-		this.lane = null;
-		this.passingLanes = new PlotLane[0];
-		this.parents = new ArrayList<IPlotCommit>();
-		this.children = new ArrayList<IPlotCommit>();
-		this.widget = null;
-		this.isRealCommit = true;
+		initFields();
 
 		if (historyInfo.getPrimerySpec().getIdentifier() < 0) {
 			localHistoryOnly = true;
 			this.branchName = "local";
+			this.id = -1;
 		} else if (historyInfo.getPrimerySpec() != null) {
 			this.branchName = historyInfo.getPrimerySpec().getBranch();
 			this.id = historyInfo.getPrimerySpec().getIdentifier();
@@ -60,6 +56,27 @@ public class PlotCommit implements IPlotCommit {
 			this.id = -666;
 			localHistoryOnly = true;
 		}
+	}
+
+	private void initFields() {
+		this.lane = null;
+		this.passingLanes = new PlotLane[0];
+		this.parents = new ArrayList<IPlotCommit>();
+		this.children = new ArrayList<IPlotCommit>();
+		this.widget = null;
+		this.isRealCommit = true;
+	}
+
+	/**
+	 * Creates a hollow dummy commit with the given id and branch name.
+	 * 
+	 * @param dummyId The id of the dummy.
+	 * @param branch The branch name of the dummy.
+	 */
+	public PlotCommit(int dummyId, String branch) {
+		initFields();
+		this.id = dummyId;
+		this.branchName = branch;
 	}
 
 	/**

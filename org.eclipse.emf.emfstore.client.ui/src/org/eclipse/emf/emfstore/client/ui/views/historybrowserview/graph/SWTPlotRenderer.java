@@ -317,6 +317,9 @@ public class SWTPlotRenderer extends AbstractPlotRenderer {
 				color = myLane.getLightColor();
 			}
 		}
+		if (color == null) {
+			color = sysColorGray;
+		}
 		return color;
 	}
 
