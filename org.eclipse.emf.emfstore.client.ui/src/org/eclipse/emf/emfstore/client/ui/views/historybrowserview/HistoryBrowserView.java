@@ -96,8 +96,9 @@ import org.eclipse.ui.part.ViewPart;
  * @author Aumann
  */
 public class HistoryBrowserView extends ViewPart implements ProjectSpaceContainer {
-	private static final int infosAboveCenter = 2;
-	private static final int infosBelowCenter = 3;
+	private static final int INFOS_ABOVE_BASE = 5;
+	private static final int INFOS_BELOW_BASE = 10;
+	private static final boolean DEFAULT_SHOW_ALL_BRANCHES = true;
 
 	/**
 	 * Treeviewer that provides a model element selection for selected
@@ -395,6 +396,7 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 
 		addExpandAllAndCollapseAllAction(menuManager);
 		addRefreshAction(menuManager);
+		addShowAllBranchesAction(menuManager);
 		addShowRootAction(menuManager);
 		addNextAndPreviousAction(menuManager);
 		addJumpToRevisionAction(menuManager);
@@ -434,6 +436,21 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		refresh.setImageDescriptor(Activator.getImageDescriptor("/icons/refresh.png"));
 		refresh.setToolTipText("Refresh");
 		menuManager.add(refresh);
+	}
+
+	private void addShowAllBranchesAction(IToolBarManager menuManager) {
+		Action showAllBranches = new Action("", SWT.TOGGLE) {
+			@Override
+			public void run() {
+				paginationManager.setShowAllVersions(isChecked());
+				refresh();
+			}
+
+		};
+		showAllBranches.setImageDescriptor(Activator.getImageDescriptor("icons/showallbranches.png"));
+		showAllBranches.setToolTipText("Show All Branches");
+		showAllBranches.setChecked(DEFAULT_SHOW_ALL_BRANCHES);
+		menuManager.add(showAllBranches);
 	}
 
 	private void addShowRootAction(IToolBarManager menuManager) {
@@ -485,7 +502,7 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 
 		};
 		prev.setImageDescriptor(Activator.getImageDescriptor("/icons/prev.png"));
-		prev.setToolTipText("Previous " + (infosAboveCenter - 1) + " items");
+		prev.setToolTipText("Previous " + INFOS_ABOVE_BASE + " items");
 		menuManager.add(prev);
 
 		Action next = new Action() {
@@ -497,7 +514,7 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 
 		};
 		next.setImageDescriptor(Activator.getImageDescriptor("/icons/next.png"));
-		next.setToolTipText("Next " + (infosBelowCenter - 1) + " items");
+		next.setToolTipText("Next " + INFOS_BELOW_BASE + " items");
 		menuManager.add(next);
 	}
 
@@ -509,11 +526,13 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 				if (inputDialog.open() == Window.OK) {
 					try {
 						int temp = Integer.parseInt(inputDialog.getValue());
-						// TODO: currentEnd = temp;
+						paginationManager.setVersion(temp);
 						refresh();
 					} catch (NumberFormatException e) {
 						MessageDialog.openError(getSite().getShell(), "Error", "A numeric value was expected!");
 						run();
+					} catch (EmfStoreException e) {
+						EMFStoreMessageDialog.showExceptionDialog(e);
 					}
 				}
 			}
@@ -590,8 +609,9 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 					TagVersionSpec spec = VersioningFactory.eINSTANCE.createTagVersionSpec();
 					spec.setName(VersionSpec.BASE);
 
-					if (!containsTag(hi.getTagSpecs(), spec))
+					if (!containsTag(hi.getTagSpecs(), spec)) {
 						hi.getTagSpecs().add(spec);
+					}
 					break;
 				}
 			}
@@ -658,7 +678,8 @@ public class HistoryBrowserView extends ViewPart implements ProjectSpaceContaine
 		Project project = projectSpace.getProject();
 		contentProvider = new SCMContentProvider();
 		commitProvider = new PlotCommitProvider();
-		paginationManager = new PaginationManager(projectSpace, infosAboveCenter, infosBelowCenter);
+		paginationManager = new PaginationManager(projectSpace, INFOS_ABOVE_BASE, INFOS_BELOW_BASE);
+		paginationManager.setShowAllVersions(DEFAULT_SHOW_ALL_BRANCHES);
 
 		if (me != null && project.containsInstance(me)) {
 			label += adapterFactoryLabelProvider.getText(me);

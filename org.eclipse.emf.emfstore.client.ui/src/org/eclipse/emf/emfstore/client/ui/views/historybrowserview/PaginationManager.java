@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2008-2011 Chair for Applied Software Engineering,
+ * Technische Universitaet Muenchen.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ * 
+ * Contributors: Aumann
+ ******************************************************************************/
 package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
 
 import java.util.ArrayList;
@@ -12,6 +22,8 @@ import org.eclipse.emf.emfstore.server.model.versioning.RangeQuery;
 import org.eclipse.emf.emfstore.server.model.versioning.util.HistoryQueryBuilder;
 
 /**
+ * Class handling pagination. See constructor {@link #PaginationManager(ProjectSpace, int, int)}
+ * 
  * @author Aumann
  * 
  */
@@ -29,9 +41,11 @@ public class PaginationManager {
 
 	private ProjectSpace projectSpace;
 
-	private boolean nextPage = false;
+	private boolean nextPage;
 
-	private boolean prevPage = false;
+	private boolean prevPage;
+
+	private boolean showAllVersions;
 
 	/**
 	 * Creates a new PaginationManager with given page range around the central
@@ -89,14 +103,12 @@ public class PaginationManager {
 		List<HistoryInfo> historyInfos = projectSpace.getHistoryInfo(query);
 
 		if (newCenterVersion != null && !currentCenterVersionShown.equals(newCenterVersion)) {
-
 			setCorrectCenterVersionAndHistory(historyInfos, newCenterVersion.getIdentifier(), beforeCurrent);
-
 		} else {
-
 			currentlyPresentedInfos = historyInfos;
 		}
-		prevPage = nextPage = false;
+		prevPage = false;
+		nextPage = false;
 		return currentlyPresentedInfos;
 	}
 
@@ -214,11 +226,19 @@ public class PaginationManager {
 		}
 		assert overLapVersionPosInNewerVersions != -1 : "As the new query is based around the first/last version of the previous query there must be at least one overlapping version.";
 
+		mergedInfos = performMerge(mergedInfos, newerVersions, olderVersions, overLapVersionPosInNewerVersions,
+			idOfLastVersionMerged);
+
+		return mergedInfos;
+	}
+
+	private List<HistoryInfo> performMerge(List<HistoryInfo> mergedInfos, List<HistoryInfo> newerVersions,
+		List<HistoryInfo> olderVersions, int overLapVersionPosInNewerVersion, int idOfLastVersionMerged) {
 		// now start merging from the overlap version on
 		// actually merging should be unnecessary as all versions should be
 		// contained from the overlap on
-		// but merging is more robust if paging ever gets mixed with new calls
-		int currentPosNewer = overLapVersionPosInNewerVersions;
+		// but this way merging is more robust if paging ever gets mixed with new calls
+		int currentPosNewer = overLapVersionPosInNewerVersion;
 		int currentPosOlder = 0;
 		while (currentPosNewer != newerVersions.size() && currentPosOlder != olderVersions.size()) {
 			HistoryInfo nextMergeCandidate;
@@ -260,9 +280,12 @@ public class PaginationManager {
 		return info.getPrimerySpec().getIdentifier();
 	}
 
+	/**
+	 * 
+	 * @param centerVersion The query center version.
+	 * @return
+	 */
 	private HistoryQuery getQuery(PrimaryVersionSpec centerVersion) {
-
-		boolean allVersions = true;
 		PrimaryVersionSpec version;
 		if (centerVersion != null) {
 			version = centerVersion;
@@ -270,10 +293,21 @@ public class PaginationManager {
 			version = projectSpace.getBaseVersion();
 			currentCenterVersionShown = version;
 		}
-		RangeQuery query = HistoryQueryBuilder.rangeQuery(version, aboveCenterCount, belowCenterCount, allVersions,
-			false, false, true);
+		RangeQuery query = HistoryQueryBuilder.rangeQuery(version, aboveCenterCount, belowCenterCount, showAllVersions,
+			!showAllVersions, !showAllVersions, true);
 
 		return query;
+	}
+
+	/**
+	 * Allows to switch between showing all history info items (across all branches) or just those relevant to the
+	 * current project branch.
+	 * 
+	 * @param allVersions if true versions across all branches are shown, otherwise only versions for the current branch
+	 *            including ancestor versions
+	 */
+	public void setShowAllVersions(boolean allVersions) {
+		showAllVersions = allVersions;
 	}
 
 	/**
@@ -282,6 +316,7 @@ public class PaginationManager {
 	 */
 	public void nextPage() {
 		nextPage = true;
+		prevPage = false;
 	}
 
 	/**
@@ -290,6 +325,65 @@ public class PaginationManager {
 	 */
 	public void previousPage() {
 		prevPage = true;
+		nextPage = false;
 	}
 
+	/**
+	 * Swaps to a page containing the specified version. Call {@link #retrieveHistoryInfos()} to
+	 * retrieve the new page.
+	 * 
+	 * @param id The identifier of the version to display.
+	 * @throws EmfStoreException When an error occurs while retrieving versions from the server.
+	 * 
+	 * @return true if a version range surrounding the id has been found, false otherwise. Note that the range does not
+	 *         necessarily contain the id, for example if only versions for a certain branch are shown.
+	 */
+	public boolean setVersion(int id) throws EmfStoreException {
+		prevPage = false;
+		nextPage = false;
+		if (currentlyPresentedInfos.isEmpty() || currentCenterVersionShown == null) {
+			return false;
+		}
+
+		int newestVersion = getId(currentlyPresentedInfos.get(0));
+		int oldestVersion = getId(currentlyPresentedInfos.get(currentlyPresentedInfos.size() - 1));
+
+		List<HistoryInfo> currentHistoryInfosBU = currentlyPresentedInfos;
+		PrimaryVersionSpec currentCenterBU = currentCenterVersionShown;
+
+		if (newestVersion >= id && id >= oldestVersion) {
+			return true; // already there
+		}
+
+		List<HistoryInfo> historyInfos = new ArrayList<HistoryInfo>();
+		while (!containsId(historyInfos, id)) {
+			if (id > newestVersion) {
+				// retrieve newer versions until the desired id is in range (i.e. either found or not found)
+				prevPage = true;
+			} else {
+				nextPage = true;
+			}
+			List<HistoryInfo> result = retrieveHistoryInfos();
+			if (getId(result.get(0)) == newestVersion || getId(result.get(result.size() - 1)) == oldestVersion) {
+				// could not find the desired version range
+				assert !containsId(result, id);
+				currentlyPresentedInfos = currentHistoryInfosBU;
+				currentCenterVersionShown = currentCenterBU;
+				return false;
+			}
+			newestVersion = getId(result.get(0));
+			oldestVersion = getId(result.get(result.size() - 1));
+		}
+		return true;
+	}
+
+	private boolean containsId(List<HistoryInfo> infos, int id) {
+		int newestVersion = getId(infos.get(0));
+		int oldestVersion = getId(infos.get(infos.size() - 1));
+
+		if (newestVersion >= id && id >= oldestVersion) {
+			return true;
+		}
+		return false;
+	}
 }
