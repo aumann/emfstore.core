@@ -318,6 +318,7 @@ public class SWTPlotRenderer extends AbstractPlotRenderer {
 			}
 		}
 		if (color == null) {
+			assert false;
 			color = sysColorGray;
 		}
 		return color;

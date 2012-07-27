@@ -419,6 +419,10 @@ public class PlotCommitProvider implements IPlotCommitProvider {
 	private IPlotCommit getDummyParent(int id, String parentBranch) {
 		if (!dummyParentForId.containsKey(id)) {
 			IPlotCommit dummyParent = new PlotCommit(id, parentBranch);
+			Color[] colors = getColorsForBranch(parentBranch);
+			// set light color for saturated color to hint at "parent out of page"
+			dummyParent.setColor(colors[1]);
+			dummyParent.setLightColor(colors[1]);
 			dummyParentForId.put(id, dummyParent);
 
 		}

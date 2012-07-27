@@ -11,6 +11,7 @@
 package org.eclipse.emf.emfstore.client.ui.views.historybrowserview;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
@@ -94,7 +95,7 @@ public class PaginationManager {
 				}
 			}
 			assert beforeCurrent != -1 : "The currently shown center version should be contained in the currently shown history infos, why has it vanished?";
-			afterCurrent = currentlyPresentedInfos.size() - beforeCurrent - 1; // 1
+			afterCurrent = currentlyPresentedInfos.size() - beforeCurrent - 1; // - 1
 																				// ==
 																				// currentCenter
 			if (prevPage && beforeCurrent >= aboveCenterCount) {
@@ -151,7 +152,6 @@ public class PaginationManager {
 				oldCenterVersionPos = i;
 			}
 		}
-		// assert newCenterVersionPos != -1 : "The query is based around this version. So it must be there.";
 		if (newCenterVersionPos == -1) {
 			newCenterVersionPos = Math.max(0, newerVersions - 1);
 		}
@@ -222,85 +222,46 @@ public class PaginationManager {
 
 	private List<HistoryInfo> mergeHistoryInfoLists(List<HistoryInfo> newQueryHistoryInfos,
 		List<HistoryInfo> oldPresentedHistoryInfos) {
-		List<HistoryInfo> newerVersions;
-		List<HistoryInfo> olderVersions;
-		if (prevPage) {
-			newerVersions = newQueryHistoryInfos;
-			olderVersions = oldPresentedHistoryInfos;
-		} else {
-			assert nextPage;
-			newerVersions = oldPresentedHistoryInfos;
-			olderVersions = newQueryHistoryInfos;
-		}
+		return newMerge(newQueryHistoryInfos, oldPresentedHistoryInfos);
 
-		int highestVersionInOlderVersions = olderVersions.get(0).getPrimerySpec().getIdentifier();
-		int overLapVersionPosInNewerVersions = -1;
-		List<HistoryInfo> mergedInfos = new ArrayList<HistoryInfo>();
-		int idOfLastVersionMerged = -1;
-		for (int i = 0; i < newerVersions.size(); i++) {
-			HistoryInfo currentNewerVersion = newerVersions.get(i);
-			int currentVersionInNewerVersions = getId(currentNewerVersion);
-			if (currentVersionInNewerVersions == highestVersionInOlderVersions) {
-				overLapVersionPosInNewerVersions = i;
-				break;
-			} else if (currentVersionInNewerVersions < highestVersionInOlderVersions) {
-				assert i > 0 : "There must at least be one not older version in newerVersions";
-				overLapVersionPosInNewerVersions = i - 1;
-			} else {
-				mergedInfos.add(currentNewerVersion);
-				idOfLastVersionMerged = getId(currentNewerVersion);
-			}
-		}
-		assert overLapVersionPosInNewerVersions != -1 : "As the new query is based around the first/last version of the previous query there must be at least one overlapping version.";
-
-		mergedInfos = performMerge(mergedInfos, newerVersions, olderVersions, overLapVersionPosInNewerVersions,
-			idOfLastVersionMerged);
-
-		return mergedInfos;
 	}
 
-	private List<HistoryInfo> performMerge(List<HistoryInfo> mergedInfos, List<HistoryInfo> newerVersions,
-		List<HistoryInfo> olderVersions, int overLapVersionPosInNewerVersion, int idOfLastVersionMerged) {
-		// now start merging from the overlap version on
-		// actually merging should be unnecessary as all versions should be
-		// contained from the overlap on
-		// but this way merging is more robust if paging ever gets mixed with new calls
-		int currentPosNewer = overLapVersionPosInNewerVersion;
-		int currentPosOlder = 0;
-		while (currentPosNewer != newerVersions.size() && currentPosOlder != olderVersions.size()) {
-			HistoryInfo nextMergeCandidate;
-			if (getId(newerVersions.get(currentPosNewer)) >= getId(olderVersions.get(currentPosOlder))) {
-				nextMergeCandidate = newerVersions.get(currentPosNewer);
-				++currentPosNewer;
+	private List<HistoryInfo> newMerge(List<HistoryInfo> newQuery, List<HistoryInfo> olderVersions) {
+		int newPos = 0, oldPos = 0;
+
+		List<HistoryInfo> merge = new ArrayList<HistoryInfo>();
+		while (newPos < newQuery.size() && oldPos < olderVersions.size()) {
+			if (getId(newQuery.get(newPos)) >= getId(olderVersions.get(oldPos))) {
+				merge.add(newQuery.get(newPos));
+				newPos++;
 			} else {
-				nextMergeCandidate = olderVersions.get(currentPosOlder);
-				++currentPosOlder;
+				merge.add(olderVersions.get(oldPos));
+				oldPos++;
 			}
-			if (idOfLastVersionMerged != getId(nextMergeCandidate)) { // avoid
-																		// duplicates
-				mergedInfos.add(nextMergeCandidate);
-				idOfLastVersionMerged = getId(nextMergeCandidate);
-			}
-		}
-		// add rest of the list that is not at the end
-		for (int i = currentPosNewer; i < newerVersions.size(); i++) {
-			HistoryInfo nextMergeCandidate = newerVersions.get(i);
-			if (idOfLastVersionMerged != getId(nextMergeCandidate)) { // avoid
-																		// duplicates
-				mergedInfos.add(nextMergeCandidate);
-				idOfLastVersionMerged = getId(nextMergeCandidate);
-			}
+
 		}
 
-		for (int i = currentPosOlder; i < olderVersions.size(); i++) {
-			HistoryInfo nextMergeCandidate = olderVersions.get(i);
-			if (idOfLastVersionMerged != getId(nextMergeCandidate)) { // avoid
-																		// duplicates
-				mergedInfos.add(nextMergeCandidate);
-				idOfLastVersionMerged = getId(nextMergeCandidate);
-			}
+		// add rest
+		assert newPos == newQuery.size() || oldPos == olderVersions.size();
+		for (int i = newPos; i < newQuery.size(); i++) {
+			merge.add(newQuery.get(i));
 		}
-		return mergedInfos;
+
+		for (int i = oldPos; i < olderVersions.size(); i++) {
+			merge.add(olderVersions.get(i));
+		}
+
+		// remove duplicates
+		Iterator<HistoryInfo> iterator = merge.iterator();
+		int prevId = Integer.MIN_VALUE;
+		while (iterator.hasNext()) {
+			int currId = getId(iterator.next());
+			if (currId == prevId) {
+				iterator.remove();
+			}
+			prevId = currId;
+		}
+		return merge;
 	}
 
 	private int getId(HistoryInfo info) {

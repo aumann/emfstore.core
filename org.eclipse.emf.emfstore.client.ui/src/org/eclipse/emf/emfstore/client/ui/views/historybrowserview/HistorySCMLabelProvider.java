@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2008-2011 Chair for Applied Software Engineering,
+ * Copyright (c) 2008-2012 Chair for Applied Software Engineering,
  * Technische Universitaet Muenchen.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,8 +16,17 @@ import org.eclipse.emf.emfstore.common.model.Project;
 import org.eclipse.emf.emfstore.server.model.versioning.HistoryInfo;
 import org.eclipse.emf.emfstore.server.model.versioning.TagVersionSpec;
 
+/**
+ * @author aleaum
+ * 
+ */
 public class HistorySCMLabelProvider extends SCMLabelProvider {
 
+	/**
+	 * Creates a new {@link HistorySCMLabelProvider} for the given project.
+	 * 
+	 * @param project The project to represent.
+	 */
 	public HistorySCMLabelProvider(Project project) {
 		super(project);
 	}
